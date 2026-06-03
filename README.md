@@ -24,13 +24,13 @@ hosting serves the plain files in `out/`.
 
 ### One-time setup
 
-1. Create (or pick) a Firebase project and enable Hosting.
-2. Set `.firebaserc` `projects.default` to the project ID.
-3. Create a service account with the **Firebase Hosting Admin** role and
-   download its JSON key.
-4. In the GitHub repo settings add:
-   - secret `FIREBASE_SERVICE_ACCOUNT` = the service-account JSON
-   - variable `FIREBASE_PROJECT_ID` = the project ID
+The Firebase project is **`radioso-live`** (set in `.firebaserc` and the deploy
+workflow). To enable CI deploys, add one GitHub Actions secret:
+
+1. In the Firebase/GCP console, create a service account with the
+   **Firebase Hosting Admin** role and download its JSON key.
+2. In the GitHub repo settings add secret `FIREBASE_SERVICE_ACCOUNT` = the
+   service-account JSON.
 
 ### Continuous deploy
 
@@ -41,5 +41,5 @@ hosting serves the plain files in `out/`.
 
 ```bash
 pnpm run build
-npx firebase-tools deploy --only hosting --project <PROJECT_ID>
+npx firebase-tools deploy --only hosting --project radioso-live
 ```
