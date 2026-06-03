@@ -32,6 +32,7 @@ jobs:
       # Deploys a preview channel on pull requests, and live on push to main.
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
+          github_environment: live
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: radioso-live
