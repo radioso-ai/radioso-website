@@ -1,6 +1,9 @@
 # Radioso website
 
-Marketing site for Radioso. Next.js 16 (App Router), Tailwind v4, statically
+Website for radioso. We treat it like a product, and you can enjoy looking at its code. Admittedly, not something you can use as a kit.
+
+
+Next.js 16 (App Router), Tailwind v4, statically
 exported and served from Firebase Hosting.
 
 ## Develop
