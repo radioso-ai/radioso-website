@@ -13,9 +13,25 @@ pnpm run build      # static export → ./out
 pnpm run preview    # serve ./out locally
 ```
 
-The agent answers in the page are currently served by a local stub in
-`lib/agent.ts`. To connect the real grounded API, replace `fetchAnswer()` there
-with a `fetch` against the endpoint and map the response into `AgentAnswerData`.
+## Agent answers
+
+`lib/agent.ts` `fetchAnswer()` calls the live Radioso grounded API through a
+**headless embed token**: it exchanges the token for a public session, then posts
+the question to the public chat endpoint. If the live call fails (local dev, an
+origin not on the workspace allowlist, or message-route CORS not yet deployed) it
+falls back to canned answers so the page never breaks.
+
+Config (optional — sensible defaults baked in, inlined at build):
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_RADIOSO_API_BASE` | `https://platform.radioso.dev` | Embed/public-chat host |
+| `NEXT_PUBLIC_RADIOSO_EMBED_TOKEN` | the site's marketing token | Headless embed token (public, origin-locked) |
+
+For the live API to work from the browser, the site's origin (production domain
+**and** `http://localhost:3002` for dev) must be added to the agent workspace's
+website-embed **allowed origins** in the Radioso dashboard. Until then the page
+serves the canned fallback.
 
 ## Deploy (Firebase Hosting)
 

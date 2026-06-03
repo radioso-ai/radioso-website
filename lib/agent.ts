@@ -1,16 +1,19 @@
 /**
- * Dummy agent layer.
+ * Agent layer.
  *
- * Pre-rendered answers below are placeholders — they pretend to be Radioso responses so the
- * page UX can be designed and verified before wiring the real grounded API. Once an endpoint
- * + token is provided, swap `fetchAnswer()` to call it and replace the canned `answers` map
- * with build-time fetches (ISR) for pre-rendered sections.
+ * `fetchAnswer()` calls the live Radioso grounded API through the headless embed token
+ * (session exchange → public chat message). If the live call is unavailable — local dev,
+ * an origin not yet on the workspace allowlist, or the message CORS not yet deployed — it
+ * falls back to the canned `PRERENDERED` answers so the page never shows a broken state.
+ *
+ * The pre-rendered seed answer (hero "What is Radioso?") stays canned because the page is a
+ * static export; live answers happen client-side once a visitor asks.
  */
 
 export type AgentSource = {
   n: number
   title: string
-  detail: string
+  detail?: string
   url?: string
 }
 
@@ -93,12 +96,12 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
 }
 
-/**
- * Tiny intent router for the dummy one-shot input. Returns a canned answer based on the
- * question — swap with a real grounded call once the endpoint is available.
- */
-export async function fetchAnswer(question: string): Promise<AgentAnswerData> {
-  await new Promise((resolve) => setTimeout(resolve, 700 + Math.random() * 500))
+/* ------------------------------------------------------------------ *
+ * Stub fallback — canned answers for local dev and whenever the live
+ * API is unreachable. Keyed by a tiny intent router over the question.
+ * ------------------------------------------------------------------ */
+async function stubAnswer(question: string): Promise<AgentAnswerData> {
+  await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 400))
 
   const q = question.toLowerCase().trim()
   if (!q) return PRERENDERED.refuse
@@ -116,4 +119,97 @@ export async function fetchAnswer(question: string): Promise<AgentAnswerData> {
     if (pattern.test(q)) return PRERENDERED[key]
   }
   return PRERENDERED.refuse
+}
+
+/* ------------------------------------------------------------------ *
+ * Live grounded API — Radioso public chat via the headless embed token.
+ * Exchange the embed token for a public session (cached), then post the
+ * question. Configurable via NEXT_PUBLIC_RADIOSO_* (inlined at build).
+ * ------------------------------------------------------------------ */
+const API_BASE = process.env.NEXT_PUBLIC_RADIOSO_API_BASE ?? 'https://platform.radioso.dev'
+const EMBED_TOKEN = process.env.NEXT_PUBLIC_RADIOSO_EMBED_TOKEN ?? 'VZljKt6M2wne5TKu_yIKwQ'
+
+let sessionTokenPromise: Promise<string> | null = null
+
+async function ensureSessionToken(): Promise<string> {
+  if (!sessionTokenPromise) {
+    sessionTokenPromise = (async () => {
+      const res = await fetch(
+        `${API_BASE}/api/embed/session/${encodeURIComponent(EMBED_TOKEN)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        },
+      )
+      if (!res.ok) throw new Error(`session ${res.status}`)
+      const data: unknown = await res.json()
+      const token =
+        typeof data === 'object' && data !== null
+          ? (data as { publicSessionToken?: unknown }).publicSessionToken
+          : undefined
+      if (typeof token !== 'string' || !token) throw new Error('missing session token')
+      return token
+    })().catch((err) => {
+      sessionTokenPromise = null // let the next ask retry the exchange
+      throw err
+    })
+  }
+  return sessionTokenPromise
+}
+
+type RawCitation = { title?: string; sourceUrl?: string | null }
+type RawSegment = { text?: string; citationIndices?: number[] }
+type RawAnswer = {
+  answer?: string
+  citations?: RawCitation[]
+  answerSegments?: RawSegment[]
+}
+
+function mapAnswer(raw: RawAnswer): AgentAnswerData {
+  const citations = Array.isArray(raw.citations) ? raw.citations : []
+  const sources: AgentSource[] = citations.map((c, i) => ({
+    n: i + 1,
+    title: c.title?.trim() || `Source ${i + 1}`,
+    url: c.sourceUrl ?? undefined,
+  }))
+
+  let body = ''
+  if (Array.isArray(raw.answerSegments) && raw.answerSegments.length > 0) {
+    for (const seg of raw.answerSegments) {
+      body += seg.text ?? ''
+      for (const idx of seg.citationIndices ?? []) body += `[${idx + 1}]`
+    }
+  } else {
+    body = raw.answer ?? ''
+  }
+
+  return { body: body.trim(), sources }
+}
+
+export async function fetchAnswer(question: string): Promise<AgentAnswerData> {
+  const q = question.trim()
+  if (!q) return PRERENDERED.refuse
+  if (!EMBED_TOKEN) return stubAnswer(q)
+
+  try {
+    const sessionToken = await ensureSessionToken()
+    const res = await fetch(`${API_BASE}/api/public/chat/${encodeURIComponent(EMBED_TOKEN)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Radioso-Public-Session': sessionToken,
+      },
+      body: JSON.stringify({ message: q, startConversation: true, stream: false }),
+    })
+    if (!res.ok) throw new Error(`chat ${res.status}`)
+    const mapped = mapAnswer((await res.json()) as RawAnswer)
+    if (!mapped.body) throw new Error('empty answer')
+    return mapped
+  } catch (err) {
+    if (typeof console !== 'undefined') {
+      console.warn('[radioso] live answer unavailable, using fallback:', err)
+    }
+    return stubAnswer(q)
+  }
 }

@@ -94,8 +94,21 @@ function SourceChip({ source }: { source: AgentSource }) {
         {source.n}
       </span>
       <FileText className="size-3" />
-      <span className="font-mono text-foreground">{source.title}</span>
-      <span className="text-muted-foreground/80">· {source.detail}</span>
+      {source.url ? (
+        <a
+          href={source.url}
+          target="_blank"
+          rel="noreferrer"
+          className="font-mono text-foreground underline-offset-2 hover:underline"
+        >
+          {source.title}
+        </a>
+      ) : (
+        <span className="font-mono text-foreground">{source.title}</span>
+      )}
+      {source.detail ? (
+        <span className="text-muted-foreground/80">· {source.detail}</span>
+      ) : null}
     </span>
   )
 }
