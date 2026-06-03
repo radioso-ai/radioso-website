@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+
+# firebase
+.firebase/
+firebase-debug.log
+
+# misc
+.DS_Store
+*.tsbuildinfo
