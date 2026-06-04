@@ -1,5 +1,8 @@
 import Image from 'next/image'
 import { FileText } from 'lucide-react'
+import { Children, isValidElement } from 'react'
+import ReactMarkdown, { type Components } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { ReactNode } from 'react'
 
 import type { AgentAnswerData, AgentSource } from '@/lib/agent'
@@ -56,207 +59,145 @@ export function AgentAnswer({ data, question, streaming, variant = 'card' }: Pro
 }
 
 function renderBody(body: string, sources: AgentSource[], streaming?: boolean): ReactNode {
-  const blocks = parseMarkdownBlocks(body)
-
   return (
-    <div className="flex flex-col gap-3">
-      {blocks.map((block, index) => {
-        const isLastBlock = index === blocks.length - 1
-
-        if (block.type === 'ul' || block.type === 'ol') {
-          const ListTag = block.type
-          return (
-            <ListTag
-              key={index}
-              className={
-                block.type === 'ul'
-                  ? 'ml-5 list-outside list-disc space-y-1 pl-1'
-                  : 'ml-5 list-outside list-decimal space-y-1 pl-1'
-              }
-            >
-              {block.items.map((item, itemIndex) => (
-                <li key={itemIndex}>
-                  {renderInlineMarkdown(item, sources, `${index}-${itemIndex}`)}
-                  {streaming && isLastBlock && itemIndex === block.items.length - 1 ? (
-                    <span className="typing-caret align-middle" />
-                  ) : null}
-                </li>
-              ))}
-            </ListTag>
-          )
-        }
-
-        if (block.type === 'heading') {
-          return (
-            <p key={index} className="font-semibold text-foreground">
-              {renderInlineMarkdown(block.text, sources, `${index}`)}
-              {streaming && isLastBlock ? <span className="typing-caret align-middle" /> : null}
-            </p>
-          )
-        }
-
-        if (block.type === 'paragraph') {
-          return (
-            <p key={index}>
-              {renderInlineMarkdown(block.text, sources, `${index}`)}
-              {streaming && isLastBlock ? <span className="typing-caret align-middle" /> : null}
-            </p>
-          )
-        }
-
-        return null
-      })}
+    <div className="space-y-3">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={markdownComponents(sources)}
+      >
+        {streaming ? `${body}${STREAMING_CARET_TOKEN}` : body}
+      </ReactMarkdown>
     </div>
   )
 }
 
-type MarkdownBlock =
-  | { type: 'paragraph' | 'heading'; text: string }
-  | { type: 'ul' | 'ol'; items: string[] }
+const STREAMING_CARET_TOKEN = '\uE000'
 
-function parseMarkdownBlocks(body: string): MarkdownBlock[] {
-  const blocks: MarkdownBlock[] = []
-  const lines = body.replace(/\r\n?/g, '\n').split('\n')
-  let paragraph: string[] = []
-  let list: { type: 'ul' | 'ol'; items: string[] } | null = null
-
-  const flushParagraph = () => {
-    if (paragraph.length === 0) return
-    blocks.push({ type: 'paragraph', text: paragraph.join(' ').trim() })
-    paragraph = []
-  }
-
-  const flushList = () => {
-    if (!list) return
-    blocks.push(list)
-    list = null
-  }
-
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed) {
-      flushParagraph()
-      flushList()
-      continue
-    }
-
-    const heading = trimmed.match(/^#{1,3}\s+(.+)$/)
-    if (heading) {
-      flushParagraph()
-      flushList()
-      blocks.push({ type: 'heading', text: heading[1].trim() })
-      continue
-    }
-
-    const bullet = trimmed.match(/^[-*]\s+(.+)$/)
-    if (bullet) {
-      flushParagraph()
-      if (!list || list.type !== 'ul') {
-        flushList()
-        list = { type: 'ul', items: [] }
+function markdownComponents(sources: AgentSource[]): Components {
+  return {
+    p({ children }) {
+      return <p>{renderCitationChildren(children, sources)}</p>
+    },
+    a({ children, href }) {
+      return (
+        <a
+          href={href}
+          target={href?.startsWith('http') ? '_blank' : undefined}
+          rel={href?.startsWith('http') ? 'noreferrer' : undefined}
+          className="font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+        >
+          {renderCitationChildren(children, sources)}
+        </a>
+      )
+    },
+    ul({ children }) {
+      return <ul className="ml-5 list-outside list-disc space-y-1 pl-1">{children}</ul>
+    },
+    ol({ children }) {
+      return <ol className="ml-5 list-outside list-decimal space-y-1 pl-1">{children}</ol>
+    },
+    li({ children }) {
+      return <li>{renderCitationChildren(children, sources)}</li>
+    },
+    strong({ children }) {
+      return <strong className="font-semibold">{renderCitationChildren(children, sources)}</strong>
+    },
+    em({ children }) {
+      return <em className="italic">{renderCitationChildren(children, sources)}</em>
+    },
+    h1({ children }) {
+      return <p className="text-lg font-semibold">{renderCitationChildren(children, sources)}</p>
+    },
+    h2({ children }) {
+      return <p className="font-semibold">{renderCitationChildren(children, sources)}</p>
+    },
+    h3({ children }) {
+      return <p className="font-semibold">{renderCitationChildren(children, sources)}</p>
+    },
+    blockquote({ children }) {
+      return (
+        <blockquote className="border-l-2 border-border pl-4 text-muted-foreground">
+          {renderCitationChildren(children, sources)}
+        </blockquote>
+      )
+    },
+    code({ children, className }) {
+      const isBlock = className?.startsWith('language-')
+      if (isBlock) {
+        return (
+          <code className={`${className} font-mono text-[0.9em]`}>
+            {children}
+          </code>
+        )
       }
-      list.items.push(bullet[1].trim())
-      continue
-    }
 
-    const ordered = trimmed.match(/^\d+[.)]\s+(.+)$/)
-    if (ordered) {
-      flushParagraph()
-      if (!list || list.type !== 'ol') {
-        flushList()
-        list = { type: 'ol', items: [] }
-      }
-      list.items.push(ordered[1].trim())
-      continue
-    }
-
-    if (list && /^\s{2,}\S/.test(line)) {
-      list.items[list.items.length - 1] += ` ${trimmed}`
-      continue
-    }
-
-    flushList()
-    paragraph.push(trimmed)
+      return (
+        <code className="rounded-[5px] bg-muted px-1 py-0.5 font-mono text-[0.9em]">
+          {children}
+        </code>
+      )
+    },
+    pre({ children }) {
+      return (
+        <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-[13px] leading-relaxed">
+          {children}
+        </pre>
+      )
+    },
+    table({ children }) {
+      return (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-[13px]">{children}</table>
+        </div>
+      )
+    },
+    th({ children }) {
+      return (
+        <th className="border-b border-border px-3 py-2 font-semibold">
+          {renderCitationChildren(children, sources)}
+        </th>
+      )
+    },
+    td({ children }) {
+      return (
+        <td className="border-b border-border px-3 py-2 align-top">
+          {renderCitationChildren(children, sources)}
+        </td>
+      )
+    },
   }
-
-  flushParagraph()
-  flushList()
-  return blocks.length > 0 ? blocks : [{ type: 'paragraph', text: body }]
 }
 
-function renderInlineMarkdown(text: string, sources: AgentSource[], keyPrefix: string): ReactNode[] {
+function renderCitationChildren(children: ReactNode, sources: AgentSource[]): ReactNode {
+  return Children.map(children, (child) => {
+    if (typeof child === 'string') return renderCitationText(child, sources)
+    if (!isValidElement<{ children?: ReactNode }>(child)) return child
+    return child
+  })
+}
+
+function renderCitationText(text: string, sources: AgentSource[]): ReactNode[] {
   const nodes: ReactNode[] = []
-  let buffer = ''
-  let i = 0
+  const regex = new RegExp(`(${STREAMING_CARET_TOKEN}|\\[(\\d+)\\])`, 'g')
+  let last = 0
+  let match: RegExpExecArray | null
   let key = 0
 
-  const flush = () => {
-    if (!buffer) return
-    nodes.push(buffer)
-    buffer = ''
-  }
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > last) nodes.push(text.slice(last, match.index))
 
-  while (i < text.length) {
-    if (text.startsWith('**', i)) {
-      const end = text.indexOf('**', i + 2)
-      if (end !== -1) {
-        flush()
-        nodes.push(
-          <strong key={`${keyPrefix}-b-${key++}`} className="font-semibold">
-            {renderInlineMarkdown(text.slice(i + 2, end), sources, `${keyPrefix}-b-${key}`)}
-          </strong>,
-        )
-        i = end + 2
-        continue
-      }
-    }
-
-    if (text[i] === '`') {
-      const end = text.indexOf('`', i + 1)
-      if (end !== -1) {
-        flush()
-        nodes.push(
-          <code
-            key={`${keyPrefix}-code-${key++}`}
-            className="rounded-[5px] bg-muted px-1 py-0.5 font-mono text-[0.9em]"
-          >
-            {text.slice(i + 1, end)}
-          </code>,
-        )
-        i = end + 1
-        continue
-      }
-    }
-
-    const citation = text.slice(i).match(/^\[(\d+)\]/)
-    if (citation) {
-      flush()
-      const n = Number(citation[1])
+    if (match[1] === STREAMING_CARET_TOKEN) {
+      nodes.push(<span key={`caret-${key++}`} className="typing-caret align-middle" />)
+    } else {
+      const n = Number(match[2])
       const exists = sources.some((s) => s.n === n)
-      nodes.push(<CitationPip key={`${keyPrefix}-c-${key++}`} n={n} muted={!exists} />)
-      i += citation[0].length
-      continue
+      nodes.push(<CitationPip key={`c-${key++}`} n={n} muted={!exists} />)
     }
 
-    if (text[i] === '*' && text[i + 1] !== '*') {
-      const end = text.indexOf('*', i + 1)
-      if (end !== -1) {
-        flush()
-        nodes.push(
-          <em key={`${keyPrefix}-i-${key++}`} className="italic">
-            {renderInlineMarkdown(text.slice(i + 1, end), sources, `${keyPrefix}-i-${key}`)}
-          </em>,
-        )
-        i = end + 1
-        continue
-      }
-    }
-
-    buffer += text[i]
-    i += 1
+    last = match.index + match[0].length
   }
 
-  flush()
+  if (last < text.length) nodes.push(text.slice(last))
   return nodes
 }
 
