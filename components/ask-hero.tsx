@@ -11,7 +11,7 @@ const SUGGESTIONS = [
 ]
 
 export function AskHero() {
-  const { asked, pending, error, ask, answerRef } = useAsk()
+  const { asked, pending, streaming, error, ask, answerRef } = useAsk()
 
   return (
     <section className="pb-16 pt-10 sm:pt-14">
@@ -45,7 +45,10 @@ export function AskHero() {
               {error}
             </div>
           )}
-          {!error && pending && (
+          {!error && pending && streaming && (
+            <AgentAnswer question={asked.question} data={streaming} streaming />
+          )}
+          {!error && pending && !streaming && (
             <AgentAnswer
               question={asked.question}
               data={{ body: 'Grounding answer in your documents', sources: [] }}
