@@ -19,6 +19,8 @@ type AskState = {
   setQuestion: (q: string) => void
   asked: Asked
   pending: boolean
+  /** Partial answer rendered live while the stream is in flight; null otherwise. */
+  streaming: AgentAnswerData | null
   error: string | null
   ask: (q: string) => Promise<void>
   /** Populate the input box with text and move focus to it. */
@@ -35,6 +37,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
   const [question, setQuestion] = useState('')
   const [asked, setAsked] = useState<Asked>(SEED)
   const [pending, setPending] = useState(false)
+  const [streaming, setStreaming] = useState<AgentAnswerData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const answerRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -45,6 +48,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
       if (!trimmed || pending) return
       setPending(true)
       setError(null)
+      setStreaming(null)
       setAsked({ question: trimmed, answer: null })
       setQuestion('')
 
@@ -53,12 +57,15 @@ export function AskProvider({ children }: { children: ReactNode }) {
       })
 
       try {
-        const data = await fetchAnswer(trimmed)
+        const data = await fetchAnswer(trimmed, {
+          onChunk: (partialBody) => setStreaming({ body: partialBody, sources: [] }),
+        })
         setAsked({ question: trimmed, answer: data })
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong.')
       } finally {
         setPending(false)
+        setStreaming(null)
       }
     },
     [pending],
@@ -86,6 +93,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
         setQuestion,
         asked,
         pending,
+        streaming,
         error,
         ask,
         populateInput,

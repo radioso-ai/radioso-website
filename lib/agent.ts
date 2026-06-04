@@ -2,9 +2,14 @@
  * Agent layer.
  *
  * `fetchAnswer()` calls the live Radioso grounded API through the headless embed token
- * (session exchange → public chat message). If the live call is unavailable — local dev,
- * an origin not yet on the workspace allowlist, or the message CORS not yet deployed — it
- * falls back to the canned `PRERENDERED` answers so the page never shows a broken state.
+ * (session exchange → public chat message). The public session is reused across asks, and the
+ * `conversationId` returned by the first answer is fed back into later asks so follow-ups
+ * continue the same conversation instead of starting fresh. Answers stream over SSE: text
+ * arrives incrementally via `onChunk`, and the final `done` event carries the cited payload.
+ *
+ * If the live call is unavailable — local dev, an origin not yet on the workspace allowlist,
+ * or the message CORS not yet deployed — it falls back to the canned `PRERENDERED` answers so
+ * the page never shows a broken state.
  *
  * The pre-rendered seed answer (hero "What is Radioso?") stays canned because the page is a
  * static export; live answers happen client-side once a visitor asks.
@@ -131,6 +136,13 @@ const EMBED_TOKEN = process.env.NEXT_PUBLIC_RADIOSO_EMBED_TOKEN ?? 'VZljKt6M2wne
 
 let sessionTokenPromise: Promise<string> | null = null
 
+/**
+ * Conversation continuity. Captured from the first live answer and sent back on every
+ * subsequent ask so the backend continues the same conversation (with memory) instead of
+ * opening a new one each time. Resets on a full page load — one thread per page visit.
+ */
+let conversationId: string | null = null
+
 async function ensureSessionToken(): Promise<string> {
   if (!sessionTokenPromise) {
     sessionTokenPromise = (async () => {
@@ -161,6 +173,7 @@ async function ensureSessionToken(): Promise<string> {
 type RawCitation = { title?: string; sourceUrl?: string | null }
 type RawSegment = { text?: string; citationIndices?: number[] }
 type RawAnswer = {
+  conversationId?: string
   answer?: string
   citations?: RawCitation[]
   answerSegments?: RawSegment[]
@@ -187,7 +200,15 @@ function mapAnswer(raw: RawAnswer): AgentAnswerData {
   return { body: body.trim(), sources }
 }
 
-export async function fetchAnswer(question: string): Promise<AgentAnswerData> {
+export type FetchAnswerOptions = {
+  /** Called with the full text accumulated so far as each stream chunk arrives. */
+  onChunk?: (partialBody: string) => void
+}
+
+export async function fetchAnswer(
+  question: string,
+  opts: FetchAnswerOptions = {},
+): Promise<AgentAnswerData> {
   const q = question.trim()
   if (!q) return PRERENDERED.refuse
   if (!EMBED_TOKEN) return stubAnswer(q)
@@ -200,10 +221,14 @@ export async function fetchAnswer(question: string): Promise<AgentAnswerData> {
         'Content-Type': 'application/json',
         'X-Radioso-Public-Session': sessionToken,
       },
-      body: JSON.stringify({ message: q, startConversation: true, stream: false }),
+      body: JSON.stringify(
+        conversationId
+          ? { message: q, conversationId, startConversation: false, stream: true }
+          : { message: q, startConversation: true, stream: true },
+      ),
     })
-    if (!res.ok) throw new Error(`chat ${res.status}`)
-    const mapped = mapAnswer((await res.json()) as RawAnswer)
+    if (!res.ok || !res.body) throw new Error(`chat ${res.status}`)
+    const mapped = await readAnswerStream(res.body, opts.onChunk)
     if (!mapped.body) throw new Error('empty answer')
     return mapped
   } catch (err) {
@@ -212,4 +237,68 @@ export async function fetchAnswer(question: string): Promise<AgentAnswerData> {
     }
     return stubAnswer(q)
   }
+}
+
+/**
+ * Parse the Radioso SSE chat stream. Events: `conversation` (carries the id), `chunk`
+ * (incremental `{ text }`), `done` (the full cited payload), and `suggestions` (ignored).
+ * Accumulated text is pushed through `onChunk`; the `done` payload is authoritative for the
+ * final answer (citation markers + sources) and commits the conversation id.
+ */
+async function readAnswerStream(
+  body: ReadableStream<Uint8Array>,
+  onChunk?: (partialBody: string) => void,
+): Promise<AgentAnswerData> {
+  const reader = body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  let acc = ''
+  // Held on an object so the closure assignment below survives TS control-flow narrowing.
+  const state: { final: RawAnswer | null } = { final: null }
+
+  const dispatch = (event: string, data: string) => {
+    if (!data) return
+    let payload: unknown
+    try {
+      payload = JSON.parse(data)
+    } catch {
+      return
+    }
+    if (event === 'chunk') {
+      const text = (payload as { text?: unknown }).text
+      if (typeof text === 'string') {
+        acc += text
+        onChunk?.(acc)
+      }
+    } else if (event === 'done') {
+      state.final = payload as RawAnswer
+    }
+  }
+
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n')
+
+    let sep: number
+    while ((sep = buffer.indexOf('\n\n')) !== -1) {
+      const block = buffer.slice(0, sep)
+      buffer = buffer.slice(sep + 2)
+
+      let event = 'message'
+      const dataLines: string[] = []
+      for (const line of block.split('\n')) {
+        if (line.startsWith('event:')) event = line.slice(6).trim()
+        else if (line.startsWith('data:')) dataLines.push(line.slice(5).replace(/^ /, ''))
+      }
+      dispatch(event, dataLines.join('\n'))
+    }
+  }
+
+  if (state.final) {
+    if (typeof state.final.conversationId === 'string') conversationId = state.final.conversationId
+    return mapAnswer(state.final)
+  }
+  // Stream ended without a `done` event — surface whatever text we accumulated.
+  return { body: acc.trim(), sources: [] }
 }
