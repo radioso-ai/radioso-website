@@ -246,8 +246,7 @@ function AnsweredBy() {
     <div className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground">
       <Image src="/radioso-icon.svg" alt="" width={14} height={14} className="opacity-80" />
       <span>
-        Answered by <span className="font-medium text-foreground/80">Radioso</span> · grounded
-        in this site&apos;s knowledge base
+        Answers by <span className="font-medium text-foreground/80">Radioso</span>
       </span>
     </div>
   )

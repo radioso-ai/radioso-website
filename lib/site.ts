@@ -6,5 +6,5 @@ export const site = {
   url: process.env.SITE_URL ?? 'https://radioso.dev',
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.dev',
   appUrl: process.env.APP_URL ?? 'https://platform.radioso.dev',
-  githubUrl: 'https://github.com/radiosoAI/',
+  githubUrl: 'https://github.com/radioso-ai/',
 }

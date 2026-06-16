@@ -1,7 +1,13 @@
 'use client'
 
+import { useEffect, useLayoutEffect, useRef } from 'react'
+
 import { AgentAnswer } from '@/components/agent-answer'
+import { AskInput } from '@/components/ask-input'
 import { useAsk } from '@/lib/ask-context'
+
+// useLayoutEffect warns during SSR; fall back to useEffect on the server.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 const SUGGESTIONS = [
   'Can it take actions?',
@@ -10,8 +16,84 @@ const SUGGESTIONS = [
   'How does it compare to LangChain?',
 ]
 
+/**
+ * Cap the window so a very long answer can't push the rest of the page far down.
+ * Smaller on phones, where the input + suggestions also need to stay in view.
+ */
+function maxWindowPx() {
+  const vh = window.innerHeight
+  return vh * (window.innerWidth < 640 ? 0.48 : 0.7)
+}
+
 export function AskHero() {
-  const { asked, pending, streaming, error, ask, answerRef } = useAsk()
+  const { transcript, pending, streaming, error, ask, answerRef } = useAsk()
+  const lastRef = useRef<HTMLDivElement | null>(null)
+
+  // The conversation lives in a fixed window sized to the newest message, so only
+  // that message shows by default; earlier exchanges stay mounted above and are
+  // reachable by scrolling up inside the window. The window grows with the answer
+  // as it streams and stays pinned to the bottom (the newest content).
+  useIsomorphicLayoutEffect(() => {
+    const container = answerRef.current
+    const last = lastRef.current
+    if (!container || !last) return
+
+    const fit = () => {
+      container.style.height = `${Math.min(last.offsetHeight, maxWindowPx())}px`
+      container.scrollTop = container.scrollHeight - container.clientHeight
+    }
+
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(last)
+    window.addEventListener('resize', fit)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', fit)
+    }
+    // Re-bind when the newest element changes (new message or error banner).
+  }, [transcript.length, error, answerRef])
+
+  // Bring the window itself into view when a new question is asked.
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    requestAnimationFrame(() => {
+      answerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [transcript.length, answerRef])
+
+  // The blocks shown in the conversation, oldest first. The error banner (if any)
+  // is the last block so it becomes the newest, scrolled-to entry.
+  const blocks = transcript.map((item, i) => {
+    if (item.answer === null) {
+      return (
+        <AgentAnswer
+          key={i}
+          question={item.question}
+          data={streaming ?? { body: 'Grounding answer in your documents', sources: [] }}
+          streaming
+        />
+      )
+    }
+    return <AgentAnswer key={i} question={item.question} data={item.answer} />
+  })
+
+  if (error) {
+    blocks.push(
+      <div
+        key="error"
+        className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive"
+      >
+        {error}
+      </div>,
+    )
+  }
+
+  const lastIndex = blocks.length - 1
 
   return (
     <section className="pb-16 pt-10 sm:pt-14">
@@ -25,7 +107,25 @@ export function AskHero() {
           .
         </h1>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+        <div
+          ref={answerRef}
+          className="no-scrollbar mt-6 -mx-4 scroll-mt-28 overflow-y-auto overflow-x-hidden px-4 text-left sm:mt-10"
+        >
+          <div className="flex flex-col gap-6">
+            {blocks.map((block, i) => (
+              <div key={block.key ?? i} ref={i === lastIndex ? lastRef : undefined}>
+                {block}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <AskInput
+          autoFocus
+          className="mt-5 rounded-full border border-border/70 bg-card/90 p-1.5 pl-4 shadow-lg shadow-primary/10 backdrop-blur-md sm:pl-5"
+        />
+
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           {SUGGESTIONS.map((s) => (
             <button
               key={s}
@@ -37,27 +137,6 @@ export function AskHero() {
               {s}
             </button>
           ))}
-        </div>
-
-        <div ref={answerRef} className="mt-12 scroll-mt-28 text-left">
-          {error && (
-            <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-          {!error && pending && streaming && (
-            <AgentAnswer question={asked.question} data={streaming} streaming />
-          )}
-          {!error && pending && !streaming && (
-            <AgentAnswer
-              question={asked.question}
-              data={{ body: 'Grounding answer in your documents', sources: [] }}
-              streaming
-            />
-          )}
-          {!error && !pending && asked.answer && (
-            <AgentAnswer question={asked.question} data={asked.answer} />
-          )}
         </div>
       </div>
     </section>

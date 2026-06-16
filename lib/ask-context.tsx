@@ -12,12 +12,14 @@ import {
 
 import { fetchAnswer, PRERENDERED, type AgentAnswerData } from './agent'
 
-type Asked = { question: string; answer: AgentAnswerData | null }
+/** One question and its (eventual) answer. `answer` is null while the ask is in flight. */
+export type Asked = { question: string; answer: AgentAnswerData | null }
 
 type AskState = {
   question: string
   setQuestion: (q: string) => void
-  asked: Asked
+  /** Full conversation history, oldest first. The last entry may still be in flight. */
+  transcript: Asked[]
   pending: boolean
   /** Partial answer rendered live while the stream is in flight; null otherwise. */
   streaming: AgentAnswerData | null
@@ -35,7 +37,7 @@ const Ctx = createContext<AskState | null>(null)
 
 export function AskProvider({ children }: { children: ReactNode }) {
   const [question, setQuestion] = useState('')
-  const [asked, setAsked] = useState<Asked>(SEED)
+  const [transcript, setTranscript] = useState<Asked[]>([SEED])
   const [pending, setPending] = useState(false)
   const [streaming, setStreaming] = useState<AgentAnswerData | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -49,20 +51,24 @@ export function AskProvider({ children }: { children: ReactNode }) {
       setPending(true)
       setError(null)
       setStreaming(null)
-      setAsked({ question: trimmed, answer: null })
+      // Append the new question as an in-flight entry, keeping prior history.
+      // AskHero scrolls the new entry into view once it has rendered.
+      setTranscript((prev) => [...prev, { question: trimmed, answer: null }])
       setQuestion('')
-
-      requestAnimationFrame(() => {
-        answerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
 
       try {
         const data = await fetchAnswer(trimmed, {
           onChunk: (partialBody) => setStreaming({ body: partialBody, sources: [] }),
         })
-        setAsked({ question: trimmed, answer: data })
+        setTranscript((prev) =>
+          prev.map((item, i) =>
+            i === prev.length - 1 ? { question: trimmed, answer: data } : item,
+          ),
+        )
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong.')
+        // Drop the in-flight entry so history stays clean; the error renders separately.
+        setTranscript((prev) => prev.slice(0, -1))
       } finally {
         setPending(false)
         setStreaming(null)
@@ -91,7 +97,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
       value={{
         question,
         setQuestion,
-        asked,
+        transcript,
         pending,
         streaming,
         error,
