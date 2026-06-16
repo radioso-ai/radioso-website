@@ -1,46 +1,16 @@
 'use client'
 
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Send, Menu, X, Github, LogIn } from 'lucide-react'
+import { Menu, X, Github, LogIn } from 'lucide-react'
 
 import { site } from '@/lib/site'
-import { useAsk } from '@/lib/ask-context'
 import { Logo } from '@/components/logo'
 
 const NAV = [{ href: site.docsUrl, label: 'Docs' }]
 
-/**
- * Render the typed question with any case-insensitive occurrence of `radioso`
- * wrapped in `<strong>`. Used by the input's overlay layer — the real input is
- * transparent so it still owns the caret while this overlay shows the styled text.
- */
-function renderWithRadioso(text: string): ReactNode {
-  return text.split(/(radioso)/i).map((part, i) =>
-    part.toLowerCase() === 'radioso' ? (
-      <strong key={i} className="font-semibold text-foreground">
-        {part}
-      </strong>
-    ) : (
-      <span key={i}>{part}</span>
-    ),
-  )
-}
-
 export function PillNav() {
-  const { question, setQuestion, ask, pending, inputRef } = useAsk()
   const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (window.matchMedia('(pointer: coarse)').matches) return
-    inputRef.current?.focus({ preventScroll: true })
-  }, [inputRef])
-
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    void ask(question)
-  }
 
   return (
     <>
@@ -50,7 +20,7 @@ export function PillNav() {
       />
       <div className="sticky top-4 z-50">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 xl:max-w-7xl">
-        <nav className="relative mx-auto flex w-full items-center gap-2 rounded-full border border-border/70 bg-card/90 p-1.5 pl-3 shadow-lg shadow-primary/10 backdrop-blur-md sm:gap-3 sm:pl-5 lg:max-w-3xl xl:max-w-5xl 2xl:max-w-6xl">
+        <nav className="relative mx-auto flex w-fit max-w-[calc(100%-1rem)] items-center gap-2 rounded-full border border-border/70 bg-card/90 p-1.5 pl-3 shadow-lg shadow-primary/10 backdrop-blur-md sm:gap-3 sm:pl-5">
           <Link href="/" aria-label={site.name} className="inline-flex shrink-0 items-center">
             <Logo
               priority
@@ -69,42 +39,6 @@ export function PillNav() {
               </Link>
             ))}
           </div>
-
-          <div aria-hidden className="mx-1 hidden h-7 w-px bg-border lg:block" />
-
-          <form onSubmit={onSubmit} className="flex min-w-0 flex-1 items-center gap-1.5">
-            <div className="relative flex min-w-0 flex-1 items-center">
-              <input
-                ref={inputRef}
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                aria-label="Ask a question about radioso"
-                disabled={pending}
-                className="h-10 min-w-0 flex-1 bg-transparent px-2 text-[15px] text-transparent caret-foreground outline-none disabled:opacity-60 sm:px-3"
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-nowrap px-2 text-[15px] sm:px-3"
-              >
-                {question ? (
-                  <span className="text-foreground">{renderWithRadioso(question)}</span>
-                ) : (
-                  <span className="text-muted-foreground/80">
-                    Ask a question about{' '}
-                    <strong className="font-semibold text-foreground/85">radioso</strong>…
-                  </span>
-                )}
-              </div>
-            </div>
-            <button
-              type="submit"
-              disabled={pending || !question.trim()}
-              aria-label="Ask"
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Send className="size-4 -translate-x-px translate-y-px" />
-            </button>
-          </form>
 
           <button
             type="button"

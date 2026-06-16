@@ -206,3 +206,12 @@
   height: 1px;
   background: linear-gradient(to right, transparent, var(--border), transparent);
 }
+
+/* Scrollable region with no visible scrollbar chrome. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
