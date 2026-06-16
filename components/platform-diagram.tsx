@@ -71,7 +71,7 @@ export function PlatformDiagram() {
       </div>
 
       <p className="mx-auto mt-10 max-w-xl text-center font-serif text-lg italic text-muted-foreground">
-        Follows your rules. Runs your skills. Knows your content.
+        Talks to your users and takes actions you need. 
       </p>
     </section>
   )

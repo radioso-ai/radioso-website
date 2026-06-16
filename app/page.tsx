@@ -3,6 +3,7 @@ import { PillNav } from '@/components/pill-nav'
 import { AskHero } from '@/components/ask-hero'
 import { TrustStrip } from '@/components/trust-strip'
 import { PlatformDiagram } from '@/components/platform-diagram'
+import { ActsSection } from '@/components/acts-section'
 import { Quickstart } from '@/components/quickstart'
 import { AskProvider } from '@/lib/ask-context'
 
@@ -22,6 +23,7 @@ export default function HomePage() {
           <AskHero />
           <TrustStrip />
           <PlatformDiagram />
+          <ActsSection />
           <Quickstart />
         </main>
       </AskProvider>
