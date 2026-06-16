@@ -4,10 +4,10 @@ import { AgentAnswer } from '@/components/agent-answer'
 import { useAsk } from '@/lib/ask-context'
 
 const SUGGESTIONS = [
+  'Can it take actions?',
+  'Can it hand off to a human?',
   'Can I self-host it?',
   'How does it compare to LangChain?',
-  'Does it work with Cursor?',
-  'Is it free?',
 ]
 
 export function AskHero() {
@@ -17,12 +17,12 @@ export function AskHero() {
     <section className="pb-16 pt-10 sm:pt-14">
       <div className="mx-auto w-full max-w-3xl px-4 text-center sm:px-6 xl:max-w-4xl 2xl:max-w-5xl">
         <h1 className="font-serif text-balance text-2xl font-semibold leading-[1.1] tracking-tight sm:text-3xl lg:text-4xl">
-          Grounded agents that{' '}
+          Grounded agents that don&apos;t just talk &mdash; they{' '}
           <span className="scribble-underline">
-            actually know
+            act
             <ScribbleSvg />
-          </span>{' '}
-          what they&apos;re talking about.
+          </span>
+          .
         </h1>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
