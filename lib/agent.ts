@@ -131,7 +131,7 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
  * Exchange the embed token for a public session (cached), then post the
  * question. Configurable via NEXT_PUBLIC_RADIOSO_* (inlined at build).
  * ------------------------------------------------------------------ */
-const API_BASE = process.env.NEXT_PUBLIC_RADIOSO_API_BASE ?? 'https://platform.radioso.dev'
+const API_BASE = process.env.NEXT_PUBLIC_RADIOSO_API_BASE ?? 'https://app.radioso.ai'
 const EMBED_TOKEN = process.env.NEXT_PUBLIC_RADIOSO_EMBED_TOKEN ?? 'VZljKt6M2wne5TKu_yIKwQ'
 
 let sessionTokenPromise: Promise<string> | null = null
