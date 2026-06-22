@@ -28,7 +28,7 @@ Config (optional — sensible defaults baked in, inlined at build):
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_RADIOSO_API_BASE` | `https://platform.radioso.dev` | Embed/public-chat host |
+| `NEXT_PUBLIC_RADIOSO_API_BASE` | `https://app.radioso.ai` | Embed/public-chat host |
 | `NEXT_PUBLIC_RADIOSO_EMBED_TOKEN` | the site's marketing token | Headless embed token (public, origin-locked) |
 
 For the live API to work from the browser, the site's origin (production domain
