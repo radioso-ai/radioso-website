@@ -34,7 +34,7 @@ export function Quickstart() {
             </Button>
           </div>
         </div>
-        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="lift overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-2.5">
             <span className="size-2.5 rounded-full bg-muted-foreground/30" />
             <span className="size-2.5 rounded-full bg-muted-foreground/30" />

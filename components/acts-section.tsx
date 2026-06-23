@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Compass, Route, Zap, ArrowRight } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
+import { Reveal } from '@/components/reveal'
 import { site } from '@/lib/site'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
@@ -45,20 +46,21 @@ export function ActsSection() {
       </div>
 
       <div className="mx-auto mt-14 grid max-w-5xl gap-4 md:grid-cols-3">
-        {BEATS.map(({ icon: Icon, verb, title, body }) => (
-          <div
+        {BEATS.map(({ icon: Icon, verb, title, body }, i) => (
+          <Reveal
             key={title}
-            className="flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-5 shadow-sm"
+            delay={i * 120}
+            className="lift group flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-5 shadow-sm"
           >
             <div className="flex items-baseline gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon className="size-4" />
               </div>
               <p className="font-serif text-lg font-semibold text-foreground">{title}</p>
               <span className="text-[11px] italic text-muted-foreground">{verb}</span>
             </div>
             <p className="text-[13px] leading-relaxed text-muted-foreground">{body}</p>
-          </div>
+          </Reveal>
         ))}
       </div>
 

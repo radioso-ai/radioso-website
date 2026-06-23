@@ -1,6 +1,8 @@
 import { Server, KeyRound, Database, Plug } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
+import { Reveal } from '@/components/reveal'
+
 type Point = {
   icon: ComponentType<SVGProps<SVGSVGElement>>
   title: string
@@ -18,16 +20,16 @@ export function TrustStrip() {
   return (
     <section aria-label="Why teams self-host Radioso" className="border-y border-border/60 bg-card/50">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-x-10 gap-y-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
-        {points.map(({ icon: Icon, title, note }) => (
-          <div key={title} className="flex items-start gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        {points.map(({ icon: Icon, title, note }, i) => (
+          <Reveal key={title} delay={i * 90} className="group flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary/15">
               <Icon className="size-4" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold tracking-tight text-foreground">{title}</p>
               <p className="text-[13px] leading-snug text-muted-foreground">{note}</p>
             </div>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>

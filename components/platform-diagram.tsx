@@ -123,7 +123,7 @@ function AgentCard() {
 
         <FlowArrow tight />
 
-        <div className="rounded-xl border border-border bg-card px-4 py-3 text-center">
+        <div className="signal-glow rounded-xl border border-primary/30 bg-card px-4 py-3 text-center">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[13px] font-medium">
             <span className="inline-flex items-center gap-2">
               <Quote className="size-3.5 text-primary" />
@@ -145,7 +145,7 @@ function SurfacesStrip() {
         {SURFACES.map(({ icon: Icon, label }) => (
           <span
             key={label}
-            className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-[13px] font-medium text-foreground/85 ring-1 ring-primary/15"
+            className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-[13px] font-medium text-foreground/85 ring-1 ring-primary/15 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:text-foreground hover:ring-primary/40"
           >
             <Icon className="size-3.5 text-foreground/70" />
             {label}
@@ -169,7 +169,7 @@ function CenterPill({
   emphasis?: boolean
 }) {
   const cls = emphasis
-    ? 'bg-primary text-primary-foreground'
+    ? 'bg-primary text-primary-foreground signal-glow'
     : 'bg-card text-foreground border border-border'
   return (
     <div className="flex items-center justify-center">
@@ -193,9 +193,9 @@ function LaneCard({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-card/60 p-3">
+    <div className="lift group flex flex-col gap-2 rounded-xl border border-border bg-card/60 p-3">
       <div className="flex items-baseline gap-2">
-        <div className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <div className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110">
           <Icon className="size-3.5" />
         </div>
         <p className="text-sm font-semibold text-foreground">{title}</p>
@@ -238,9 +238,21 @@ function LaneNote({ icon: Icon, children }: { icon?: Icon; children: React.React
 }
 
 function FlowArrow({ tight = false }: { tight?: boolean }) {
+  if (tight) {
+    return (
+      <div className="flex justify-center">
+        <ArrowDown aria-hidden className="size-4 text-border" />
+      </div>
+    )
+  }
+  // A connector line carrying a bright signal dot — data flowing toward the surfaces.
   return (
-    <div className={`flex justify-center ${tight ? '' : 'py-4'}`}>
-      <ArrowDown aria-hidden className="size-4 text-border" />
+    <div className="flex flex-col items-center py-4" aria-hidden>
+      <div
+        className="flow-conduit h-9 w-px bg-gradient-to-b from-border to-primary/40"
+        style={{ '--flow-distance': '34px' } as React.CSSProperties}
+      />
+      <ArrowDown className="-mt-1 size-4 text-primary/50" />
     </div>
   )
 }
