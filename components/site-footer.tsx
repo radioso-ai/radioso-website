@@ -67,9 +67,17 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border/60">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5 text-xs text-muted-foreground">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-6 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} Radioso</p>
-          <p>Self-hosted. Multi-provider. API-first.</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Link href="/legal/privacy-policy" className="hover:text-foreground">
+              Privacy Policy
+            </Link>
+            <Link href="/legal/terms-of-service" className="hover:text-foreground">
+              Terms of Service
+            </Link>
+            <p>Self-hosted. Multi-provider. API-first.</p>
+          </div>
         </div>
       </div>
     </footer>
