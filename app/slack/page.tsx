@@ -39,20 +39,20 @@ const features = [
 
 const steps = [
   {
-    title: 'Click “Add to Slack”',
-    body: 'Choose the workspace you want to install Radioso into and review the requested permissions.',
+    title: 'Sign in to Radioso',
+    body: 'Click “Add to Slack” to open your Radioso workspace. Slack installs are started by a workspace admin from inside the app.',
   },
   {
-    title: 'Authorize the app',
-    body: 'Slack walks you through approving Radioso. Workspace admins may need to grant approval first.',
+    title: 'Open Slack channel settings',
+    body: 'In your agent’s settings, find the Slack channel card and choose “Add to Slack” to begin the OAuth install.',
   },
   {
-    title: 'Connect your Radioso workspace',
-    body: 'Sign in to your Radioso instance to link the Slack install to your documents and agents.',
+    title: 'Authorize in Slack',
+    body: 'Radioso redirects you to Slack to pick a workspace and approve the requested permissions. Your Slack admin may need to grant approval.',
   },
   {
     title: 'Start asking',
-    body: 'Mention @Radioso in a channel or send it a direct message to get grounded answers and run routines.',
+    body: 'Back in Radioso, pick the answering agent for Slack. Then mention @Radioso in a channel or DM the app to get grounded answers and run routines.',
   },
 ]
 
