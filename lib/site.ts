@@ -7,4 +7,8 @@ export const site = {
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.ai',
   appUrl: process.env.APP_URL ?? 'https://app.radioso.ai',
   githubUrl: 'https://github.com/radioso-ai/',
+  // Slack OAuth "Add to Slack" install URL. Override per-deployment with the
+  // real slack.com/oauth/v2/authorize link (with client_id + scopes).
+  slackInstallUrl:
+    process.env.SLACK_INSTALL_URL ?? 'https://app.radioso.ai/integrations/slack/install',
 }
