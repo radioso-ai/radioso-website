@@ -366,8 +366,12 @@
   .rise-in,
   .flow-conduit::after,
   .signal-glow::before,
+  .pixel-spark,
   .pulse-dot::after {
     animation: none !important;
+  }
+  .pixel-spark {
+    opacity: 0.7;
   }
   .scribble-underline svg path {
     stroke-dashoffset: 0;
@@ -434,6 +438,60 @@
   background: linear-gradient(to right, transparent, var(--border), transparent);
 }
 
+/* Soft ambient halo behind the answer card — a glow, never a hard-edged box.
+   Generous inset + heavy blur keep it edgeless; dimmer in dark so it stays subtle. */
+.answer-glow {
+  position: absolute;
+  inset: -2.5rem;
+  z-index: -10;
+  border-radius: 40px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--primary) 16%, transparent),
+    transparent 78%
+  );
+  filter: blur(64px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.dark .answer-glow {
+  opacity: 0.38;
+}
+
+/* Chunky pixel-cell grid texture — echoes the way the logo is built from cells. */
+.pixel-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: -1px -1px;
+}
+
+.dark .pixel-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 9%, transparent) 1px, transparent 1px);
+}
+
+/* Twinkling pixel spark — the logo motif scattered as living confetti. */
+.pixel-spark {
+  animation: pixel-twinkle 3.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes pixel-twinkle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.82) rotate(-8deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08) rotate(8deg);
+  }
+}
+
 /* Scrollable region with no visible scrollbar chrome. */
 .no-scrollbar {
   scrollbar-width: none;
@@ -442,3 +500,5 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+

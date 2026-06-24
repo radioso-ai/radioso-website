@@ -18,7 +18,7 @@ const points: Point[] = [
 
 export function TrustStrip() {
   return (
-    <section aria-label="Why teams self-host Radioso" className="border-y border-border/60 bg-card/50">
+    <section aria-label="Why teams self-host Radioso" className="pixel-grid border-y border-border/60 bg-card/50">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-x-10 gap-y-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
         {points.map(({ icon: Icon, title, note }, i) => (
           <Reveal key={title} delay={i * 90} className="group flex items-start gap-3">

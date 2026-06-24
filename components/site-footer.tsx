@@ -2,10 +2,21 @@ import Link from 'next/link'
 
 import { site } from '@/lib/site'
 import { Logo } from '@/components/logo'
+import { SparkMark } from '@/components/pixel-sprite'
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/60 bg-background">
+    <footer className="relative overflow-hidden border-t border-border/60 bg-background">
+      <SparkMark
+        className="absolute right-[12%] top-10 size-5"
+        color="var(--secondary)"
+        style={{ animationDelay: '0.5s' }}
+      />
+      <SparkMark
+        className="absolute right-[28%] bottom-16 hidden size-4 md:block"
+        color="var(--primary)"
+        style={{ animationDelay: '1.4s' }}
+      />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           <Link href="/" className="inline-flex items-center" aria-label={site.name}>

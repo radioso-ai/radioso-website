@@ -19,6 +19,8 @@ import {
 } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
+import { SparkMark } from '@/components/pixel-sprite'
+
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
 type Item = { icon: Icon; name: string; note: string; mono?: boolean }
 
@@ -35,10 +37,10 @@ const DIRECTIVES: { name: string }[] = [
   { name: '+ your rules' },
 ]
 
-// Routines guide — authored multi-step journeys, resumed across turns; can emit actions.
+// Routines guide — authored multi-step routines, resumed across turns; can emit actions.
 const ROUTINES: Item[] = [
   { icon: Headset, name: 'Contact a human', note: 'collect → confirm → send' },
-  { icon: Plus, name: 'Your own', note: 'author a journey' },
+  { icon: Plus, name: 'Your own', note: 'author a routine' },
 ]
 
 // Surfaces are the I/O boundary: you ask from one, and the answer returns there.
@@ -55,6 +57,9 @@ export function PlatformDiagram() {
   return (
     <section id="platform" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
+        <div className="mb-4 flex justify-center">
+          <SparkMark className="size-6" color="var(--primary)" />
+        </div>
         <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
           Inside Radioso.
         </h2>
@@ -113,7 +118,7 @@ function AgentCard() {
                 <ItemRow key={r.name} {...r} />
               ))}
             </div>
-            <LaneNote>Stateful multi-step journeys, resumed across turns.</LaneNote>
+            <LaneNote>Stateful multi-step routines, resumed across turns.</LaneNote>
           </LaneCard>
         </div>
 

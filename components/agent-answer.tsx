@@ -47,11 +47,8 @@ export function AgentAnswer({ data, question, streaming, variant = 'card' }: Pro
 
   return (
     <div className="relative">
-      <div
-        aria-hidden
-        className="absolute -inset-4 -z-10 rounded-[28px] bg-gradient-to-br from-primary/12 via-transparent to-secondary/15 blur-2xl"
-      />
-      <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-card/85 p-6 shadow-xl shadow-primary/5 backdrop-blur-sm sm:p-7">
+      <div aria-hidden className="answer-glow" />
+      <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-card/90 p-6 shadow-lg shadow-black/5 ring-1 ring-black/[0.03] backdrop-blur-sm dark:shadow-black/30 dark:ring-white/[0.06] sm:p-7">
         {content}
       </div>
     </div>
