@@ -6,6 +6,7 @@ import { Menu, X, Github, LogIn } from 'lucide-react'
 
 import { site } from '@/lib/site'
 import { Logo } from '@/components/logo'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const NAV = [{ href: site.docsUrl, label: 'Docs' }]
 
@@ -64,6 +65,10 @@ export function PillNav() {
                   </Link>
                 ))}
                 <div className="my-1 h-px bg-border" />
+                <ThemeToggle
+                  showLabel
+                  className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                />
                 <Link
                   href={site.githubUrl}
                   onClick={() => setMenuOpen(false)}
@@ -87,6 +92,7 @@ export function PillNav() {
       </div>
 
       <div className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-center gap-1 sm:right-6 lg:flex">
+        <ThemeToggle className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground" />
         <Link
           href={site.githubUrl}
           aria-label="GitHub"

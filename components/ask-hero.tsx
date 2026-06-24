@@ -98,7 +98,10 @@ export function AskHero() {
   return (
     <section className="pb-16 pt-10 sm:pt-14">
       <div className="mx-auto w-full max-w-3xl px-4 text-center sm:px-6 xl:max-w-4xl 2xl:max-w-5xl">
-        <h1 className="font-serif text-balance text-2xl font-semibold leading-[1.1] tracking-tight sm:text-3xl lg:text-4xl">
+        <h1
+          className="rise-in font-serif text-balance text-2xl font-semibold leading-[1.1] tracking-tight sm:text-3xl lg:text-4xl"
+          style={{ '--rise-delay': '60ms' } as React.CSSProperties}
+        >
           Grounded agents that don&apos;t just talk &mdash; they{' '}
           <span className="scribble-underline">
             act
@@ -109,7 +112,8 @@ export function AskHero() {
 
         <div
           ref={answerRef}
-          className="no-scrollbar mt-6 -mx-4 scroll-mt-28 overflow-y-auto overflow-x-hidden px-4 text-left sm:mt-10"
+          style={{ '--rise-delay': '220ms' } as React.CSSProperties}
+          className="rise-in no-scrollbar mt-6 -mx-4 scroll-mt-28 overflow-y-auto overflow-x-hidden px-4 text-left sm:mt-10"
         >
           <div className="flex flex-col gap-6">
             {blocks.map((block, i) => (
@@ -120,12 +124,17 @@ export function AskHero() {
           </div>
         </div>
 
-        <AskInput
-          autoFocus
-          className="mt-5 rounded-full border border-border/70 bg-card/90 p-1.5 pl-4 shadow-lg shadow-primary/10 backdrop-blur-md sm:pl-5"
-        />
+        <div className="rise-in" style={{ '--rise-delay': '340ms' } as React.CSSProperties}>
+          <AskInput
+            autoFocus
+            className="mt-5 rounded-full border border-border/70 bg-card/90 p-1.5 pl-4 shadow-lg shadow-primary/10 backdrop-blur-md transition-shadow focus-within:shadow-xl focus-within:shadow-primary/20 sm:pl-5"
+          />
+        </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <div
+          className="rise-in mt-4 flex flex-wrap items-center justify-center gap-2"
+          style={{ '--rise-delay': '440ms' } as React.CSSProperties}
+        >
           {SUGGESTIONS.map((s) => (
             <button
               key={s}

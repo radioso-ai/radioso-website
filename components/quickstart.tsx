@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 
 import { site } from '@/lib/site'
+import { SparkMark } from '@/components/pixel-sprite'
 
 const snippet = `# requires Node 24 + Docker Desktop
 ./run-dev.sh
@@ -16,6 +17,7 @@ export function Quickstart() {
     <section id="quickstart" className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
       <div className="grid items-center gap-12 md:grid-cols-2">
         <div>
+          <SparkMark className="mb-4 size-6" color="var(--secondary)" />
           <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
             Working assistant in under five minutes.
           </h2>
@@ -34,7 +36,7 @@ export function Quickstart() {
             </Button>
           </div>
         </div>
-        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="lift overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-2.5">
             <span className="size-2.5 rounded-full bg-muted-foreground/30" />
             <span className="size-2.5 rounded-full bg-muted-foreground/30" />
