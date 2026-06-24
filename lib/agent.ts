@@ -37,7 +37,7 @@ const RADIOSO_SOURCES = {
   retrieval: { title: 'docs/retrieval.md', detail: '§ pgvector' },
   selfHost: { title: 'docs/deployment.md', detail: '§ Self-hosting' },
   embed: { title: 'docs/embed.md', detail: '§ Website embed' },
-  pricing: { title: 'docs/editions.md', detail: '§ OSS vs Enterprise' },
+  pricing: { title: 'docs/pricing.md', detail: '§ Licensing & pricing' },
 } satisfies Record<string, Omit<AgentSource, 'n'>>
 
 export const PRERENDERED: Record<string, AgentAnswerData> = {
@@ -82,16 +82,15 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat iframe with no backend work on the host site, and origin policy stays with you[1]. It's available everywhere, alongside the web app, REST API, SDK, and MCP server[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.embed },
-      { n: 2, ...RADIOSO_SOURCES.pricing },
+      { n: 2, ...RADIOSO_SOURCES.architecture },
     ],
   },
   pricing: {
     body:
-      "The core platform is open source and free to self-host[1]. Enterprise Edition adds additional operator controls and support; pricing is engagement-based[2]. You bring your own model keys either way — Radioso doesn't mark up inference[3].",
+      "Radioso is self-hosted: you run it on your own infrastructure and bring your own OpenAI, Anthropic, or Gemini keys, so nothing routes through us and there's no markup on inference[1]. We're still settling licensing and pricing with our first customers — reach out and we'll work something out for your team[2].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.pricing },
-      { n: 2, ...RADIOSO_SOURCES.embed },
-      { n: 3, ...RADIOSO_SOURCES.readme },
+      { n: 1, ...RADIOSO_SOURCES.readme },
+      { n: 2, ...RADIOSO_SOURCES.pricing },
     ],
   },
   refuse: {
