@@ -131,7 +131,7 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
  * question. Configurable via NEXT_PUBLIC_RADIOSO_* (inlined at build).
  * ------------------------------------------------------------------ */
 const API_BASE = process.env.NEXT_PUBLIC_RADIOSO_API_BASE ?? 'https://app.radioso.ai'
-const EMBED_TOKEN = process.env.NEXT_PUBLIC_RADIOSO_EMBED_TOKEN ?? 'VZljKt6M2wne5TKu_yIKwQ'
+const EMBED_TOKEN = process.env.NEXT_PUBLIC_RADIOSO_EMBED_TOKEN ?? '6teSuTrkFZGiKOyPMWoJCA'
 
 let sessionTokenPromise: Promise<string> | null = null
 
