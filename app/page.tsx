@@ -1,10 +1,15 @@
 import { SiteFooter } from '@/components/site-footer'
 import { PillNav } from '@/components/pill-nav'
 import { AskHero } from '@/components/ask-hero'
+import { AudienceSection } from '@/components/audience-section'
+import { OnePlatformSection } from '@/components/one-platform-section'
 import { TrustStrip } from '@/components/trust-strip'
 import { PlatformDiagram } from '@/components/platform-diagram'
 import { ActsSection } from '@/components/acts-section'
 import { Quickstart } from '@/components/quickstart'
+import { LicensingSection } from '@/components/licensing-section'
+import { FaqSection } from '@/components/faq-section'
+import { ClosingCta } from '@/components/closing-cta'
 import { HumanLoop } from '@/components/human-loop'
 import { Reveal } from '@/components/reveal'
 import { PixelSprite, SPARK_GRID } from '@/components/pixel-sprite'
@@ -57,6 +62,12 @@ export default function HomePage() {
           <AskHero />
           <TrustStrip />
           <Reveal>
+            <OnePlatformSection />
+          </Reveal>
+          <Reveal>
+            <AudienceSection />
+          </Reveal>
+          <Reveal>
             <PlatformDiagram />
           </Reveal>
           <HumanLoop />
@@ -65,6 +76,15 @@ export default function HomePage() {
           </Reveal>
           <Reveal>
             <Quickstart />
+          </Reveal>
+          <Reveal>
+            <LicensingSection />
+          </Reveal>
+          <Reveal>
+            <FaqSection />
+          </Reveal>
+          <Reveal>
+            <ClosingCta />
           </Reveal>
         </main>
       </AskProvider>

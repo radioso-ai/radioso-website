@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono, Fraunces } from 'next/font/google'
 
+import { CookieBanner } from '@/components/cookie-banner'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { ThemeProvider } from '@/components/theme-provider'
 import { site } from '@/lib/site'
@@ -36,7 +37,13 @@ export const metadata: Metadata = {
     description: site.description,
     url: site.url,
     siteName: site.name,
-    images: [{ url: '/radioso-lockup.svg', width: 983, height: 300, alt: 'Radioso' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — all your conversational agents on one self-hosted platform' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: site.name,
+    description: site.description,
+    images: ['/og.png'],
   },
   icons: {
     icon: '/radioso-icon.svg',
@@ -51,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}
+            <CookieBanner />
           </ThemeProvider>
         </PostHogProvider>
       </body>

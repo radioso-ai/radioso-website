@@ -39,13 +39,22 @@ export function AskHero() {
     if (!container || !last) return
 
     const fit = () => {
-      container.style.height = `${Math.min(last.offsetHeight, maxWindowPx())}px`
+      // Span from the top of the newest message to the bottom of the scroll
+      // content, then pin to the bottom — the top edge lands exactly on the
+      // message. Sizing by last.offsetHeight instead would under-measure: the
+      // absolutely-positioned .answer-glow bleeds 2.5rem past the card and
+      // inflates scrollHeight, so a bottom-pinned window clipped the top.
+      const needed = container.scrollHeight - last.offsetTop
+      container.style.height = `${Math.min(needed, maxWindowPx())}px`
       container.scrollTop = container.scrollHeight - container.clientHeight
     }
 
     fit()
     const ro = new ResizeObserver(fit)
     ro.observe(last)
+    // An earlier message resizing (font swap, image load) moves the newest one
+    // without changing its size — watching the whole column catches that.
+    if (last.parentElement) ro.observe(last.parentElement)
     window.addEventListener('resize', fit)
     return () => {
       ro.disconnect()
@@ -113,7 +122,7 @@ export function AskHero() {
         <div
           ref={answerRef}
           style={{ '--rise-delay': '220ms' } as React.CSSProperties}
-          className="rise-in no-scrollbar mt-6 -mx-4 scroll-mt-28 overflow-y-auto overflow-x-hidden px-4 text-left sm:mt-10"
+          className="rise-in no-scrollbar relative mt-6 -mx-4 scroll-mt-28 overflow-y-auto overflow-x-hidden px-4 text-left sm:mt-10"
         >
           <div className="flex flex-col gap-6">
             {blocks.map((block, i) => (

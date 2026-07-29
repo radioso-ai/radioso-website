@@ -8,7 +8,10 @@ import { site } from '@/lib/site'
 import { Logo } from '@/components/logo'
 import { ThemeToggle } from '@/components/theme-toggle'
 
-const NAV = [{ href: site.docsUrl, label: 'Docs' }]
+const NAV = [
+  { href: site.docsUrl, label: 'Docs' },
+  { href: `mailto:${site.contactEmail}`, label: 'Contact' },
+]
 
 export function PillNav() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -40,6 +43,13 @@ export function PillNav() {
               </Link>
             ))}
           </div>
+
+          <Link
+            href="/#quickstart"
+            className="hidden h-9 shrink-0 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 lg:inline-flex"
+          >
+            Get started
+          </Link>
 
           <button
             type="button"
@@ -84,6 +94,13 @@ export function PillNav() {
                 >
                   <LogIn className="size-4" />
                   Log in
+                </Link>
+                <Link
+                  href="/#quickstart"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  Get started
                 </Link>
               </div>
             </div>

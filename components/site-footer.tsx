@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { site } from '@/lib/site'
+import { CookieSettingsButton } from '@/components/cookie-banner'
 import { Logo } from '@/components/logo'
 import { SparkMark } from '@/components/pixel-sprite'
 
@@ -29,13 +30,33 @@ export function SiteFooter() {
             <p className="font-semibold tracking-tight">Product</p>
             <ul className="mt-3 space-y-2 text-muted-foreground">
               <li>
-                <Link href="#platform" className="hover:text-foreground">
+                <Link href="/#who" className="hover:text-foreground">
+                  Who it&apos;s for
+                </Link>
+              </li>
+              <li>
+                <Link href="/#platform" className="hover:text-foreground">
                   The platform
                 </Link>
               </li>
               <li>
-                <Link href="#quickstart" className="hover:text-foreground">
+                <Link href="/#quickstart" className="hover:text-foreground">
                   Quick start
+                </Link>
+              </li>
+              <li>
+                <Link href="/#licensing" className="hover:text-foreground">
+                  Licensing
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faq" className="hover:text-foreground">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link href="/slack" className="hover:text-foreground">
+                  Radioso for Slack
                 </Link>
               </li>
             </ul>
@@ -58,6 +79,11 @@ export function SiteFooter() {
                   GitHub
                 </Link>
               </li>
+              <li>
+                <Link href={`mailto:${site.contactEmail}`} className="hover:text-foreground">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -72,6 +98,7 @@ export function SiteFooter() {
             <Link href="/legal/terms-of-service" className="hover:text-foreground">
               Terms of Service
             </Link>
+            <CookieSettingsButton className="cursor-pointer hover:text-foreground" />
             <p>Self-hosted. Multi-provider. API-first.</p>
           </div>
         </div>

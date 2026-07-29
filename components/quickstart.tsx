@@ -4,13 +4,7 @@ import { ArrowRight } from 'lucide-react'
 
 import { site } from '@/lib/site'
 import { SparkMark } from '@/components/pixel-sprite'
-
-const snippet = `# requires Node 24 + Docker Desktop
-./run-dev.sh
-
-# then open
-# http://localhost:3000   web app
-# http://localhost:8080   API`
+import { QuickstartTerminal } from '@/components/quickstart-terminal'
 
 export function Quickstart() {
   return (
@@ -36,17 +30,7 @@ export function Quickstart() {
             </Button>
           </div>
         </div>
-        <div className="lift overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-          <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-2.5">
-            <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-            <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-            <span className="size-2.5 rounded-full bg-muted-foreground/30" />
-            <span className="ml-2 font-mono text-xs text-muted-foreground">~/radioso</span>
-          </div>
-          <pre className="overflow-x-auto p-5 font-mono text-sm leading-relaxed text-foreground">
-            <code>{snippet}</code>
-          </pre>
-        </div>
+        <QuickstartTerminal />
       </div>
     </section>
   )
