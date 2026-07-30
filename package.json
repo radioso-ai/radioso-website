@@ -9,7 +9,8 @@
     "dev": "next dev --webpack --port 3002",
     "build": "next build --webpack",
     "preview": "npx serve out",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "generate:og": "node scripts/generate-og.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
@@ -34,6 +35,7 @@
     "eslint": "^9.39.1",
     "eslint-config-next": "16.2.4",
     "postcss": "^8.5.6",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.16",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2"

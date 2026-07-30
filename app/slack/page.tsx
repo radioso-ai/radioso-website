@@ -97,7 +97,7 @@ export default function SlackLandingPage() {
             Grounded answers and agents that act — inside Slack.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            The Radioso Slack app brings your self-hosted grounded agents into your workspace. Ask
+            The Radioso Slack app brings your agents into your workspace. Ask
             questions of your documents, run multi-step routines, and hand off to a teammate — without
             leaving the conversation.
           </p>

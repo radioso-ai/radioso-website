@@ -1,12 +1,13 @@
 export const site = {
   name: 'Radioso',
-  tagline: 'Self-hosted grounded agents that know your content — and act on it.',
+  tagline: 'All your conversational agents. One self-hosted platform.',
   description:
-    'Radioso is a self-hosted platform for grounded agents that act. Ground answers in your documents, steer behavior with directives, run multi-step routines, take action and hand off to a person — across web, API, SDK, and MCP, without a low-code canvas or a PhD in agent frameworks.',
+    'Radioso is a self-hosted platform for building all your conversational agents in one place — support, sales, docs, internal help. Each one grounded in your documents with citations, steered by your rules, running multi-step routines, taking real action, and handing off to a person when it should — across web, API, SDK, and MCP.',
   url: process.env.SITE_URL ?? 'https://radioso.ai',
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.ai',
   appUrl: process.env.APP_URL ?? 'https://app.radioso.ai',
   githubUrl: 'https://github.com/radioso-ai/',
+  contactEmail: 'hello@radioso.ai',
   // Slack install entry point. Radioso's install flow is authenticated and
   // per-workspace — a workspace admin starts it from the dashboard's Slack
   // channel settings, which calls POST /workspaces/{id}/slack/install/start to
