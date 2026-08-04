@@ -81,8 +81,16 @@
     min-height: 100%;
   }
 
+  /* The hero atmosphere sits at z-index -10/-9, behind page content but above the
+     canvas. Once html has a background of its own, body's stops propagating to the
+     canvas and paints as an ordinary opaque box — right over that layer. So the
+     background lives on html only, and body stays transparent. */
+  html {
+    @apply bg-background;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 
@@ -436,27 +444,6 @@
 .section-divider {
   height: 1px;
   background: linear-gradient(to right, transparent, var(--border), transparent);
-}
-
-/* Soft ambient halo behind the answer card — a glow, never a hard-edged box.
-   Generous inset + heavy blur keep it edgeless; dimmer in dark so it stays subtle. */
-.answer-glow {
-  position: absolute;
-  inset: -2.5rem;
-  z-index: -10;
-  border-radius: 40px;
-  background: radial-gradient(
-    closest-side,
-    color-mix(in oklab, var(--primary) 16%, transparent),
-    transparent 78%
-  );
-  filter: blur(64px);
-  opacity: 0.55;
-  pointer-events: none;
-}
-
-.dark .answer-glow {
-  opacity: 0.38;
 }
 
 /* Chunky pixel-cell grid texture — echoes the way the logo is built from cells. */

@@ -23,13 +23,18 @@ type HeroSpark = {
   size: string
   color: string
   delay: string
+  className?: string
 }
+// Placed in the gaps the two-column hero leaves: above the columns and clear of the
+// nav pill, under the headline paragraph, and one in the gutter between the columns.
+// Anything further right lands behind the conversation card, where it reads as grime.
 const HERO_SPARKS: HeroSpark[] = [
   { top: '16%', left: '8%', size: 'size-5', color: 'var(--secondary)', delay: '0s' },
-  { top: '30%', right: '10%', size: 'size-6', color: 'var(--primary)', delay: '0.8s' },
-  { top: '62%', left: '14%', size: 'size-4', color: 'var(--primary)', delay: '1.6s' },
-  { top: '54%', right: '16%', size: 'size-5', color: 'var(--secondary)', delay: '2.1s' },
-  { top: '8%', left: '46%', size: 'size-3', color: 'var(--secondary)', delay: '1.2s' },
+  { top: '7%', right: '18%', size: 'size-6', color: 'var(--primary)', delay: '0.8s' },
+  { top: '87%', left: '11%', size: 'size-4', color: 'var(--primary)', delay: '1.6s' },
+  { top: '76%', left: '33%', size: 'size-5', color: 'var(--secondary)', delay: '2.1s' },
+  // The gutter only exists in the two-column layout; stacked, this lands on the paragraph.
+  { top: '40%', left: '45%', size: 'size-3', color: 'var(--secondary)', delay: '1.2s', className: 'hidden lg:block' },
 ]
 
 export default function HomePage() {
@@ -53,7 +58,7 @@ export default function HomePage() {
                 key={i}
                 grid={SPARK_GRID}
                 palette={{ X: s.color }}
-                className={`pixel-spark absolute ${s.size}`}
+                className={`pixel-spark absolute ${s.size} ${s.className ?? ''}`}
                 style={{ top: s.top, left: s.left, right: s.right, animationDelay: s.delay }}
               />
             ))}

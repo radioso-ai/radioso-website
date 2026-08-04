@@ -26,7 +26,7 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.tagline}`,
+    default: site.metaTitle,
     template: `%s | ${site.name}`,
   },
   description: site.description,
