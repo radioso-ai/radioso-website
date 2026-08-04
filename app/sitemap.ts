@@ -1,11 +1,13 @@
 import type { MetadataRoute } from 'next'
 
+import { getAllPosts } from '@/lib/blog'
 import { site } from '@/lib/site'
 
 export const dynamic = 'force-static'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()
+  const posts = await getAllPosts()
 
   return [
     {
@@ -25,5 +27,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${site.url}/legal/terms-of-service`,
       lastModified,
     },
+    {
+      url: `${site.url}/blog`,
+      lastModified,
+    },
+    ...posts.map((post) => ({
+      url: `${site.url}/blog/${post.slug}`,
+      lastModified: new Date(`${post.date}T00:00:00Z`),
+    })),
   ]
 }

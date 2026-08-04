@@ -19,9 +19,9 @@ type Plan = {
 const PLANS: Plan[] = [
   {
     icon: Github,
-    label: 'free',
+    label: 'self-hosted',
     title: 'Open source',
-    body: 'Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated, nothing is held back for a paid tier. Self-host the full platform on your own infrastructure, free.',
+    body: 'Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated, nothing is held back for a paid tier. Read the source, run the whole platform on your own infrastructure, and change what you need to.',
     cta: 'Get the source',
     href: site.githubUrl,
   },
@@ -46,8 +46,8 @@ export function LicensingSection() {
           Every feature, open source.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-          The whole product is open source and free to self-host. Enterprise Edition is only for
-          multi-tenant deployments running Radioso at scale.
+          Every product feature is open source, and you can run the whole platform yourself.
+          Enterprise Edition is only for multi-tenant deployments running Radioso at scale.
         </p>
       </div>
 

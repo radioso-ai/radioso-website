@@ -15,6 +15,8 @@
  * static export; live answers happen client-side once a visitor asks.
  */
 
+import { site } from '@/lib/site'
+
 export type AgentSource = {
   n: number
   title: string
@@ -30,72 +32,76 @@ export type AgentAnswerData = {
   surface?: string
 }
 
+/**
+ * Every entry must be a page that exists and that actually covers the claim citing it.
+ * A fabricated citation on a product whose whole pitch is "grounded, with citations" is
+ * the one error worth being paranoid about — verify the page before adding it here.
+ */
 const RADIOSO_SOURCES = {
-  readme: { title: 'readme.md', detail: 'Quick Start' },
-  architecture: { title: 'docs/architecture.md', detail: '§ Surfaces' },
-  mcp: { title: 'docs/mcp.md', detail: '§ Server setup' },
-  retrieval: { title: 'docs/retrieval.md', detail: '§ pgvector' },
-  selfHost: { title: 'docs/deployment.md', detail: '§ Self-hosting' },
-  embed: { title: 'docs/embed.md', detail: '§ Website embed' },
-  pricing: { title: 'docs/pricing.md', detail: '§ Licensing & pricing' },
+  why: { title: 'Why Radioso', url: `${site.docsUrl}/why-radioso` },
+  grounded: { title: 'Grounded answers', url: `${site.docsUrl}/why-radioso/grounded-answers` },
+  architecture: { title: 'Architecture', url: `${site.docsUrl}/architecture` },
+  retrieval: { title: 'Retrieval pipeline', url: `${site.docsUrl}/architecture/retrieval-pipeline` },
+  deployment: { title: 'Deployment', url: `${site.docsUrl}/operators/deployment` },
+  runLocally: { title: 'Run locally', url: `${site.docsUrl}/quickstarts/run-locally` },
+  embed: { title: 'Website embed', url: `${site.docsUrl}/quickstarts/website-embed` },
+  source: { title: 'github.com/radioso-ai', url: site.githubUrl },
 } satisfies Record<string, Omit<AgentSource, 'n'>>
 
 export const PRERENDERED: Record<string, AgentAnswerData> = {
   whatIsRadioso: {
     body:
-      "Radioso is a self-hosted context platform for grounded assistants. You upload your documents and Radioso parses, chunks, and embeds them into Postgres with pgvector[1]. From there, one backend powers a web chat, a REST API, a TypeScript SDK, a website embed, and an MCP server — so the same grounded answers reach your end users and your tools[2]. The data and the model keys stay in your stack[3].",
+      "Radioso is a platform for self-hosted conversational agents — grounded in your data and following your rules[1]. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. It answers from your own content and cites what it used, so you can check it[2]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[3]. Your data and your model keys stay in your stack[4].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.retrieval },
-      { n: 2, ...RADIOSO_SOURCES.architecture },
-      { n: 3, ...RADIOSO_SOURCES.selfHost },
+      { n: 1, ...RADIOSO_SOURCES.why },
+      { n: 2, ...RADIOSO_SOURCES.grounded },
+      { n: 3, ...RADIOSO_SOURCES.architecture },
+      { n: 4, ...RADIOSO_SOURCES.deployment },
     ],
   },
   whyNotLangchain: {
     body:
-      "Frameworks like LangChain give you primitives — you still have to assemble ingestion, retrieval, an agent runtime, a chat UI, an API, and an MCP server yourself[1]. Radioso ships those as one product, pre-wired, with sane defaults you can tune from the operator UI[2]. The trade is flexibility for time-to-value: if you need a one-off custom agent topology, build it on a framework; if you need a grounded assistant your team can ship this week, run Radioso[3].",
+      "Frameworks like LangChain hand you primitives — you still assemble ingestion, retrieval, an agent runtime, a chat UI, an API, and the operator tooling yourself[1]. Radioso ships that as one product: agents that answer from your content, follow directives and routines you author as data, and take action — tunable without a redeploy[1]. The trade is flexibility for time-to-value. If you need a bespoke agent topology, build it on a framework; if you need a grounded agent your team can run this week, run Radioso[2].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.architecture },
-      { n: 2, ...RADIOSO_SOURCES.retrieval },
-      { n: 3, ...RADIOSO_SOURCES.readme },
+      { n: 1, ...RADIOSO_SOURCES.why },
+      { n: 2, ...RADIOSO_SOURCES.runLocally },
     ],
   },
   selfHosting: {
     body:
-      "Yes. Radioso runs end-to-end on your hardware via Docker Compose, or on Cloud Run for managed deploys[1]. Postgres with pgvector is the system of record — application state, documents, chunks, and vectors all live there[2]. Bring your own OpenAI, Anthropic, or Gemini keys; nothing routes through a Radioso-controlled service[3].",
+      "Yes — that's the default. Radioso runs end to end on your own hardware with Docker Compose, or on Cloud Run for a managed deploy[1][2]. Postgres is the system of record: application state, documents, chunks, and vectors all live there, and uploaded files sit on your own filesystem or object storage[2]. Bring your own keys for OpenAI, Anthropic, Gemini, or any OpenAI-compatible endpoint — nothing has to route through a service we control[1].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.selfHost },
-      { n: 2, ...RADIOSO_SOURCES.retrieval },
-      { n: 3, ...RADIOSO_SOURCES.readme },
+      { n: 1, ...RADIOSO_SOURCES.deployment },
+      { n: 2, ...RADIOSO_SOURCES.runLocally },
     ],
   },
   mcp: {
     body:
-      "Radioso ships a standalone MCP server in `packages/radioso-mcp-server`[1]. Point Cursor, Claude Desktop, or any MCP-capable client at it and your knowledge base becomes a tool the model can call — with citations attached to every result[2]. The MCP surface uses the same retrieval pipeline as the web chat, so answers stay consistent across surfaces[3].",
+      "Radioso speaks MCP. Self-hosted, the backend can serve an MCP endpoint directly; there's also a standalone `@radioso/mcp-server` package when you want MCP as its own connector surface[1]. Clients get both shapes: tools to converse with an agent, and tools to search, read, and write workspace documents — with citations attached[1]. It runs the same retrieval and the same rules as every other surface, so answers stay consistent[2].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.mcp },
-      { n: 2, ...RADIOSO_SOURCES.retrieval },
-      { n: 3, ...RADIOSO_SOURCES.architecture },
+      { n: 1, ...RADIOSO_SOURCES.why },
+      { n: 2, ...RADIOSO_SOURCES.architecture },
     ],
   },
   embed: {
     body:
-      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat iframe with no backend work on the host site, and origin policy stays with you[1]. It's available everywhere, alongside the web app, REST API, SDK, and MCP server[2].",
+      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one surface among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.embed },
-      { n: 2, ...RADIOSO_SOURCES.architecture },
+      { n: 2, ...RADIOSO_SOURCES.why },
     ],
   },
-  pricing: {
+  licensing: {
     body:
-      "Radioso is self-hosted: you run it on your own infrastructure and bring your own OpenAI, Anthropic, or Gemini keys, so nothing routes through us and there's no markup on inference[1]. We're still settling licensing and pricing with our first customers — reach out and we'll work something out for your team[2].",
+      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. You self-host on your own infrastructure and bring your own model keys, so nothing routes through us and there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.readme },
-      { n: 2, ...RADIOSO_SOURCES.pricing },
+      { n: 1, ...RADIOSO_SOURCES.source },
+      { n: 2, ...RADIOSO_SOURCES.deployment },
     ],
   },
   refuse: {
     body:
-      "I can't find that in the sources I'm grounded on. Try asking about Radioso's ingestion, retrieval, deployment, MCP integration, or pricing — or check the docs for topics outside that scope.",
+      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, the surfaces it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
     sources: [],
   },
 }
@@ -114,7 +120,7 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
     [/\bself[- ]?host|deploy|docker|cloud run\b/, 'selfHosting'],
     [/\bmcp|cursor|claude desktop|chatgpt\b/, 'mcp'],
     [/\bembed|widget|iframe\b/, 'embed'],
-    [/\bprice|pricing|cost|free|paid|enterprise\b/, 'pricing'],
+    [/\bprice|pricing|cost|free|paid|licen[cs]|open[- ]?source|enterprise\b/, 'licensing'],
     [/\blangchain|framework|low[- ]?code|compare|vs\b/, 'whyNotLangchain'],
     [/\bwhat( is|'s) radioso|what does radioso|tldr\b/, 'whatIsRadioso'],
   ]

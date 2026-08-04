@@ -64,12 +64,12 @@ export function HumanLoop() {
           <SparkMark className="size-6" color="var(--secondary)" />
         </div>
         <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-          It doesn&apos;t just talk. It does the whole thing.
+          It knows when to act — and when to ask.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-          Ask in plain language. Radioso works out what needs to happen, checks your rules, takes
-          the actions across your systems, and tells you what it did — looping in a human only when
-          it should.
+          Radioso diagnoses the problem, checks your rules, and does the work. When a rule says a
+          person decides, it stops, asks, and hands over cleanly — with everything it already found
+          attached.
         </p>
       </Reveal>
 

@@ -65,6 +65,11 @@ export function SiteFooter() {
             <p className="font-semibold tracking-tight">Resources</p>
             <ul className="mt-3 space-y-2 text-muted-foreground">
               <li>
+                <Link href="/blog" className="hover:text-foreground">
+                  Blog
+                </Link>
+              </li>
+              <li>
                 <Link href={site.docsUrl} className="hover:text-foreground">
                   Documentation
                 </Link>

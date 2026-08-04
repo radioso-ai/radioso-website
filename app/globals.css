@@ -81,8 +81,16 @@
     min-height: 100%;
   }
 
+  /* The hero atmosphere sits at z-index -10/-9, behind page content but above the
+     canvas. Once html has a background of its own, body's stops propagating to the
+     canvas and paints as an ordinary opaque box — right over that layer. So the
+     background lives on html only, and body stays transparent. */
+  html {
+    @apply bg-background;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 

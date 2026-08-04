@@ -10,7 +10,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 
 const NAV = [
   { href: site.docsUrl, label: 'Docs' },
-  { href: `mailto:${site.contactEmail}`, label: 'Contact' },
+  { href: '/blog', label: 'Blog' },
 ]
 
 export function PillNav() {
