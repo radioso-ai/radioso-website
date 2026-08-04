@@ -112,11 +112,10 @@ export function AskHero() {
           question={item.question}
           data={streaming ?? { body: 'Grounding answer in your documents', sources: [] }}
           streaming
-          variant="chat"
         />
       )
     }
-    return <AgentAnswer key={i} question={item.question} data={item.answer} variant="chat" />
+    return <AgentAnswer key={i} question={item.question} data={item.answer} />
   })
 
   if (error) {

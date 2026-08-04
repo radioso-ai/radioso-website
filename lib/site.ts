@@ -1,6 +1,6 @@
 export const site = {
   name: 'Radioso',
-  tagline: 'All your conversational agents. One self-hosted platform.',
+  tagline: 'Your voice in the conversation.',
   description:
     'Radioso is a self-hosted platform for building all your conversational agents in one place — support, sales, docs, internal help. Each one grounded in your documents with citations, steered by your rules, running multi-step routines, taking real action, and handing off to a person when it should — across web, API, SDK, and MCP.',
   url: process.env.SITE_URL ?? 'https://radioso.ai',
