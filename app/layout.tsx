@@ -46,7 +46,14 @@ export const metadata: Metadata = {
     images: ['/og.png'],
   },
   icons: {
-    icon: '/radioso-icon.svg',
+    // Google's favicon crawler reads these; keep a raster .ico (it picks the 48px
+    // entry) alongside the SVG that browsers prefer. Both are the mark on a solid
+    // background — the bare glyph in radioso-icon.svg is transparent and vanishes
+    // against light surfaces.
+    icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48', type: 'image/x-icon' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
     apple: '/apple-icon.png',
   },
 }
