@@ -21,7 +21,7 @@ const PLANS: Plan[] = [
     icon: Github,
     label: 'self-hosted',
     title: 'Open source',
-    body: 'Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated, nothing is held back for a paid tier. Read the source, run the whole platform on your own infrastructure, and change what you need to.',
+    body: 'Every product feature ships in the open release — grounded answers, directives, routines, actions, every surface. Read the source, run the whole platform on your own infrastructure, and change what you need to.',
     cta: 'Get the source',
     href: site.githubUrl,
   },

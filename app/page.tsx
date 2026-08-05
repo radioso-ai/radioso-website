@@ -2,10 +2,8 @@ import { SiteFooter } from '@/components/site-footer'
 import { PillNav } from '@/components/pill-nav'
 import { AskHero } from '@/components/ask-hero'
 import { AudienceSection } from '@/components/audience-section'
-import { OnePlatformSection } from '@/components/one-platform-section'
 import { TrustStrip } from '@/components/trust-strip'
 import { PlatformDiagram } from '@/components/platform-diagram'
-import { ActsSection } from '@/components/acts-section'
 import { Quickstart } from '@/components/quickstart'
 import { LicensingSection } from '@/components/licensing-section'
 import { FaqSection } from '@/components/faq-section'
@@ -66,18 +64,13 @@ export default function HomePage() {
           <PillNav />
           <AskHero />
           <TrustStrip />
-          <Reveal>
-            <OnePlatformSection />
-          </Reveal>
-          <Reveal>
-            <AudienceSection />
-          </Reveal>
+          {/* Manages its own scroll-triggered scene — deliberately not wrapped in Reveal. */}
+          <HumanLoop />
           <Reveal>
             <PlatformDiagram />
           </Reveal>
-          <HumanLoop />
           <Reveal>
-            <ActsSection />
+            <AudienceSection />
           </Reveal>
           <Reveal>
             <Quickstart />

@@ -2,7 +2,6 @@ import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { SparkMark } from '@/components/pixel-sprite'
-import { site } from '@/lib/site'
 
 export function ClosingCta() {
   return (
@@ -19,18 +18,23 @@ export function ClosingCta() {
           style={{ animationDelay: '1.2s' }}
         />
         <h2 className="mx-auto max-w-2xl font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
-          All your conversational agents. One self-hosted platform.
+          Every organization deserves a voice.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-          Grounded in your documents, running on your own infrastructure, and reaching every surface
-          &mdash; web, API, SDK, and MCP.
+          For thirty years, using the internet meant clicking. Increasingly it will mean talking
+          &mdash; to agents that book the flight, find the recipe, fill the order. Every
+          organization will need a way to speak for itself in that conversation.
+        </p>
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
+          Radioso runs on your infrastructure, with your model keys, and your data stays in your
+          Postgres. Your voice stays yours.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
             <Link href="/#quickstart">Get started</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <Link href={`mailto:${site.contactEmail}`}>Contact us</Link>
+            <Link href="/blog/why-radioso-exists">Why we built this</Link>
           </Button>
         </div>
       </div>

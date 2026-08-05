@@ -29,8 +29,8 @@ const NAV_OFFSET_PX = 112
 /**
  * Below `lg` the window sizes itself to the newest message; cap it so a very long
  * answer can't push the rest of the page far down. Smaller on phones, where the
- * input + suggestions also need to stay in view. At `lg`+ the window has a fixed
- * height from CSS instead, so this doesn't apply.
+ * input + suggestions also need to stay in view. At `lg`+ the window hugs its
+ * content up to a CSS `max-height` instead, so this doesn't apply.
  */
 function maxWindowPx() {
   const vh = window.innerHeight
@@ -46,9 +46,10 @@ export function AskHero() {
   const seededOnly = transcript.length === 1 && !error
 
   // Only the newest message shows by default; earlier exchanges stay mounted above
-  // and are reachable by scrolling up inside the window. At `lg`+ the window is a
-  // fixed-height pane and only its scroll position moves. Below `lg` it is sized to
-  // the newest message and grows with the answer as it streams.
+  // and are reachable by scrolling up inside the window. At `lg`+ the window hugs
+  // its content until it hits the CSS max-height, after which only its scroll
+  // position moves. Below `lg` it is sized to the newest message and grows with the
+  // answer as it streams.
   useIsomorphicLayoutEffect(() => {
     const container = answerRef.current
     const last = lastRef.current
@@ -137,24 +138,28 @@ export function AskHero() {
         <div className="grid items-center gap-8 text-center sm:gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-center lg:gap-14 lg:text-left">
           <div>
             <h1
-              className="rise-in font-serif text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl xl:text-6xl"
+              className="rise-in font-serif text-balance text-3xl font-semibold leading-[1.08] tracking-tight sm:text-4xl xl:text-[2.375rem]"
               style={{ '--rise-delay': '60ms' } as React.CSSProperties}
             >
-              Your{' '}
-              <span className="scribble-underline">
-                voice
-                <ScribbleSvg />
-              </span>{' '}
-              in the conversation.
+              {/* At `lg`+ the headline shares the row with the demo card, and `text-balance`
+                  breaks the narrow column mid-sentence ("agents. One" on its own line). Each
+                  sentence becomes a block there so the break lands between them instead.
+                  The type ramp stays gentle (30 / 36 / 38) because the two-column layout caps
+                  what fits: a wider step would make some breakpoint render larger than the
+                  desktop hero. Below `lg` the headline is full-width and breaks fine on its
+                  own — `self-hosted` just needs to stay whole so it can't split at the hyphen. */}
+              <span className="lg:block">All your conversational agents.</span>{' '}
+              <span className="lg:block">
+                One <span className="whitespace-nowrap">self-hosted</span> platform.
+              </span>
             </h1>
 
             <p
               className="rise-in mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg lg:mx-0"
               style={{ '--rise-delay': '160ms' } as React.CSSProperties}
             >
-              Radioso is the platform for building AI agents that speak for your organization
-              &mdash; answering customers, guiding them, getting things done &mdash; grounded in
-              what&apos;s true about you and transparent in how they work.
+              Steered by your rules, grounded in your knowledge, and reaching every surface &mdash;
+              web, API, SDK, and MCP.
             </p>
 
             <div
@@ -191,7 +196,7 @@ export function AskHero() {
               {/* `relative` is load-bearing: fit() measures messages by offsetTop against this. */}
               <div
                 ref={answerRef}
-                className="no-scrollbar relative overflow-y-auto overflow-x-hidden px-4 py-4 lg:h-[min(52vh,400px)]"
+                className="no-scrollbar relative overflow-y-auto overflow-x-hidden px-4 py-4 lg:max-h-[min(52vh,400px)]"
               >
                 <div className="flex flex-col gap-6">
                   {blocks.map((block, i) => (
@@ -232,19 +237,5 @@ export function AskHero() {
         </div>
       </div>
     </section>
-  )
-}
-
-function ScribbleSvg() {
-  return (
-    <svg viewBox="0 0 300 12" fill="none" preserveAspectRatio="none" aria-hidden>
-      <path
-        d="M2 7 C 60 2, 110 11, 170 5 S 260 9, 298 4"
-        stroke="currentColor"
-        strokeWidth="5"
-        strokeLinecap="round"
-        opacity="0.85"
-      />
-    </svg>
   )
 }

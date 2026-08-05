@@ -10,6 +10,6 @@ When that happens, every organization will need a voice in the conversation: a w
 
 Radioso gives organizations that voice. Whatever you offer the world — a booking, a recipe, a service, an idea — Radioso lets you shape the conversation: grounded in what's true about you, and transparent in how it answers.
 
-And here's the part we care about most. In a world where a handful of large agents could end up mediating everything, we think every organization deserves a voice — not just the ones big enough to build their own. So Radioso is open source. Big or small, open to all, transparent about how it works. That's the world we want to help build.
+And here's the part we care about most. As a handful of large agents come to mediate more of that conversation, we think every organization should be able to speak for itself — on its own terms, in its own words. So Radioso is open source and self-hosted: run it yourself, see exactly how it answers, and shape it to fit. That's the world we want to help build.
 
 Radioso is coming out of private beta soon. [Sign up](https://app.radioso.ai) and try it out for a spin.
