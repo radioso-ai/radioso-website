@@ -26,7 +26,7 @@ export function Quickstart() {
               </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href={`${site.githubUrl}#quick-start`}>Setup guide</Link>
+              <Link href={`${site.docsUrl}/quickstarts/run-locally`}>Setup guide</Link>
             </Button>
           </div>
         </div>

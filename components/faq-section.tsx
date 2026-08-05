@@ -16,7 +16,7 @@ const ITEMS: Item[] = [
   {
     question: 'Is Radioso really open source, or is there a paid tier?',
     answer:
-      'Every product feature is open source — nothing is feature-gated. The Enterprise Edition exists only for multi-tenant deployments at scale.',
+      'Every product feature ships in the open release. The Enterprise Edition covers multi-tenant deployments at scale.',
   },
   {
     question: 'Can I self-host it?',
@@ -26,7 +26,7 @@ const ITEMS: Item[] = [
   {
     question: 'Which LLM providers can I use, and what does inference cost?',
     answer:
-      'Bring your own keys — OpenAI, Anthropic, and more. There is no markup on inference; you pay your provider directly.',
+      'Bring your own keys — OpenAI, Anthropic, and more. You pay your provider directly, at their price.',
   },
   {
     question: 'Can it take actions, or is it just a chatbot?',

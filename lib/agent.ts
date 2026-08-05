@@ -67,6 +67,22 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.runLocally },
     ],
   },
+  actions: {
+    body:
+      "Yes — acting is the default, not an add-on. Radioso agents run multi-step routines across turns: you write the steps in plain language, drop in a chip to collect a value, call a tool, or branch, and the engine compiles it and resumes it turn to turn — no redeploy[1]. A routine can fire a webhook when it finishes, and every step — which directive steered it, which tool it called, which routine step it's on — lands in the same turn trace as the answers, so you can see why it did what it did[1]. Those turns run in the live request path, so the agent acts inside the conversation instead of handing you a background job to poll[2].",
+    sources: [
+      { n: 1, ...RADIOSO_SOURCES.why },
+      { n: 2, ...RADIOSO_SOURCES.architecture },
+    ],
+  },
+  handoff: {
+    body:
+      "Yes. When your rules say a person decides — or the agent hits something it shouldn't settle alone — it stops and hands the conversation to a real person, with the full transcript and every action it already took attached[1]. The built-in contact-a-human flow is itself just a routine — collect an email, collect a message, submit, confirm — so you can edit it like any other one[1]. It also won't paper over a gap to avoid the handoff: with no supporting evidence it says so rather than sounding confident[2].",
+    sources: [
+      { n: 1, ...RADIOSO_SOURCES.why },
+      { n: 2, ...RADIOSO_SOURCES.grounded },
+    ],
+  },
   selfHosting: {
     body:
       "Yes — that's the default. Radioso runs end to end on your own hardware with Docker Compose, or on Cloud Run for a managed deploy[1][2]. Postgres is the system of record: application state, documents, chunks, and vectors all live there, and uploaded files sit on your own filesystem or object storage[2]. Bring your own keys for OpenAI, Anthropic, Gemini, or any OpenAI-compatible endpoint — nothing has to route through a service we control[1].",
@@ -101,7 +117,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   refuse: {
     body:
-      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, the surfaces it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
+      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, handing off to a person, the surfaces it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
     sources: [],
   },
 }
@@ -123,6 +139,18 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
     [/\bprice|pricing|cost|free|paid|licen[cs]|open[- ]?source|enterprise\b/, 'licensing'],
     [/\blangchain|framework|low[- ]?code|compare|vs\b/, 'whyNotLangchain'],
     [/\bwhat( is|'s) radioso|what does radioso|tldr\b/, 'whatIsRadioso'],
+    // Last on purpose. Both patterns below are deliberately broad, so they sit behind the
+    // surface, licensing, and comparison intents: "call a tool over MCP", "what do actions
+    // cost", and "how do routines compare to LangChain" keep their existing routes, and
+    // these two only pick up questions that would otherwise fall through to `refuse`.
+    [
+      /\baction|\bacts?\b|routine|\btools?\b|webhook|automat|\bapi call|just a (chat ?)?bot|chat ?bot\b|\bdo (things|stuff|anything)\b/,
+      'actions',
+    ],
+    [
+      /hand[- ]?off|hand(s|ed)? (it |the conversation )?(off|over)|handover|escalat|\bhumans?\b|\breal person\b|\bperson\b|talk to (a |an )?(agent|rep)/,
+      'handoff',
+    ],
   ]
 
   for (const [pattern, key] of matches) {
