@@ -54,11 +54,11 @@ export function AskInput({
           onChange={(e) => setQuestion(e.target.value)}
           aria-label="Ask a question about radioso"
           disabled={pending}
-          className="h-10 min-w-0 flex-1 bg-transparent px-2 text-[15px] text-transparent caret-foreground outline-none disabled:opacity-60 sm:px-3"
+          className="h-10 min-w-0 flex-1 bg-transparent px-2 text-base text-transparent caret-foreground outline-none disabled:opacity-60 sm:px-3"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-nowrap px-2 text-[15px] sm:px-3"
+          className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-nowrap px-2 text-base sm:px-3"
         >
           {question ? (
             <span className="text-foreground">{renderWithRadioso(question)}</span>

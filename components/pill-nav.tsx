@@ -18,9 +18,13 @@ export function PillNav() {
 
   return (
     <>
+      {/* Blur-and-fade rather than a painted gradient: the scrim has to pass over
+          the dark machine band as well as the cream page, and a `from-background`
+          gradient would drag a cream slab across it. A masked backdrop-blur takes
+          its color from whatever is actually behind it. */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 bg-gradient-to-b from-background from-30% to-transparent"
+        className="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_30%,transparent)]"
       />
       <div className="sticky top-4 z-50">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 xl:max-w-7xl">
@@ -100,7 +104,7 @@ export function PillNav() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMenuOpen(false)}
-                      className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       {item.label}
                     </Link>
@@ -108,12 +112,12 @@ export function PillNav() {
                   <div className="my-1 h-px bg-border" />
                   <ThemeToggle
                     showLabel
-                    className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   />
                   <Link
                     href={site.githubUrl}
                     onClick={() => setMenuOpen(false)}
-                    className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <Github className="size-4" />
                     GitHub
@@ -121,7 +125,7 @@ export function PillNav() {
                   <Link
                     href={site.appUrl}
                     onClick={() => setMenuOpen(false)}
-                    className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-muted"
+                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-muted"
                   >
                     <LogIn className="size-4" />
                     Log in
@@ -129,7 +133,7 @@ export function PillNav() {
                   <Link
                     href="/#quickstart"
                     onClick={() => setMenuOpen(false)}
-                    className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                    className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     Get started
                   </Link>

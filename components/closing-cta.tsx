@@ -6,7 +6,7 @@ import { SparkMark } from '@/components/pixel-sprite'
 export function ClosingCta() {
   return (
     <section className="mx-auto w-full max-w-6xl px-6 pb-24 sm:pb-28">
-      <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-[color-mix(in_oklab,var(--primary)_8%,var(--card))] px-6 py-12 text-center shadow-sm sm:px-12 sm:py-14">
+      <div className="panel relative overflow-hidden rounded-2xl px-6 py-12 text-center sm:px-12 sm:py-14">
         <SparkMark
           className="absolute left-[9%] top-8 size-5"
           color="var(--primary)"
@@ -17,7 +17,7 @@ export function ClosingCta() {
           color="var(--secondary)"
           style={{ animationDelay: '1.2s' }}
         />
-        <h2 className="mx-auto max-w-2xl font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h2 className="display-serif mx-auto max-w-2xl font-serif text-2xl font-bold tracking-tight sm:text-3xl">
           Every organization deserves a voice.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">

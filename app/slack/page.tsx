@@ -93,7 +93,7 @@ export default function SlackLandingPage() {
       <main className="flex-1">
         <section className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
           <p className="text-sm font-medium uppercase tracking-wide text-primary">Radioso for Slack</p>
-          <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+          <h1 className="display-serif mt-3 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
             Grounded answers and agents that act — inside Slack.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
@@ -116,12 +116,12 @@ export default function SlackLandingPage() {
           <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-x-10 gap-y-8 px-6 py-12 sm:grid-cols-2">
             {features.map(({ icon: Icon, title, note }) => (
               <div key={title} className="flex items-start gap-3">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <Icon className="size-4" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold tracking-tight text-foreground">{title}</p>
-                  <p className="text-[13px] leading-snug text-muted-foreground">{note}</p>
+                  <p className="text-sm leading-snug text-muted-foreground">{note}</p>
                 </div>
               </div>
             ))}
@@ -129,7 +129,7 @@ export default function SlackLandingPage() {
         </section>
 
         <section className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h2 className="display-serif font-serif text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             How to install
           </h2>
           <ol className="mt-8 space-y-6">
@@ -146,7 +146,7 @@ export default function SlackLandingPage() {
             ))}
           </ol>
 
-          <div className="mt-10 flex flex-col items-start gap-4 rounded-xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="surface mt-10 flex flex-col items-start gap-4 rounded-xl p-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold text-foreground">Ready to add Radioso to Slack?</p>
               <p className="mt-1 text-sm text-muted-foreground">
