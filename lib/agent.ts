@@ -115,6 +115,14 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.deployment },
     ],
   },
+  // Live, this question activates the `talk-to-the-team` routine, which qualifies the
+  // visitor and collects an email across several turns. The stub can't run a multi-turn
+  // flow, so it mirrors the routine's opening turn and stops there.
+  takeMyMoney: {
+    body:
+      "Ha — love the energy 💸 What are you looking to build or automate with Radioso? Tell me a bit about it and I'll get a human from the team to follow up with you.",
+    sources: [],
+  },
   refuse: {
     body:
       "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, handing off to a person, the surfaces it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
@@ -133,6 +141,11 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
   if (!q) return PRERENDERED.refuse
 
   const matches: [RegExp, keyof typeof PRERENDERED][] = [
+    // First, and deliberately narrow: only explicit "I want to buy" phrasings. A general
+    // pricing question ("what does it cost") must still reach `licensing`, whose
+    // everything-is-open-source answer is the better one — same split the live routine's
+    // trigger description draws.
+    [/take my money|shut up and take|\bbuy (it|this|radioso)\b|sign me up/, 'takeMyMoney'],
     [/\bself[- ]?host|deploy|docker|cloud run\b/, 'selfHosting'],
     [/\bmcp|cursor|claude desktop|chatgpt\b/, 'mcp'],
     [/\bembed|widget|iframe\b/, 'embed'],
