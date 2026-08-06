@@ -14,11 +14,19 @@ import { site } from '@/lib/site'
 // useLayoutEffect warns during SSR; fall back to useEffect on the server.
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
+// Name Radioso explicitly rather than saying "it". The live agent reads a bare "it" as
+// itself and answers about its own limits — "Can it take actions?" returned "I can't take
+// actions on your behalf", contradicting the product's whole pitch. "Can I self-host it?"
+// is safe because it asks about the visitor's action, not the assistant's capability.
+//
+// The last chip is deliberately not a question: it trips the `talk-to-the-team` routine on
+// the live agent, so the visitor watches it run a real multi-step flow (qualify → collect
+// email → hand to a human) instead of being told that routines exist.
 const SUGGESTIONS = [
-  'Can it take actions?',
-  'Can it hand off to a human?',
+  'How does Radioso take actions?',
   'Can I self-host it?',
-  'How does it compare to LangChain?',
+  'How is Radioso different from LangChain?',
+  'Shut up and take my money! 💸',
 ]
 
 /** Tailwind's `lg` — where the hero splits into headline | conversation columns. */
