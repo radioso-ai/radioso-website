@@ -17,8 +17,7 @@ export default async function BlogIndexPage() {
   return (
     <PageShell>
       <div className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
-        <h1 className="display-serif font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">Blog</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
+        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
           Notes from the Radioso team on conversational agents, grounded answers, and building in the open.
         </p>
         {posts.length === 0 ? (
