@@ -17,9 +17,13 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 })
 
+// `style` matters: the three serif pull-quotes are italic, and without a real
+// italic face the browser synthesises an oblique by shearing the roman — which
+// on a high-contrast display serif like Fraunces is visibly wrong.
 const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-fraunces',
+  style: ['normal', 'italic'],
   axes: ['opsz'],
 })
 

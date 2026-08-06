@@ -22,12 +22,12 @@ export function TrustStrip() {
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-x-10 gap-y-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
         {points.map(({ icon: Icon, title, note }, i) => (
           <Reveal key={title} delay={i * 90} className="group flex items-start gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary/15">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-[var(--dur-base)] ease-[var(--ease-out)] group-hover:scale-110 group-hover:bg-primary/20">
               <Icon className="size-4" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold tracking-tight text-foreground">{title}</p>
-              <p className="text-[13px] leading-snug text-muted-foreground">{note}</p>
+              <p className="text-sm leading-snug text-muted-foreground">{note}</p>
             </div>
           </Reveal>
         ))}

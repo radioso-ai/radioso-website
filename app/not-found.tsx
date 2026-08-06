@@ -21,7 +21,7 @@ export default function NotFound() {
 
         <p className="mt-12 font-mono text-sm font-medium tracking-widest text-primary">404</p>
 
-        <h1 className="mt-4 font-serif text-3xl font-semibold leading-[1.1] tracking-tight text-balance sm:text-4xl">
+        <h1 className="display-serif mt-4 font-serif text-3xl font-semibold leading-[1.1] tracking-tight text-balance sm:text-4xl">
           This page is off the air.
         </h1>
 

@@ -1,47 +1,182 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══ Tokens ═══════════════════════════════════════════════════════════
+   Everything is oklch so lightness is perceptually even and the two
+   themes can be reasoned about as the same hues at different L.
+
+   TWO BLUES, on purpose:
+     --primary  interactive blue. Buttons, links, focus, anything a
+                visitor is meant to read or click. Light-mode L is 54%
+                because the old #5096e7 scored 2.90:1 against cream —
+                the primary CTA failed WCAG AA. At L=54% it is 4.81:1.
+     --signal   luminous blue. Traces, glows, washes, tints — the
+                atmosphere layer, which is decorative and never carries
+                text, so it keeps the brighter original hue.
+   In dark mode both resolve to the same value: the bright blue already
+   scores 7.62:1 on the dark background, so there is nothing to fix.
+
+   AND ONE YELLOW:
+     --human    the logo yellow, given a job. It marks the places a
+                person is in the loop — the handoff tile, the customer
+                in the scene, the "Contact a human" routine, and the
+                section markers on the two people-centric sections.
+                Blue is the machine acting; yellow is a person being
+                asked. That is "it knows when to act, and when to ask",
+                said in colour.
+                It is a tint, a ring or an icon fill only: at 85% L it
+                cannot carry text on cream and must never try.
+   `--secondary`/`--accent` keep the same hue for shadcn's button
+   variants, which are not instantiated anywhere on the site.
+
+   ALPHA LADDER — the only opacities any brand color may take:
+     5%   wash    faintest surface tint
+     10%  tint    icon tiles, chips, message bubbles
+     20%  line    quiet borders
+     35%  edge    visible borders, accent panels, hover borders
+     50%  veil    mid glows
+     70%  glow    strong glows, near-solid strokes
+   Before this there were 20 distinct alphas of the blue, including nine
+   separate flavours of "faint tint" between 5% and 10%. */
 :root {
-  --background: #f9f9f7;
-  --foreground: #142317;
-  --card: #ffffff;
-  --card-foreground: #142317;
-  --popover: #ffffff;
-  --popover-foreground: #142317;
-  --primary: #5096e7;
-  --primary-foreground: #f9f9f7;
-  --secondary: #ffc720;
-  --secondary-foreground: #142317;
-  --muted: #e8eae8;
-  --muted-foreground: #6a706b;
-  --accent: #ffc720;
-  --accent-foreground: #142317;
-  --border: #d4d8d4;
-  --input: #d4d8d4;
-  --ring: #5096e7;
+  --background: oklch(98.16% 0.0026 106.45);
+  --foreground: oklch(23.83% 0.0308 149.85);
+  --card: oklch(100% 0 106.45);
+  --card-foreground: oklch(23.83% 0.0308 149.85);
+  --popover: oklch(100% 0 106.45);
+  --popover-foreground: oklch(23.83% 0.0308 149.85);
+  --primary: oklch(54.06% 0.1395 253.17);
+  --primary-foreground: oklch(98.16% 0.0026 106.45);
+  --signal: oklch(66.43% 0.1404 253.56);
+  --secondary: oklch(85.62% 0.1694 87.18);
+  --secondary-foreground: oklch(23.83% 0.0308 149.85);
+  --human: oklch(85.62% 0.1694 87.18);
+  --muted: oklch(93.5% 0.0034 145.55);
+  --muted-foreground: oklch(53.84% 0.0106 150.55);
+  --accent: oklch(85.62% 0.1694 87.18);
+  --accent-foreground: oklch(23.83% 0.0308 149.85);
+  --border: oklch(87.8% 0.0069 145.52);
+  --input: oklch(87.8% 0.0069 145.52);
+  --ring: oklch(54.06% 0.1395 253.17);
+  --destructive: oklch(54.58% 0.1769 29.39);
+  --destructive-foreground: oklch(98.16% 0.0026 106.45);
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: #0a0f0c;
-  --foreground: #f4f6f3;
-  --card: #131a14;
-  --card-foreground: #f4f6f3;
-  --popover: #131a14;
-  --popover-foreground: #f4f6f3;
-  --primary: #6aa6ec;
-  --primary-foreground: #0a0f0c;
-  --secondary: #ffc720;
-  --secondary-foreground: #0a0f0c;
-  --muted: #1c241e;
-  --muted-foreground: #9ea69f;
-  --accent: #ffc720;
-  --accent-foreground: #0a0f0c;
-  --border: #1f2821;
-  --input: #1f2821;
-  --ring: #6aa6ec;
+  --background: oklch(16.17% 0.0101 158.69);
+  --foreground: oklch(97.08% 0.0045 134.85);
+  --card: oklch(20.83% 0.0157 148.99);
+  --card-foreground: oklch(97.08% 0.0045 134.85);
+  --popover: oklch(20.83% 0.0157 148.99);
+  --popover-foreground: oklch(97.08% 0.0045 134.85);
+  --primary: oklch(71.34% 0.1206 253.2);
+  --primary-foreground: oklch(16.17% 0.0101 158.69);
+  --signal: oklch(71.34% 0.1206 253.2);
+  --secondary: oklch(85.62% 0.1694 87.18);
+  --secondary-foreground: oklch(16.17% 0.0101 158.69);
+  --human: oklch(85.62% 0.1694 87.18);
+  --muted: oklch(25.02% 0.016 152.73);
+  --muted-foreground: oklch(71.66% 0.0135 149.18);
+  --accent: oklch(85.62% 0.1694 87.18);
+  --accent-foreground: oklch(16.17% 0.0101 158.69);
+  /* Raised from L=26.56% — at the old value a card edge scored 1.17:1
+     against its own fill, i.e. invisible. 33.44% reads as a hairline
+     without becoming a rule. */
+  --border: oklch(33.44% 0.0224 152.68);
+  --input: oklch(33.44% 0.0224 152.68);
+  --ring: oklch(71.34% 0.1206 253.2);
+  --destructive: oklch(66.25% 0.1506 29.55);
+  --destructive-foreground: oklch(16.17% 0.0101 158.69);
+}
+
+/* ═══ Motion ═══════════════════════════════════════════════════════════
+   Three durations and two curves for everything a visitor drives. The
+   long ambient loops (aura, rings, twinkle) and the authored trace and
+   scene choreography keep their own timings — those are compositions,
+   not interaction feedback. */
+:root {
+  --dur-fast: 180ms; /* colour, opacity, small state flips */
+  --dur-base: 420ms; /* reveals, lifts, anything that moves */
+  --dur-slow: 900ms; /* deliberate, once-per-view entrances */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out; the house curve */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoot, for pops */
+}
+
+/* ── The machine band ───────────────────────────────────────────────────
+   "Inside Radioso" is the one section about the machine rather than the
+   people, so it gets its own chamber: full-bleed and dark in *both*
+   themes. Re-declaring the theme tokens locally means every token-based
+   utility and every color-mix() inside the section re-resolves on its
+   own — the diagram's markup is untouched, and the trace animations
+   finally read as light rather than as a tint on cream.
+
+   It sits a step warmer and lighter than `.dark` (L 17.5/22.5 vs 16.2/20.8)
+   so that in dark mode the chamber still separates from the page it is
+   cut into. Borders are the shared dark value — the band used to carry
+   its own lighter override, which the token fix made redundant. */
+.machine-band {
+  --background: oklch(17.5% 0.012 160);
+  --foreground: oklch(97.08% 0.0045 134.85);
+  --card: oklch(22.5% 0.016 152);
+  --card-foreground: oklch(97.08% 0.0045 134.85);
+  --popover: oklch(22.5% 0.016 152);
+  --popover-foreground: oklch(97.08% 0.0045 134.85);
+  --primary: oklch(71.34% 0.1206 253.2);
+  --primary-foreground: oklch(17.5% 0.012 160);
+  --signal: oklch(71.34% 0.1206 253.2);
+  --secondary: oklch(85.62% 0.1694 87.18);
+  --secondary-foreground: oklch(17.5% 0.012 160);
+  --human: oklch(85.62% 0.1694 87.18);
+  --muted: oklch(26.5% 0.016 152.7);
+  --muted-foreground: oklch(73% 0.013 149);
+  --accent: oklch(85.62% 0.1694 87.18);
+  --accent-foreground: oklch(17.5% 0.012 160);
+  --border: oklch(33.44% 0.0224 152.68);
+  --input: oklch(33.44% 0.0224 152.68);
+  --ring: oklch(71.34% 0.1206 253.2);
+  --destructive: oklch(66.25% 0.1506 29.55);
+  --destructive-foreground: oklch(17.5% 0.012 160);
+
+  position: relative;
+  isolation: isolate;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* A cool wash rising from the floor of the chamber, so the slab reads as
+   lit from within rather than as a flat black rectangle. In dark mode
+   this — plus the full-bleed width — is what separates the band from the
+   page, since the fills are nearly identical there by design. */
+.machine-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      70% 55% at 50% 100%,
+      color-mix(in oklab, var(--signal) 20%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      90% 60% at 50% 0%,
+      color-mix(in oklab, var(--signal) 5%, transparent),
+      transparent 65%
+    );
+}
+
+/* Hairline seams top and bottom — the edge of the chamber, not a divider. */
+.machine-band::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-top: 1px solid color-mix(in oklab, var(--signal) 20%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--signal) 20%, transparent);
 }
 
 @theme inline {
@@ -56,6 +191,10 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-signal: var(--signal);
+  --color-human: var(--human);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -65,6 +204,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  /* The one step below Tailwind's ramp. The site genuinely needs a micro
+     label size for chip eyebrows and citation pips; it had been reaching
+     for `text-[10px]` and `text-[11px]` interchangeably, 18 times. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: calc(1 / 0.6875);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -94,6 +238,78 @@
   }
 }
 
+/* ═══ Card recipes ═════════════════════════════════════════════════════
+   Three treatments, down from eleven. A visitor scrolling the homepage
+   used to meet eleven visually distinct large panels — including three
+   `rounded-2xl border-border` cards that differed only in fill (/60,
+   /60, /40), shadow (lift, static, none) and padding.
+
+   These set edge, fill and elevation only. Radius and padding stay in
+   the markup, because a nested lane inside a panel legitimately wants a
+   smaller radius than the panel around it. The radius ladder is three
+   rungs: `rounded-2xl` for cards, `rounded-xl` for nested panels,
+   `rounded-full` for chips.
+
+     .surface      resting card. Content sits on it; nothing happens.
+     .panel        accent card. Marks the one thing that matters in a
+                   section — the answer bar, the Radioso card, the CTA.
+     .interactive  .surface plus the single hover idiom: 3px lift, edge
+                   warms to signal, shadow blooms. Replaces four
+                   mutually incompatible lift implementations.
+
+   Declared with `@utility`, not as plain classes and not in a bare
+   `@layer components`. Both alternatives are wrong here: unlayered CSS
+   outranks every Tailwind utility, so a one-off `hover:border-primary/35`
+   in the markup would silently do nothing; and Tailwind v4 rewrites a
+   hand-written `@layer components` block into `:is() .surface`, an empty
+   `:is()` that matches no element at all. `@utility` puts them in the
+   utilities layer where per-instance overrides still win. */
+@utility surface {
+  border: 1px solid var(--border);
+  background-color: color-mix(in oklab, var(--card) 60%, transparent);
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+
+@utility panel {
+  border: 1px solid color-mix(in oklab, var(--signal) 35%, transparent);
+  background-color: color-mix(in oklab, var(--signal) 10%, var(--card));
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+
+@utility interactive {
+  border: 1px solid var(--border);
+  background-color: color-mix(in oklab, var(--card) 60%, transparent);
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--foreground) 5%, transparent);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--signal) 35%, transparent);
+    box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--signal) 50%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &:hover {
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+/* Fraunces ships an optical-size axis and next/font already requests it
+   (`axes: ['opsz']`), but nothing has ever set it — so every heading on the
+   site renders at the default text cut. At display sizes that cut looks
+   soft and slightly overweight. Pushing opsz up gives the real display
+   drawing: higher stroke contrast, crisper serifs, tighter joins. */
+.display-serif {
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 72;
+}
+
 /* Hero atmosphere: a yellow sunrise and a blue radio wash, over a soft dot field. */
 .hero-aura {
   position: absolute;
@@ -119,7 +335,7 @@
   height: 720px;
   top: -260px;
   right: -160px;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--secondary) 55%, transparent), transparent 70%);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--secondary) 50%, transparent), transparent 70%);
   animation-duration: 26s;
 }
 
@@ -128,7 +344,7 @@
   height: 820px;
   top: -120px;
   left: -240px;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 50%, transparent), transparent 70%);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--signal) 50%, transparent), transparent 70%);
   animation-delay: -8s;
 }
 
@@ -180,7 +396,7 @@
   height: 320px;
   margin: -160px 0 0 -160px;
   border-radius: 9999px;
-  border: 1px solid color-mix(in oklab, var(--primary) 38%, transparent);
+  border: 1px solid color-mix(in oklab, var(--signal) 35%, transparent);
   opacity: 0;
   animation: signal-ring 6s ease-out infinite;
 }
@@ -206,8 +422,10 @@
   }
 }
 
+/* One rung down the ladder in dark mode — the rings read much hotter
+   against the dark background at the same alpha. */
 .dark .signal-rings span {
-  border-color: color-mix(in oklab, var(--primary) 30%, transparent);
+  border-color: color-mix(in oklab, var(--signal) 20%, transparent);
 }
 
 .hero-dots {
@@ -230,8 +448,7 @@
   opacity: 0;
   transform: translateY(18px);
   transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity var(--dur-slow) var(--ease-out),    transform var(--dur-slow) var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
@@ -255,7 +472,7 @@
 
 .rise-in {
   opacity: 0;
-  animation: rise-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: rise-in var(--dur-slow) var(--ease-out) forwards;
   animation-delay: var(--rise-delay, 0ms);
 }
 
@@ -274,7 +491,7 @@
   margin-left: -2.5px;
   border-radius: 9999px;
   background: var(--primary);
-  box-shadow: 0 0 8px 1px color-mix(in oklab, var(--primary) 70%, transparent);
+  box-shadow: 0 0 8px 1px color-mix(in oklab, var(--signal) 70%, transparent);
   animation: flow-travel 2.6s ease-in-out infinite;
 }
 
@@ -305,7 +522,7 @@
   position: absolute;
   inset: -6px;
   border-radius: inherit;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 45%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--signal) 50%, transparent), transparent);
   opacity: 0;
   z-index: -1;
   animation: signal-breathe 3.4s ease-in-out infinite;
@@ -321,20 +538,6 @@
     opacity: 0.5;
     transform: scale(1.04);
   }
-}
-
-/* Lift cards a touch on hover for a tactile, responsive feel. */
-.lift {
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.25s ease;
-}
-
-.lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--primary) 55%, transparent);
-  border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
 }
 
 /* ---------------------------------------------------------------------------
@@ -356,7 +559,7 @@
 }
 
 .scene-play .scene-chrome {
-  transition: height 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: height var(--dur-base) var(--ease-out);
 }
 
 [data-armed] .scene-step,
@@ -371,14 +574,14 @@
 }
 
 [data-armed].scene-play .scene-step {
-  animation: rise-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise-in var(--dur-base) var(--ease-out) both;
   animation-delay: var(--scene-delay, 0ms);
 }
 
 /* Action rows land with a touch more weight than a message — they're the
    "it actually did the thing" beats, so they settle with a soft ring. */
 [data-armed].scene-play .scene-chip {
-  animation: chip-land 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: chip-land var(--dur-slow) var(--ease-out) both;
   animation-delay: var(--scene-delay, 0ms);
 }
 
@@ -390,7 +593,7 @@
   }
   55% {
     opacity: 1;
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--signal) 20%, transparent);
   }
   100% {
     opacity: 1;
@@ -402,7 +605,7 @@
 /* The check mark settles a beat after its row, with a small overshoot. */
 [data-armed].scene-play .scene-check {
   transform-origin: center;
-  animation: check-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: check-pop var(--dur-base) var(--ease-spring) both;
   animation-delay: var(--scene-delay, 0ms);
 }
 
@@ -502,7 +705,7 @@
    bright signal draws itself along the hairline that is already there. */
 .trace-line {
   background: var(--primary);
-  box-shadow: 0 0 6px 0 color-mix(in oklab, var(--primary) 60%, transparent);
+  box-shadow: 0 0 6px 0 color-mix(in oklab, var(--signal) 70%, transparent);
 }
 
 .trace-line-y {
@@ -532,7 +735,7 @@
   0% {
     opacity: 0;
     transform: scaleY(0);
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-timing-function: var(--ease-out);
   }
   4% {
     opacity: 1;
@@ -554,7 +757,7 @@
   0% {
     opacity: 0;
     transform: scaleX(0);
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-timing-function: var(--ease-out);
   }
   4% {
     opacity: 1;
@@ -582,7 +785,7 @@
   margin-left: -2.5px;
   border-radius: 9999px;
   background: var(--primary);
-  box-shadow: 0 0 8px 1px color-mix(in oklab, var(--primary) 70%, transparent);
+  box-shadow: 0 0 8px 1px color-mix(in oklab, var(--signal) 70%, transparent);
 }
 
 [data-trace='run'] .trace-dot {
@@ -637,7 +840,7 @@
   position: absolute;
   inset: -3px;
   border-radius: 9999px;
-  border: 1.5px solid color-mix(in oklab, var(--primary) 70%, transparent);
+  border: 1.5px solid color-mix(in oklab, var(--signal) 70%, transparent);
 }
 
 [data-trace='run'] .trace-ping {
@@ -648,7 +851,7 @@
   0% {
     opacity: 0;
     transform: scale(0.94);
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-timing-function: var(--ease-out);
   }
   15% {
     opacity: 0.85;
@@ -670,25 +873,25 @@
 }
 
 .trace-lane {
-  background: color-mix(in oklab, var(--primary) 7%, transparent);
+  background: color-mix(in oklab, var(--signal) 5%, transparent);
   box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent),
-    0 10px 30px -14px color-mix(in oklab, var(--primary) 70%, transparent);
+    inset 0 0 0 1px color-mix(in oklab, var(--signal) 50%, transparent),
+    0 10px 30px -14px color-mix(in oklab, var(--signal) 70%, transparent);
 }
 
 .trace-resolve {
-  background: color-mix(in oklab, var(--primary) 6%, transparent);
+  background: color-mix(in oklab, var(--signal) 5%, transparent);
   box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--primary) 60%, transparent),
-    0 12px 34px -16px color-mix(in oklab, var(--primary) 80%, transparent);
+    inset 0 0 0 1px color-mix(in oklab, var(--signal) 70%, transparent),
+    0 12px 34px -16px color-mix(in oklab, var(--signal) 70%, transparent);
 }
 
 .trace-surface {
   border-radius: 9999px;
-  background: color-mix(in oklab, var(--primary) 8%, transparent);
+  background: color-mix(in oklab, var(--signal) 10%, transparent);
   box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--primary) 50%, transparent),
-    0 8px 20px -10px color-mix(in oklab, var(--primary) 70%, transparent);
+    inset 0 0 0 1px color-mix(in oklab, var(--signal) 50%, transparent),
+    0 8px 20px -10px color-mix(in oklab, var(--signal) 70%, transparent);
 }
 
 [data-trace='run'] .trace-lane,
@@ -700,7 +903,7 @@
 @keyframes trace-hold {
   0% {
     opacity: 0;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-timing-function: var(--ease-out);
   }
   18% {
     opacity: 1;
@@ -721,7 +924,7 @@
   background: linear-gradient(
     100deg,
     transparent 34%,
-    color-mix(in oklab, var(--primary) 26%, transparent) 50%,
+    color-mix(in oklab, var(--signal) 20%, transparent) 50%,
     transparent 66%
   );
 }
@@ -814,7 +1017,7 @@
    fades in as the name fades back to muted: struck alone reads like a typo,
    struck and dimmed reads as retired. */
 [data-armed][data-trace='run'] .vendor-retired {
-  animation: vendor-retire 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: vendor-retire var(--dur-base) var(--ease-out) both;
   animation-delay: var(--strike-delay, 0ms);
 }
 
@@ -850,9 +1053,6 @@
     opacity: 1;
     transform: none;
     transition: none;
-  }
-  .lift:hover {
-    transform: none;
   }
   /* The diagram trace is pure decoration layered over a diagram that is already
      complete, so switching it off leaves the finished picture untouched. */

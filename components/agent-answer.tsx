@@ -22,7 +22,7 @@ export function AgentAnswer({ data, question, streaming }: Props) {
     <div className="flex flex-col gap-3">
       {question && (
         <div className="flex justify-end">
-          <p className="max-w-[85%] rounded-2xl rounded-br-md bg-primary/10 px-3.5 py-2 text-[13px] leading-relaxed text-foreground sm:text-sm">
+          <p className="max-w-[85%] rounded-2xl rounded-br-md bg-primary/10 px-3.5 py-2 text-sm leading-relaxed text-foreground">
             {question}
           </p>
         </div>
@@ -36,10 +36,10 @@ export function AgentAnswer({ data, question, streaming }: Props) {
           className="mt-0.5 size-5 shrink-0"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="text-[15px] leading-relaxed text-foreground">{body}</div>
+          <div className="text-base leading-relaxed text-foreground">{body}</div>
           {data.sources.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-medium text-muted-foreground">Sources</span>
+              <span className="text-2xs font-medium text-muted-foreground">Sources</span>
               {data.sources.map((s) => (
                 <SourceChip key={s.n} source={s} />
               ))}
@@ -126,14 +126,14 @@ function markdownComponents(sources: AgentSource[]): Components {
       }
 
       return (
-        <code className="rounded-[5px] bg-muted px-1 py-0.5 font-mono text-[0.9em]">
+        <code className="rounded-md bg-muted px-1 py-0.5 font-mono text-[0.9em]">
           {children}
         </code>
       )
     },
     pre({ children }) {
       return (
-        <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-[13px] leading-relaxed">
+        <pre className="overflow-x-auto rounded-xl bg-muted p-3 text-sm leading-relaxed">
           {children}
         </pre>
       )
@@ -141,7 +141,7 @@ function markdownComponents(sources: AgentSource[]): Components {
     table({ children }) {
       return (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-[13px]">{children}</table>
+          <table className="w-full border-collapse text-left text-sm">{children}</table>
         </div>
       )
     },
@@ -200,8 +200,8 @@ function CitationPip({ n, muted }: { n: number; muted?: boolean }) {
     <sup
       className={
         muted
-          ? 'ml-0.5 inline-flex size-4 items-center justify-center rounded-[6px] bg-muted align-super font-mono text-[10px] font-semibold text-muted-foreground'
-          : 'ml-0.5 inline-flex size-4 items-center justify-center rounded-[6px] bg-primary/15 align-super font-mono text-[10px] font-semibold text-primary'
+          ? 'ml-0.5 inline-flex size-4 items-center justify-center rounded-md bg-muted align-super font-mono text-2xs font-semibold text-muted-foreground'
+          : 'ml-0.5 inline-flex size-4 items-center justify-center rounded-md bg-primary/20 align-super font-mono text-2xs font-semibold text-primary'
       }
     >
       {n}
@@ -211,8 +211,8 @@ function CitationPip({ n, muted }: { n: number; muted?: boolean }) {
 
 function SourceChip({ source }: { source: AgentSource }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-border bg-card text-muted-foreground gap-1.5 px-2 py-0.5 text-[10px]">
-      <span className="inline-flex size-4 items-center justify-center rounded-[5px] bg-primary/15 font-mono text-[10px] font-semibold text-primary">
+    <span className="inline-flex items-center rounded-full border border-border bg-card text-muted-foreground gap-1.5 px-2 py-0.5 text-2xs">
+      <span className="inline-flex size-4 items-center justify-center rounded-md bg-primary/20 font-mono text-2xs font-semibold text-primary">
         {source.n}
       </span>
       <FileText className="size-3" />
@@ -237,7 +237,7 @@ function SourceChip({ source }: { source: AgentSource }) {
 
 function AnsweredBy() {
   return (
-    <div className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground">
+    <div className="flex items-center gap-2 pt-1 text-2xs text-muted-foreground">
       <Image src="/radioso-icon.svg" alt="" width={14} height={14} className="opacity-80" />
       <span>
         Answers by <span className="font-medium text-foreground/80">Radioso</span>

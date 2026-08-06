@@ -124,9 +124,9 @@ export function AudienceSection() {
     <section id="who" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
         <div className="mb-4 flex justify-center">
-          <SparkMark className="size-6" color="var(--secondary)" />
+          <SparkMark className="size-6" color="var(--human)" />
         </div>
-        <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
           One platform, not five vendors.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
@@ -146,7 +146,7 @@ export function AudienceSection() {
       </div>
 
       {/* The bridge from the platform argument to the people it pays off for. */}
-      <p className="mx-auto mt-10 max-w-xl text-center font-serif text-lg italic text-muted-foreground">
+      <p className="display-serif mx-auto mt-10 max-w-xl text-center font-serif text-lg italic text-muted-foreground">
         Different teams, same engine.
       </p>
 
@@ -155,21 +155,23 @@ export function AudienceSection() {
           <Reveal
             key={eyebrow}
             delay={i * 100}
-            className="group flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
+            className="interactive group flex flex-col gap-3 rounded-2xl p-6"
           >
             <div className="flex items-center gap-2.5">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+              <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-[var(--dur-fast)] group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon className="size-4" />
               </div>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {eyebrow}
               </p>
             </div>
-            <p className="font-serif text-xl font-semibold text-foreground">{title}</p>
-            <p className="text-[13px] leading-relaxed text-muted-foreground">{body}</p>
+            <p className="display-serif font-serif text-lg font-semibold text-foreground">
+              {title}
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
             <ul className="mt-1 flex flex-col gap-1.5">
               {points.map((point) => (
-                <li key={point} className="flex items-start gap-2 text-[13px] text-foreground/80">
+                <li key={point} className="flex items-start gap-2 text-sm text-foreground/80">
                   <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
                   {point}
                 </li>
@@ -207,7 +209,7 @@ function VendorCluster() {
         {VENDORS.map(({ icon: Icon, capability, vendor, rotate }, i) => (
           <span
             key={vendor}
-            className={`inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-[13px] font-medium text-muted-foreground ${rotate}`}
+            className={`inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground ${rotate}`}
           >
             <Icon className="size-3.5 text-muted-foreground/70" />
             {/* One flex child, so the gap between icon and label is untouched and
@@ -225,7 +227,7 @@ function VendorCluster() {
           </span>
         ))}
       </div>
-      <p className="text-[11px] text-muted-foreground">
+      <p className="text-2xs text-muted-foreground">
         five contracts · five integrations · five copies of your knowledge
       </p>
     </TraceOnView>
@@ -237,7 +239,7 @@ function VendorCluster() {
 function ConnectorArrow() {
   return (
     <div className="flex flex-col items-center py-4" aria-hidden>
-      <div className="h-9 w-px bg-gradient-to-b from-border to-primary/40" />
+      <div className="h-9 w-px bg-gradient-to-b from-border to-primary/35" />
       <ArrowDown className="-mt-1 size-4 text-primary/50" />
     </div>
   )
@@ -245,7 +247,7 @@ function ConnectorArrow() {
 
 function RadiosoCard() {
   return (
-    <div className="rounded-2xl border border-primary/30 bg-[color-mix(in_oklab,var(--primary)_8%,var(--card))] p-5 shadow-sm sm:p-6">
+    <div className="panel rounded-2xl p-5 sm:p-6">
       <div className="flex flex-col items-center gap-4">
         <div className="flex items-center justify-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm signal-glow">
@@ -258,7 +260,7 @@ function RadiosoCard() {
           {CHIPS.map((chip) => (
             <span
               key={chip}
-              className="inline-flex items-center rounded-full border border-primary/20 bg-card px-3 py-1 text-[12px] font-medium text-foreground/85"
+              className="inline-flex items-center rounded-full border border-primary/20 bg-card px-3 py-1 text-xs font-medium text-foreground/85"
             >
               {chip}
             </span>

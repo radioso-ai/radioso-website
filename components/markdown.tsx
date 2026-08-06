@@ -19,16 +19,18 @@ export function Markdown({ children, transformHref }: MarkdownProps) {
       remarkPlugins={[remarkGfm]}
       components={{
         h1: ({ children }) => (
-          <h1 className="mb-4 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+          <h1 className="display-serif mb-4 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
             {children}
           </h1>
         ),
         h2: ({ children }) => (
-          <h2 className="mt-12 border-t border-border/70 pt-8 text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="display-serif mt-12 border-t border-border/70 pt-8 font-serif text-2xl font-bold tracking-tight text-foreground">
             {children}
           </h2>
         ),
-        h3: ({ children }) => <h3 className="mt-8 text-lg font-semibold text-foreground">{children}</h3>,
+        h3: ({ children }) => (
+          <h3 className="display-serif mt-8 font-serif text-lg font-semibold text-foreground">{children}</h3>
+        ),
         p: ({ children }) => <p className="mt-4 text-sm leading-7 text-muted-foreground">{children}</p>,
         a: ({ children, href }) => {
           const normalizedHref = transformHref ? transformHref(href) : href
@@ -53,12 +55,12 @@ export function Markdown({ children, transformHref }: MarkdownProps) {
         li: ({ children }) => <li>{children}</li>,
         strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
         blockquote: ({ children }) => (
-          <blockquote className="mt-6 border-l-2 border-primary pl-4 text-sm text-muted-foreground">
+          <blockquote className="mt-6 border-l-2 border-primary pl-4 text-sm leading-7 text-muted-foreground">
             {children}
           </blockquote>
         ),
         code: ({ children }) => (
-          <code className="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground">{children}</code>
+          <code className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground">{children}</code>
         ),
         hr: () => <div className="my-10 h-px bg-border/70" />,
         table: ({ children }) => (

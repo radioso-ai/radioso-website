@@ -8,11 +8,11 @@ import { QuickstartTerminal } from '@/components/quickstart-terminal'
 
 export function Quickstart() {
   return (
-    <section id="quickstart" className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+    <section id="quickstart" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="grid items-center gap-12 md:grid-cols-2">
         <div>
-          <SparkMark className="mb-4 size-6" color="var(--secondary)" />
-          <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+          <SparkMark className="mb-4 size-6" color="var(--primary)" />
+          <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
             Working assistant in under five minutes.
           </h2>
           <p className="mt-5 text-base leading-relaxed text-muted-foreground">

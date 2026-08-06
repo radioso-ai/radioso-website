@@ -40,9 +40,9 @@ export function LicensingSection() {
     <section id="licensing" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
         <div className="mb-4 flex justify-center">
-          <SparkMark className="size-6" color="var(--secondary)" />
+          <SparkMark className="size-6" color="var(--primary)" />
         </div>
-        <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
           Every feature, open source.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
@@ -56,16 +56,18 @@ export function LicensingSection() {
           <Reveal
             key={title}
             delay={i * 120}
-            className="group flex flex-col gap-3 rounded-2xl border border-border bg-card/60 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
+            className="interactive group flex flex-col gap-3 rounded-2xl p-6"
           >
             <div className="flex items-baseline gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+              <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-[var(--dur-fast)] group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon className="size-4" />
               </div>
-              <p className="font-serif text-lg font-semibold text-foreground">{title}</p>
-              <span className="text-[11px] italic text-muted-foreground">{label}</span>
+              <p className="display-serif font-serif text-lg font-semibold text-foreground">
+                {title}
+              </p>
+              <span className="text-2xs italic text-muted-foreground">{label}</span>
             </div>
-            <p className="flex-1 text-[13px] leading-relaxed text-muted-foreground">{body}</p>
+            <p className="flex-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
             <Link
               href={href}
               className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:underline"

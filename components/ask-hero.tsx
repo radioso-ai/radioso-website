@@ -132,8 +132,13 @@ export function AskHero() {
 
   const lastIndex = blocks.length - 1
 
+  // The extra top step at `lg` is for the conversation card, not the headline. From
+  // `lg` the hero is two columns centred against each other and the card is much the
+  // taller of the two, so it starts at the very top of the row — landing ~40px under
+  // a sticky nav that is itself only 16px off the viewport. Below `lg` the card sits
+  // under the copy and is nowhere near the nav.
   return (
-    <section className="pb-16 pt-10 sm:pt-14">
+    <section className="pb-16 pt-10 sm:pt-14 lg:pt-20">
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-6xl xl:max-w-7xl">
         <div className="grid items-center gap-8 text-center sm:gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-center lg:gap-14 lg:text-left">
           <div>

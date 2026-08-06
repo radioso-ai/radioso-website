@@ -55,7 +55,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground">
           ← Back to blog
         </Link>
-        <h1 className="mt-8 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+        <h1 className="display-serif mt-8 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
           {post.title}
         </h1>
         <p className="mt-4 text-xs uppercase tracking-wide text-muted-foreground">

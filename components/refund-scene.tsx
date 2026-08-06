@@ -302,7 +302,7 @@ export function RefundScene() {
     <div ref={containerRef} className={`relative mx-auto max-w-xl ${playing ? 'scene-play' : ''}`}>
       <div
         aria-hidden
-        className="scene-chrome pixel-grid absolute inset-x-0 top-0 rounded-3xl border border-border bg-card/70 shadow-sm"
+        className="scene-chrome pixel-grid surface absolute inset-x-0 top-0 rounded-2xl"
       />
       <PixelSprite
         grid={SPARK_GRID}
@@ -313,8 +313,8 @@ export function RefundScene() {
 
       <div ref={contentRef} className="relative p-5 sm:p-7">
         <div data-at="0" className="mb-5 flex items-center gap-2 border-b border-border/60 pb-3">
-          <SparkMark className="size-3.5" color="var(--secondary)" />
-          <span className="text-[11px] font-medium text-muted-foreground">an example</span>
+          <SparkMark className="size-3.5" color="var(--human)" />
+          <span className="text-2xs font-medium text-muted-foreground">an example</span>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -337,7 +337,7 @@ function Bubble({ turn, plan, playing }: { turn: Turn; plan: TurnPlan; playing: 
       <AvatarTile who={turn.who} at={plan.avatarAt} />
       <div className={`flex max-w-[80%] flex-col gap-1.5 ${isRadioso ? 'items-end' : 'items-start'}`}>
         {isRadioso && (
-          <span className="scene-step px-1 text-[10px] font-medium text-muted-foreground" style={delay(entersAt)}>
+          <span className="scene-step px-1 text-2xs font-medium text-muted-foreground" style={delay(entersAt)}>
             Radioso
           </span>
         )}
@@ -391,8 +391,8 @@ function RadiosoText({
       style={delay(at)}
       className={`${
         isRadioso
-          ? 'rounded-2xl rounded-br-sm border border-primary/20 bg-primary/10 px-3.5 py-2 text-[13px] leading-relaxed text-foreground'
-          : 'rounded-2xl rounded-bl-sm bg-muted px-3.5 py-2 text-[13px] leading-relaxed text-foreground'
+          ? 'rounded-2xl rounded-br-md border border-primary/20 bg-primary/10 px-3.5 py-2 text-sm leading-relaxed text-foreground'
+          : 'rounded-2xl rounded-bl-md bg-muted px-3.5 py-2 text-sm leading-relaxed text-foreground'
       } ${className ?? ''}`}
     >
       {children}
@@ -406,7 +406,7 @@ function TypingBeat({ at, runFor, align }: { at: number; runFor: number; align: 
       aria-hidden
       data-at={at}
       className={`scene-typing absolute top-0 flex items-center gap-1 rounded-2xl border border-primary/20 bg-primary/10 px-3 py-2.5 ${
-        align === 'right' ? 'right-0 rounded-br-sm' : 'left-0 rounded-bl-sm'
+        align === 'right' ? 'right-0 rounded-br-md' : 'left-0 rounded-bl-md'
       }`}
       style={{ '--scene-delay': `${at}ms`, '--scene-typing-dur': `${runFor}ms` } as CSSProperties}
     >
@@ -423,7 +423,7 @@ function ActionChip({ action, at, playing }: { action: Action; at: number; playi
   return (
     <div
       data-at={at}
-      className="scene-chip flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/[0.06] px-2.5 py-1.5 text-[12px] text-foreground/90"
+      className="scene-chip flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-2.5 py-1.5 text-xs text-foreground/90"
       style={delay(at)}
     >
       <Icon className="size-3.5 shrink-0 text-primary" />
@@ -485,7 +485,7 @@ function AvatarTile({ who, at }: { who: Turn['who']; at: number }) {
   if (who === 'radioso') {
     return (
       <div
-        className="scene-step flex size-9 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))]"
+        className="scene-step flex size-9 shrink-0 items-center justify-center rounded-xl border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))]"
         style={delay(at)}
       >
         <Image src="/radioso-icon.svg" alt="Radioso" width={20} height={20} className="size-5" />
@@ -494,7 +494,7 @@ function AvatarTile({ who, at }: { who: Turn['who']; at: number }) {
   }
   return (
     <div
-      className="scene-step flex size-9 shrink-0 items-end justify-center overflow-hidden rounded-xl border border-border bg-background/70"
+      className="scene-step flex size-9 shrink-0 items-end justify-center overflow-hidden rounded-xl border border-human/35 bg-human/10"
       style={delay(at)}
     >
       <PixelSprite grid={AVATAR_CUSTOMER.grid} palette={AVATAR_CUSTOMER.palette} className="size-8" title="Someone" />

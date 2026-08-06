@@ -53,7 +53,7 @@ export function CookieBanner() {
       className="fixed inset-x-4 bottom-4 z-[60] sm:inset-x-auto sm:left-6 sm:bottom-6 sm:max-w-sm"
     >
       <div className="rounded-2xl border border-border bg-card/95 p-4 shadow-xl shadow-primary/10 backdrop-blur-md">
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           We use one analytics cookie (PostHog, EU-hosted) to understand how this site is used — no
           ads, no cross-site tracking. Decline and we won&apos;t track you at all. See our{' '}
           <Link
