@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Manual re-run from the Actions tab. The push trigger has silently failed to fire
+  # before, leaving main deployed but stale with no way to retry short of another
+  # commit; this is that retry. Dispatching from main goes live, from any other
+  # branch it lands on a preview channel — same rule as the channelId below.
+  workflow_dispatch:
 
 permissions:
   contents: read
