@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { FileText } from 'lucide-react'
 import { Children, isValidElement } from 'react'
 import ReactMarkdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -12,10 +11,12 @@ type Props = {
   question?: string
   /** Show a thinking caret at the end of the body — used by the live one-shot input. */
   streaming?: boolean
+  /** No tokens yet — the body is a status line ("Thinking"), not an answer. */
+  placeholder?: boolean
 }
 
 /** Message bubbles for the hero chat window, which supplies its own frame. */
-export function AgentAnswer({ data, question, streaming }: Props) {
+export function AgentAnswer({ data, question, streaming, placeholder }: Props) {
   const body = renderBody(data.body, data.sources, streaming)
 
   return (
@@ -36,7 +37,15 @@ export function AgentAnswer({ data, question, streaming }: Props) {
           className="mt-0.5 size-5 shrink-0"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="text-base leading-relaxed text-foreground">{body}</div>
+          <div
+            className={
+              placeholder
+                ? 'thinking-shimmer text-base leading-relaxed'
+                : 'text-base leading-relaxed text-foreground'
+            }
+          >
+            {body}
+          </div>
           {data.sources.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="text-2xs font-medium text-muted-foreground">Sources</span>
@@ -45,7 +54,6 @@ export function AgentAnswer({ data, question, streaming }: Props) {
               ))}
             </div>
           )}
-          <AnsweredBy />
         </div>
       </div>
     </div>
@@ -215,7 +223,6 @@ function SourceChip({ source }: { source: AgentSource }) {
       <span className="inline-flex size-4 items-center justify-center rounded-md bg-primary/20 font-mono text-2xs font-semibold text-primary">
         {source.n}
       </span>
-      <FileText className="size-3" />
       {source.url ? (
         <a
           href={source.url}
@@ -232,16 +239,5 @@ function SourceChip({ source }: { source: AgentSource }) {
         <span className="text-muted-foreground/80">· {source.detail}</span>
       ) : null}
     </span>
-  )
-}
-
-function AnsweredBy() {
-  return (
-    <div className="flex items-center gap-2 pt-1 text-2xs text-muted-foreground">
-      <Image src="/radioso-icon.svg" alt="" width={14} height={14} className="opacity-80" />
-      <span>
-        Answers by <span className="font-medium text-foreground/80">Radioso</span>
-      </span>
-    </div>
   )
 }

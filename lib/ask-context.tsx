@@ -23,6 +23,8 @@ type AskState = {
   pending: boolean
   /** Partial answer rendered live while the stream is in flight; null otherwise. */
   streaming: AgentAnswerData | null
+  /** False once an ask was served by the canned stub — the header badge drops its "live" claim. */
+  live: boolean
   error: string | null
   ask: (q: string) => Promise<void>
   /** Populate the input box with text and move focus to it. */
@@ -40,6 +42,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
   const [transcript, setTranscript] = useState<Asked[]>([SEED])
   const [pending, setPending] = useState(false)
   const [streaming, setStreaming] = useState<AgentAnswerData | null>(null)
+  const [live, setLive] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const answerRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -60,6 +63,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
         const data = await fetchAnswer(trimmed, {
           onChunk: (partialBody) => setStreaming({ body: partialBody, sources: [] }),
         })
+        setLive(data.fallback !== true)
         setTranscript((prev) =>
           prev.map((item, i) =>
             i === prev.length - 1 ? { question: trimmed, answer: data } : item,
@@ -100,6 +104,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
         transcript,
         pending,
         streaming,
+        live,
         error,
         ask,
         populateInput,
