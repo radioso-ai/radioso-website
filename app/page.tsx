@@ -45,10 +45,15 @@ export default function HomePage() {
             className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[760px] overflow-hidden"
           >
             <div className="hero-aura" />
-            <div className="signal-rings">
-              <span />
-              <span />
-              <span />
+            {/* Mirrors the pill-nav container so the ring origin lands on the sun mark
+                (offsets live in .signal-rings). Rest position only: the nav is sticky,
+                the waves stay with the hero. */}
+            <div className="relative mx-auto w-full max-w-6xl xl:max-w-7xl">
+              <div className="signal-rings">
+                <span />
+                <span />
+                <span />
+              </div>
             </div>
             <div className="hero-dots" />
             {HERO_SPARKS.map((s, i) => (

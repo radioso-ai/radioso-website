@@ -377,15 +377,30 @@
   }
 }
 
-/* Emanating radio waves — a broadcast signal rippling out behind the hero. */
+/* Emanating radio waves — the sun logo broadcasting. The offsets centre the origin
+   on the nav pill's sun mark at rest (sticky top-4 + pill padding put its centre at
+   y=43px; x = container padding + pill inset + pill padding-left + half the mark,
+   which steps with `sm` and `md` alongside the pill's own padding). Measured against
+   the rendered lockup — its sun spans 21..279 of the 1173×300 viewBox. */
 .signal-rings {
   position: absolute;
-  top: 64px;
-  left: 50%;
+  top: 43px;
+  left: 55px;
   width: 1px;
   height: 1px;
-  transform: translateX(-50%);
   pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .signal-rings {
+    left: 73px;
+  }
+}
+
+@media (min-width: 768px) {
+  .signal-rings {
+    left: 77px;
+  }
 }
 
 .signal-rings span {
@@ -396,9 +411,15 @@
   height: 320px;
   margin: -160px 0 0 -160px;
   border-radius: 9999px;
-  border: 1px solid color-mix(in oklab, var(--signal) 35%, transparent);
+  /* The logo yellow at glow strength — at 85% L it needs 70% to read on cream. */
+  border: 1px solid color-mix(in oklab, var(--secondary) 70%, transparent);
   opacity: 0;
   animation: signal-ring 6s ease-out infinite;
+}
+
+.dark .signal-rings span {
+  /* The same yellow is loud on the dark ground; edge strength is enough. */
+  border-color: color-mix(in oklab, var(--secondary) 35%, transparent);
 }
 
 .signal-rings span:nth-child(2) {
@@ -1040,8 +1061,13 @@
   .flow-conduit::after,
   .signal-glow::before,
   .pixel-spark,
-  .pulse-dot::after {
+  .pulse-dot::after,
+  .thinking-shimmer {
     animation: none !important;
+  }
+  .thinking-shimmer {
+    background: none;
+    color: var(--muted-foreground);
   }
   .pixel-spark {
     opacity: 0.7;
@@ -1142,6 +1168,31 @@
   vertical-align: -0.15em;
   margin-left: 1px;
   animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes thinking-sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Highlight sweeping through muted text — the "Thinking" status while an answer is
+   in flight. The gradient is painted on the wrapper and clipped to descendant text. */
+.thinking-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted-foreground) 42%,
+    var(--foreground) 50%,
+    var(--muted-foreground) 58%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: thinking-sweep 2.4s linear infinite;
 }
 
 .section-divider {

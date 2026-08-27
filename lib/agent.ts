@@ -30,6 +30,8 @@ export type AgentAnswerData = {
   sources: AgentSource[]
   /** Surface where the bot was asked, for the "answered by" attribution chip. */
   surface?: string
+  /** Served from the canned stub because the live API was unreachable. */
+  fallback?: boolean
 }
 
 /**
@@ -51,12 +53,10 @@ const RADIOSO_SOURCES = {
 export const PRERENDERED: Record<string, AgentAnswerData> = {
   whatIsRadioso: {
     body:
-      "Radioso is a platform for self-hosted conversational agents — grounded in your data and following your rules[1]. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. It answers from your own content and cites what it used, so you can check it[2]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[3]. Your data and your model keys stay in your stack[4].",
+      "Radioso is a platform for self-hosted conversational agents — grounded in your data and following your rules[1]. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.why },
-      { n: 2, ...RADIOSO_SOURCES.grounded },
-      { n: 3, ...RADIOSO_SOURCES.architecture },
-      { n: 4, ...RADIOSO_SOURCES.deployment },
+      { n: 2, ...RADIOSO_SOURCES.architecture },
     ],
   },
   whyNotLangchain: {
@@ -257,7 +257,7 @@ export async function fetchAnswer(
 ): Promise<AgentAnswerData> {
   const q = question.trim()
   if (!q) return PRERENDERED.refuse
-  if (!EMBED_TOKEN) return stubAnswer(q)
+  if (!EMBED_TOKEN) return { ...(await stubAnswer(q)), fallback: true }
 
   try {
     const sessionToken = await ensureSessionToken()
@@ -281,7 +281,7 @@ export async function fetchAnswer(
     if (typeof console !== 'undefined') {
       console.warn('[radioso] live answer unavailable, using fallback:', err)
     }
-    return stubAnswer(q)
+    return { ...(await stubAnswer(q)), fallback: true }
   }
 }
 

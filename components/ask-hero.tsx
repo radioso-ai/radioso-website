@@ -46,7 +46,7 @@ function maxWindowPx() {
 }
 
 export function AskHero() {
-  const { transcript, pending, streaming, error, ask, answerRef } = useAsk()
+  const { transcript, pending, streaming, live, error, ask, answerRef } = useAsk()
   const frameRef = useRef<HTMLDivElement | null>(null)
   const lastRef = useRef<HTMLDivElement | null>(null)
   // The seeded answer reads from its question down; once a visitor asks, the window
@@ -119,8 +119,9 @@ export function AskHero() {
         <AgentAnswer
           key={i}
           question={item.question}
-          data={streaming ?? { body: 'Grounding answer in your documents', sources: [] }}
-          streaming
+          data={streaming ?? { body: 'Thinking', sources: [] }}
+          streaming={streaming !== null}
+          placeholder={streaming === null}
         />
       )
     }
@@ -200,9 +201,15 @@ export function AskHero() {
               <div className="flex items-center gap-2 border-b border-border/70 px-4 py-2.5">
                 <Image src="/radioso-icon.svg" alt="" width={16} height={16} className="size-4" />
                 <span className="text-[13px] font-medium text-foreground/90">Ask Radioso</span>
+                {/* The badge only claims "live" while it's true: once an ask is served by
+                    the canned stub (dev, blocked origin, API down) it downgrades to "demo". */}
                 <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <span className="pulse-dot" />
-                  live
+                  {live ? (
+                    <span className="pulse-dot" />
+                  ) : (
+                    <span className="size-2 rounded-full bg-muted-foreground/50" />
+                  )}
+                  {live ? 'live' : 'demo'}
                 </span>
               </div>
 
