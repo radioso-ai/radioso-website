@@ -18,4 +18,4 @@ On one site, people prefer asking the assistant for course dates rather than bro
 
 At a web store we work with, several customers asked about a specific perfumery category. The store didn't sell perfumes. **Guess what, they do now.**
 
-If you already have an assistant talking to your customers, **go and read what people asked it this week.** If you don't, [you're in the right place]. Hello.
+If you already have an assistant talking to your customers, **go and read what people asked it this week.** If you don't, [you're in the right place](https://app.radioso.ai). Hello.
