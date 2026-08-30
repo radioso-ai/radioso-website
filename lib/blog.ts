@@ -11,6 +11,7 @@ export type PostMeta = {
   author?: string
   image?: string
   imageAlt?: string
+  socialImage?: string
   draft: boolean
 }
 
@@ -76,6 +77,7 @@ function parsePost(fileName: string, source: string): Post {
   const rawFrontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source)?.[1] ?? ''
   const image = optionalString(data.image, 'image', fileName)
   const imageAlt = optionalString(data.imageAlt, 'imageAlt', fileName)
+  const socialImage = optionalString(data.socialImage, 'socialImage', fileName)
 
   if (image && !imageAlt) {
     throw new Error(`content/blog/${fileName}: frontmatter field "imageAlt" is required when "image" is set.`)
@@ -83,6 +85,10 @@ function parsePost(fileName: string, source: string): Post {
 
   if (image && !image.startsWith('/')) {
     throw new Error(`content/blog/${fileName}: frontmatter field "image" must be a root-relative public path.`)
+  }
+
+  if (socialImage && !socialImage.startsWith('/')) {
+    throw new Error(`content/blog/${fileName}: frontmatter field "socialImage" must be a root-relative public path.`)
   }
 
   return {
@@ -93,6 +99,7 @@ function parsePost(fileName: string, source: string): Post {
     author: optionalString(data.author, 'author', fileName),
     image,
     imageAlt,
+    socialImage,
     draft: optionalBoolean(data.draft, 'draft', fileName),
     content: file.content,
   }

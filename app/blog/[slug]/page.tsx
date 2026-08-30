@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = await getPost(slug)
-  const socialImage = post.image ?? '/og.png'
+  const socialImage = post.socialImage ?? post.image ?? '/og.png'
 
   return {
     title: post.title,
@@ -65,7 +65,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {post.author ? ` · ${post.author}` : ''}
         </p>
         {post.image && post.imageAlt ? (
-          <div className="relative mt-10 aspect-[1200/630] overflow-hidden rounded-xl border border-border/70 bg-muted">
+          <div className="relative mx-auto mt-10 aspect-square w-full max-w-3xl overflow-hidden rounded-xl border border-border/70 bg-muted">
             <Image
               src={post.image}
               alt={post.imageAlt}
