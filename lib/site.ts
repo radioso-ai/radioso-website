@@ -1,6 +1,6 @@
 export const site = {
   name: 'Radioso',
-  tagline: 'Your voice in the conversation.',
+  tagline: 'Shape the conversation.',
   // Kept separate from the tagline. The tagline is the brand line under the logo;
   // a <title> only renders ~60 characters in results, so it front-loads the terms
   // people actually search rather than the evocative line.
