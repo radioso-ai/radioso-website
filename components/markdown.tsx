@@ -55,7 +55,7 @@ export function Markdown({ children, transformHref }: MarkdownProps) {
         li: ({ children }) => <li>{children}</li>,
         strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
         blockquote: ({ children }) => (
-          <blockquote className="mt-6 border-l-2 border-primary pl-4 text-sm leading-7 text-muted-foreground">
+          <blockquote className="display-serif mt-8 border-y border-border/70 py-6 font-serif [&_p]:mt-0 [&_p]:text-xl [&_p]:font-semibold [&_p]:leading-8 [&_p]:tracking-tight [&_p]:text-foreground md:[&_p]:text-2xl">
             {children}
           </blockquote>
         ),
