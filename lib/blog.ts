@@ -9,6 +9,9 @@ export type PostMeta = {
   description: string
   date: string
   author?: string
+  image?: string
+  imageAlt?: string
+  socialImage?: string
   draft: boolean
 }
 
@@ -72,6 +75,21 @@ function parsePost(fileName: string, source: string): Post {
   const file = matter(source)
   const data: Record<string, unknown> = file.data
   const rawFrontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source)?.[1] ?? ''
+  const image = optionalString(data.image, 'image', fileName)
+  const imageAlt = optionalString(data.imageAlt, 'imageAlt', fileName)
+  const socialImage = optionalString(data.socialImage, 'socialImage', fileName)
+
+  if (image && !imageAlt) {
+    throw new Error(`content/blog/${fileName}: frontmatter field "imageAlt" is required when "image" is set.`)
+  }
+
+  if (image && !image.startsWith('/')) {
+    throw new Error(`content/blog/${fileName}: frontmatter field "image" must be a root-relative public path.`)
+  }
+
+  if (socialImage && !socialImage.startsWith('/')) {
+    throw new Error(`content/blog/${fileName}: frontmatter field "socialImage" must be a root-relative public path.`)
+  }
 
   return {
     slug: fileName.replace(/\.md$/, ''),
@@ -79,6 +97,9 @@ function parsePost(fileName: string, source: string): Post {
     description: requireString(data.description, 'description', fileName),
     date: requireDate(data.date, rawFrontmatter, fileName),
     author: optionalString(data.author, 'author', fileName),
+    image,
+    imageAlt,
+    socialImage,
     draft: optionalBoolean(data.draft, 'draft', fileName),
     content: file.content,
   }

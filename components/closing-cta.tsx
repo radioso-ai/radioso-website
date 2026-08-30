@@ -18,16 +18,16 @@ export function ClosingCta() {
           style={{ animationDelay: '1.2s' }}
         />
         <h2 className="display-serif mx-auto max-w-2xl font-serif text-2xl font-bold tracking-tight sm:text-3xl">
-          Every organization deserves a voice.
+          Every organization should shape its own conversations.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
           For thirty years, using the internet meant clicking. Increasingly it will mean talking
           &mdash; to agents that book the flight, find the recipe, fill the order. Every
-          organization will need a way to speak for itself in that conversation.
+          organization will need a way to represent itself in that conversation.
         </p>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
           Radioso runs on your infrastructure, with your model keys, and your data stays in your
-          Postgres. Your voice stays yours.
+          Postgres. Your data stays yours.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
