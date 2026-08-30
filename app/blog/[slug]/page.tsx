@@ -65,13 +65,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {post.author ? ` · ${post.author}` : ''}
         </p>
         {post.image && post.imageAlt ? (
-          <div className="relative mx-auto mt-10 aspect-square w-full max-w-3xl overflow-hidden rounded-xl border border-border/70 bg-muted">
+          <div className="relative mx-auto mt-10 aspect-square w-full max-w-[18rem] overflow-hidden rounded-xl border border-border/70 bg-muted sm:max-w-md">
             <Image
               src={post.image}
               alt={post.imageAlt}
               fill
               priority
-              sizes="(min-width: 896px) 848px, calc(100vw - 48px)"
+              sizes="(min-width: 640px) 448px, 288px"
               className="object-cover"
             />
           </div>

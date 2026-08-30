@@ -27,7 +27,7 @@ export default async function BlogIndexPage() {
           <ul className="mt-12 space-y-12">
             {posts.map((post) => (
               <li key={post.slug} className="border-t border-border/70 pt-8">
-                <article className={post.image ? 'grid gap-6 md:grid-cols-[minmax(0,1fr)_12rem] md:items-start' : undefined}>
+                <article className={post.image ? 'grid gap-6 md:grid-cols-[minmax(0,1fr)_16rem] md:items-start' : undefined}>
                   <div>
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
                       <time dateTime={post.date}>{formatPostDate(post.date)}</time>
@@ -44,13 +44,14 @@ export default async function BlogIndexPage() {
                     <Link
                       href={`/blog/${post.slug}`}
                       aria-label={`Read ${post.title}`}
-                      className="relative order-first block aspect-square w-full max-w-56 overflow-hidden rounded-lg border border-border/70 bg-muted md:order-last md:max-w-none"
+                      className="relative order-first block aspect-square w-full overflow-hidden rounded-lg border border-border/70 bg-muted md:order-last"
                     >
                       <Image
                         src={post.image}
                         alt={post.imageAlt}
                         fill
-                        sizes="(min-width: 768px) 192px, 224px"
+                        loading="eager"
+                        sizes="(min-width: 768px) 256px, calc(100vw - 48px)"
                         className="object-cover transition-transform duration-300 hover:scale-[1.02]"
                       />
                     </Link>
