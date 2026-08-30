@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Markdown } from '@/components/markdown'
@@ -19,13 +20,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = await getPost(slug)
+  const socialImage = post.image ?? '/og.png'
 
   return {
     title: post.title,
     description: post.description,
     alternates: { canonical: `${site.url}/blog/${post.slug}` },
     // Next replaces rather than merges openGraph/twitter from the root layout, so the
-    // shared card image and siteName have to be restated here or posts share with no image.
+    // image and siteName have to be restated here or posts share with no image.
     openGraph: {
       type: 'article',
       title: post.title,
@@ -34,13 +36,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       siteName: site.name,
       publishedTime: post.date,
       authors: post.author ? [post.author] : undefined,
-      images: [{ url: '/og.png', width: 1200, height: 630, alt: post.title }],
+      images: [{ url: socialImage, alt: post.imageAlt ?? post.title }],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.description,
-      images: ['/og.png'],
+      images: [socialImage],
     },
   }
 }
@@ -62,6 +64,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <time dateTime={post.date}>{formatPostDate(post.date)}</time>
           {post.author ? ` · ${post.author}` : ''}
         </p>
+        {post.image && post.imageAlt ? (
+          <div className="relative mt-10 aspect-[1200/630] overflow-hidden rounded-xl border border-border/70 bg-muted">
+            <Image
+              src={post.image}
+              alt={post.imageAlt}
+              fill
+              priority
+              sizes="(min-width: 896px) 848px, calc(100vw - 48px)"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
         <Markdown>{post.content}</Markdown>
       </article>
     </PageShell>
