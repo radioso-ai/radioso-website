@@ -160,9 +160,6 @@ function RuntimeMap() {
           </div>
         ))}
       </div>
-      <p className="mt-4 text-center text-2xs text-muted-foreground">
-        Context in once. The answer returns where it was asked.
-      </p>
     </div>
   )
 }
