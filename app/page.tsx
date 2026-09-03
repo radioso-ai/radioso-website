@@ -2,83 +2,31 @@ import { SiteFooter } from '@/components/site-footer'
 import { PillNav } from '@/components/pill-nav'
 import { AskHero } from '@/components/ask-hero'
 import { AudienceSection } from '@/components/audience-section'
-import { TrustStrip } from '@/components/trust-strip'
-import { PlatformDiagram } from '@/components/platform-diagram'
-import { Quickstart } from '@/components/quickstart'
+import { PlatformOverview } from '@/components/platform-diagram'
 import { LicensingSection } from '@/components/licensing-section'
 import { FaqSection } from '@/components/faq-section'
 import { ClosingCta } from '@/components/closing-cta'
-import { HumanLoop } from '@/components/human-loop'
+import { AgentDemos } from '@/components/agent-demos'
 import { Reveal } from '@/components/reveal'
-import { PixelSprite, SPARK_GRID } from '@/components/pixel-sprite'
 import { AskProvider } from '@/lib/ask-context'
-
-// Twinkling logo-sparks scattered behind the hero — playful, on-brand confetti.
-type HeroSpark = {
-  top: string
-  left?: string
-  right?: string
-  size: string
-  color: string
-  delay: string
-  className?: string
-}
-// Placed in the gaps the two-column hero leaves: above the columns and clear of the
-// nav pill, under the headline paragraph, and one in the gutter between the columns.
-// Anything further right lands behind the conversation card, where it reads as grime.
-const HERO_SPARKS: HeroSpark[] = [
-  { top: '16%', left: '8%', size: 'size-5', color: 'var(--secondary)', delay: '0s' },
-  { top: '7%', right: '18%', size: 'size-6', color: 'var(--primary)', delay: '0.8s' },
-  { top: '87%', left: '11%', size: 'size-4', color: 'var(--primary)', delay: '1.6s' },
-  { top: '76%', left: '33%', size: 'size-5', color: 'var(--secondary)', delay: '2.1s' },
-  // The gutter only exists in the two-column layout; stacked, this lands on the paragraph.
-  { top: '40%', left: '45%', size: 'size-3', color: 'var(--secondary)', delay: '1.2s', className: 'hidden lg:block' },
-]
 
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <AskProvider>
         <main className="relative flex-1">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[760px] overflow-hidden"
-          >
-            <div className="hero-aura" />
-            {/* Mirrors the pill-nav container so the ring origin lands on the sun mark
-                (offsets live in .signal-rings). Rest position only: the nav is sticky,
-                the waves stay with the hero. */}
-            <div className="relative mx-auto w-full max-w-6xl xl:max-w-7xl">
-              <div className="signal-rings">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-            <div className="hero-dots" />
-            {HERO_SPARKS.map((s, i) => (
-              <PixelSprite
-                key={i}
-                grid={SPARK_GRID}
-                palette={{ X: s.color }}
-                className={`pixel-spark absolute ${s.size} ${s.className ?? ''}`}
-                style={{ top: s.top, left: s.left, right: s.right, animationDelay: s.delay }}
-              />
-            ))}
-          </div>
           <PillNav />
           <AskHero />
-          <TrustStrip />
-          {/* Manages its own scroll-triggered scene — deliberately not wrapped in Reveal. */}
-          <HumanLoop />
-          <Reveal>
-            <PlatformDiagram />
-          </Reveal>
+          {/* Manages its own tabs and scroll-triggered scenes — deliberately not
+              wrapped in a page-level Reveal. */}
+          <AgentDemos />
           <Reveal>
             <AudienceSection />
           </Reveal>
+          {/* Keep the homepage proof compact; the full architecture, interfaces,
+              providers, and local quickstart live on /developers. */}
           <Reveal>
-            <Quickstart />
+            <PlatformOverview />
           </Reveal>
           <Reveal>
             <LicensingSection />

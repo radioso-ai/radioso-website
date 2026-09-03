@@ -3,15 +3,14 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
-import { SparkMark } from '@/components/pixel-sprite'
+import { SignalMark } from '@/components/pixel-sprite'
 import { useAsk } from '@/lib/ask-context'
 import { cn } from '@/lib/utils'
 
 type Item = { question: string; answer: string }
 
-// Every question stays within a topic the live agent answers well and the canned
-// fallback in lib/agent.ts routes cleanly (self-host, pricing/licensing, LangChain,
-// MCP), so the offline path degrades gracefully too.
+// Keep the homepage questions buyer-facing. Provider, integration, architecture,
+// and deployment detail belongs on /developers and in the docs.
 const ITEMS: Item[] = [
   {
     question: 'Is Radioso really open source, or is there a paid tier?',
@@ -21,27 +20,12 @@ const ITEMS: Item[] = [
   {
     question: 'Can I self-host it?',
     answer:
-      'Yes — the whole stack runs on your own infrastructure with Docker Compose. Documents, conversations, and vectors all stay in your own Postgres.',
-  },
-  {
-    question: 'Which LLM providers can I use, and what does inference cost?',
-    answer:
-      'Bring your own keys — OpenAI, Anthropic, and more. You pay your provider directly, at their price.',
+      'Yes — run the whole platform on your own infrastructure, or use Radioso Cloud with the same product and your own model keys.',
   },
   {
     question: 'Can it take actions, or is it just a chatbot?',
     answer:
       'It calls tools, fires webhooks, and runs multi-step routines — then hands off to a person with full context when it should.',
-  },
-  {
-    question: 'How does it compare to LangChain?',
-    answer:
-      'Frameworks give you primitives to assemble yourself. Radioso ships the assembled product — ingestion, retrieval, agent runtime, chat UI, API, and MCP server, pre-wired.',
-  },
-  {
-    question: 'Can I plug it into Cursor or Claude via MCP?',
-    answer:
-      'Yes — a standalone MCP server ships with it. Your knowledge base becomes a tool any MCP client can call, citations attached.',
   },
 ]
 
@@ -54,7 +38,7 @@ export function FaqSection() {
     <section id="faq" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
         <div className="mb-4 flex justify-center">
-          <SparkMark className="size-6" color="var(--primary)" />
+          <SignalMark color="var(--primary)" />
         </div>
         <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
           Questions? Ask the product.
@@ -114,7 +98,7 @@ export function FaqSection() {
                   disabled={pending}
                   className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-primary/35 bg-primary/5 px-3.5 py-1.5 text-xs font-medium text-primary transition-all ease-[var(--ease-out)] hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary/10 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                 >
-                  <SparkMark className="size-3.5" color="currentColor" />
+                  <SignalMark className="size-3.5" color="currentColor" />
                   Ask the agent
                 </button>
               </div>

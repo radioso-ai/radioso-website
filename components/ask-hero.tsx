@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef } from 'react'
-import { Github } from 'lucide-react'
 
 import { AgentAnswer } from '@/components/agent-answer'
 import { AskInput } from '@/components/ask-input'
@@ -147,12 +146,24 @@ export function AskHero() {
   // a sticky nav that is itself only 16px off the viewport. Below `lg` the card sits
   // under the copy and is nowhere near the nav.
   return (
-    <section className="pb-16 pt-10 sm:pt-14 lg:pt-20">
+    <section className="hero-band relative isolate pb-16 pt-10 sm:pt-14 lg:pt-20">
+      {/* Everything in here emanates from the sun mark in the nav: the source
+          glow and the three broadcast waves leaving it. */}
+      <div aria-hidden className="hero-backdrop">
+        <div className="relative mx-auto w-full max-w-6xl xl:max-w-7xl">
+          <div className="signal-origin signal-source" />
+          <div className="signal-origin signal-rings">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </div>
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:max-w-6xl xl:max-w-7xl">
         <div className="grid items-center gap-8 text-center sm:gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-center lg:gap-14 lg:text-left">
           <div>
             <h1
-              className="rise-in font-serif text-balance text-3xl font-semibold leading-[1.08] tracking-tight sm:text-4xl xl:text-[2.375rem]"
+              className="rise-in font-serif text-balance text-[color:var(--hero-ink)] text-3xl font-semibold leading-[1.08] tracking-tight sm:text-4xl xl:text-[2.375rem]"
               style={{ '--rise-delay': '60ms' } as React.CSSProperties}
             >
               {/* At `lg`+ the headline shares the row with the demo card, and `text-balance`
@@ -163,33 +174,61 @@ export function AskHero() {
                   desktop hero. Below `lg` the headline is full-width and breaks fine on its
                   own — `self-hosted` just needs to stay whole so it can't split at the hyphen. */}
               <span className="lg:block">All your conversational agents.</span>{' '}
-              <span className="lg:block">
-                One <span className="whitespace-nowrap">self-hosted</span> platform.
-              </span>
+              <span className="lg:block">One platform you own.</span>
             </h1>
 
             <p
-              className="rise-in mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg lg:mx-0"
+              className="rise-in mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-[color:var(--hero-ink-muted)] sm:mt-6 sm:text-lg lg:mx-0"
               style={{ '--rise-delay': '160ms' } as React.CSSProperties}
             >
-              Steered by your rules, grounded in your knowledge, and reaching every surface &mdash;
-              web, API, SDK, and MCP.
+              {/* Each named agent deep-links to its demo tab below — the tab section
+                  listens for these #demo-* hashes. */}
+              <a href="#demo-support" className="hero-link">
+                A support agent resolving tickets
+              </a>
+              , <a href="#demo-docs" className="hero-link">a docs assistant citing sources</a>,{' '}
+              <a href="#demo-leads" className="hero-link">a lead qualifier on your marketing site</a>{' '}
+              &mdash; and the one you haven&apos;t thought of yet. All of them on one platform,
+              drawing on the same knowledge and following the same rules.
             </p>
 
             <div
               className="rise-in mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center lg:justify-start"
               style={{ '--rise-delay': '260ms' } as React.CSSProperties}
             >
-              <Button asChild size="lg">
-                <Link href="/#quickstart">Get started</Link>
+              {/* Cloud first, self-host second: the cloud is the commercial path
+                  and signup is genuinely self-serve; self-hostability is the proof
+                  of ownership, not the headline act. The primary runs a size up
+                  from the ghost so the hierarchy is unmistakable. GitHub keeps its
+                  spots in the nav and footer. `bg-primary` is the site's blue,
+                  invisible on the band, so the primary action inverts to the ink
+                  colour and the secondary is a hairline ghost.
+
+                  "Run it locally", not "self-host, in 5 minutes": five minutes is
+                  the docker-compose bootstrap on your own machine. Real
+                  self-hosting is a deployment project, and a label that
+                  overclaims it reads as marketing-true at best. */}
+              <Button
+                asChild
+                className="h-12 px-7 text-base font-semibold bg-[color:var(--hero-ink)] text-[color:var(--hero-bg)] hover:bg-[color:var(--hero-ink)]/90"
+              >
+                <Link href={site.appUrl}>Start in the cloud</Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href={site.githubUrl} target="_blank" rel="noreferrer">
-                  <Github className="size-4" />
-                  View on GitHub
-                </Link>
+              <Button
+                asChild
+                variant="outline"
+                className="h-12 px-6 text-sm border-[color:var(--hero-ink)]/30 bg-transparent text-[color:var(--hero-ink)] shadow-none hover:bg-[color:var(--hero-ink)]/10 hover:text-[color:var(--hero-ink)] dark:border-[color:var(--hero-ink)]/30 dark:bg-transparent dark:hover:bg-[color:var(--hero-ink)]/10 dark:hover:text-[color:var(--hero-ink)]"
+              >
+                <Link href="/developers#quickstart">Run it locally in 5 minutes</Link>
               </Button>
             </div>
+
+            <p
+              className="rise-in mt-3 text-sm text-[color:var(--hero-ink-muted)]"
+              style={{ '--rise-delay': '300ms' } as React.CSSProperties}
+            >
+              No credit card &mdash; sign up and get straight to work.
+            </p>
           </div>
 
           <div className="min-w-0">

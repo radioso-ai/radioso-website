@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Fraunces } from 'next/font/google'
+import { IBM_Plex_Sans, JetBrains_Mono, Fraunces } from 'next/font/google'
 
 import { CookieBanner } from '@/components/cookie-banner'
 import { PostHogProvider } from '@/components/posthog-provider'
@@ -7,9 +7,14 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { site } from '@/lib/site'
 import './globals.css'
 
-const inter = Inter({
+// Not Inter. Inter next to a display serif is the default pairing of every
+// AI-assisted SaaS mockup, and the site was getting read as one. Plex Sans is
+// humanist where Inter is neutral, which sits better beside Fraunces, and its
+// open-source lineage suits a self-hosted product.
+const plexSans = IBM_Plex_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-plex-sans',
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -41,7 +46,7 @@ export const metadata: Metadata = {
     description: site.description,
     url: site.url,
     siteName: site.name,
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — all your conversational agents on one self-hosted platform' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — all your conversational agents on one platform you own' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -65,7 +70,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="bg-background">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} font-sans antialiased`}>
+      <body className={`${plexSans.variable} ${jetbrainsMono.variable} ${fraunces.variable} font-sans antialiased`}>
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}

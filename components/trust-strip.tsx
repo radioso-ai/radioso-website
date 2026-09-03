@@ -1,4 +1,4 @@
-import { Server, KeyRound, Database, Plug } from 'lucide-react'
+import { Github, KeyRound, Database, Server } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
 import { Reveal } from '@/components/reveal'
@@ -9,16 +9,19 @@ type Point = {
   note: string
 }
 
+// Ownership facts that hold in both deployment modes — the old set (self-hosted,
+// Postgres, open standards) only made sense to a visitor who had already decided
+// to run it themselves.
 const points: Point[] = [
-  { icon: Server, title: 'Self-hosted', note: 'Runs on your own infrastructure' },
+  { icon: Github, title: 'Every feature open source', note: 'Nothing gated behind a paid tier' },
   { icon: KeyRound, title: 'Bring your own LLM', note: 'Your keys, no inference markup' },
-  { icon: Database, title: 'Your data stays put', note: 'Everything in your Postgres' },
-  { icon: Plug, title: 'Open standards', note: 'MCP, REST, and SDK included' },
+  { icon: Database, title: 'Your data stays yours', note: 'Postgres you can export — or host' },
+  { icon: Server, title: 'Cloud or self-hosted', note: 'Same platform, your call' },
 ]
 
 export function TrustStrip() {
   return (
-    <section aria-label="Why teams self-host Radioso" className="pixel-grid border-y border-border/60 bg-card/50">
+    <section aria-label="Why teams choose Radioso" className="border-y border-border/60 bg-card/50">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-x-10 gap-y-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
         {points.map(({ icon: Icon, title, note }, i) => (
           <Reveal key={title} delay={i * 90} className="group flex items-start gap-3">
@@ -26,8 +29,8 @@ export function TrustStrip() {
               <Icon className="size-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold tracking-tight text-foreground">{title}</p>
-              <p className="text-sm leading-snug text-muted-foreground">{note}</p>
+              <p className="text-base font-semibold tracking-tight text-foreground">{title}</p>
+              <p className="text-[15px] leading-snug text-muted-foreground">{note}</p>
             </div>
           </Reveal>
         ))}

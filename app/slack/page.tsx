@@ -83,7 +83,7 @@ export default function SlackLandingPage() {
 
       <main className="flex-1">
         <section className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
-          <p className="text-sm font-medium uppercase tracking-wide text-primary">Radioso for Slack</p>
+          <p className="text-sm font-medium text-primary">Radioso for Slack</p>
           <h1 className="display-serif mt-3 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
             Grounded answers and agents that act — inside Slack.
           </h1>

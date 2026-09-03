@@ -53,7 +53,7 @@ const RADIOSO_SOURCES = {
 export const PRERENDERED: Record<string, AgentAnswerData> = {
   whatIsRadioso: {
     body:
-      "Radioso is a platform for self-hosted conversational agents — grounded in your data and following your rules[1]. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
+      "Radioso is an open-source platform for conversational agents — grounded in your data and following your rules[1]. Run it in Radioso Cloud, or self-host it on your own infrastructure. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.why },
       { n: 2, ...RADIOSO_SOURCES.architecture },
@@ -109,7 +109,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   licensing: {
     body:
-      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. You self-host on your own infrastructure and bring your own model keys, so nothing routes through us and there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
+      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. You bring your own model keys — in Radioso Cloud or self-hosted — so there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.source },
       { n: 2, ...RADIOSO_SOURCES.deployment },
