@@ -133,7 +133,7 @@ function RuntimeMap() {
     <div className="panel rounded-2xl p-5 sm:p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="font-mono text-2xs uppercase tracking-widest text-muted-foreground">
+          <p className="font-mono text-xs text-muted-foreground">
             one deployment
           </p>
           <p className="mt-1 text-sm font-semibold text-foreground">Same agent, every surface</p>

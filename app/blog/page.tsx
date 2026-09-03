@@ -29,7 +29,7 @@ export default async function BlogIndexPage() {
               <li key={post.slug} className="border-t border-border/70 pt-8">
                 <article className={post.image ? 'grid gap-6 md:grid-cols-[minmax(0,1fr)_16rem] md:items-start' : undefined}>
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       <time dateTime={post.date}>{formatPostDate(post.date)}</time>
                       {post.author ? ` · ${post.author}` : ''}
                     </p>

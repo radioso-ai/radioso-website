@@ -160,7 +160,7 @@ export function AudienceSection() {
               <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-[var(--dur-fast)] group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon className="size-4" />
               </div>
-              <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-semibold text-muted-foreground">
                 {eyebrow}
               </p>
             </div>

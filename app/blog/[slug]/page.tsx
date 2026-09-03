@@ -60,7 +60,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <h1 className="display-serif mt-8 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
           {post.title}
         </h1>
-        <p className="mt-4 text-xs uppercase tracking-wide text-muted-foreground">
+        <p className="mt-4 text-xs text-muted-foreground">
           <time dateTime={post.date}>{formatPostDate(post.date)}</time>
           {post.author ? ` · ${post.author}` : ''}
         </p>
