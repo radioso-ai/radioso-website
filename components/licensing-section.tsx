@@ -3,7 +3,7 @@ import { Github, Building2, ArrowRight } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
 import { Reveal } from '@/components/reveal'
-import { SparkMark } from '@/components/pixel-sprite'
+import { SignalMark } from '@/components/pixel-sprite'
 import { site } from '@/lib/site'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
@@ -40,7 +40,7 @@ export function LicensingSection() {
     <section id="licensing" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
         <div className="mb-4 flex justify-center">
-          <SparkMark className="size-6" color="var(--primary)" />
+          <SignalMark color="var(--primary)" />
         </div>
         <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
           Every feature, open source.

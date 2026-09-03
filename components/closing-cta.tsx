@@ -1,23 +1,13 @@
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
-import { SparkMark } from '@/components/pixel-sprite'
+import { site } from '@/lib/site'
 
 export function ClosingCta() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 pb-24 sm:pb-28">
-      <div className="panel relative overflow-hidden rounded-2xl px-6 py-12 text-center sm:px-12 sm:py-14">
-        <SparkMark
-          className="absolute left-[9%] top-8 size-5"
-          color="var(--primary)"
-          style={{ animationDelay: '0.3s' }}
-        />
-        <SparkMark
-          className="absolute right-[11%] bottom-8 hidden size-4 sm:block"
-          color="var(--secondary)"
-          style={{ animationDelay: '1.2s' }}
-        />
-        <h2 className="display-serif mx-auto max-w-2xl font-serif text-2xl font-bold tracking-tight sm:text-3xl">
+    <section className="brand-bookend brand-bookend-signal relative w-full overflow-hidden border-t border-border/60">
+      <div className="mx-auto w-full max-w-6xl px-6 py-20 text-center sm:py-24">
+        <h2 className="display-serif mx-auto max-w-2xl font-serif text-3xl font-bold tracking-tight sm:text-4xl">
           Every organization should shape its own conversations.
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
@@ -26,17 +16,26 @@ export function ClosingCta() {
           organization will need a way to represent itself in that conversation.
         </p>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-          Radioso runs on your infrastructure, with your model keys, and your data stays in your
-          Postgres. Your data stays yours.
+          Radioso is open source end to end. Run it in our cloud or on your own infrastructure
+          &mdash; your model keys, your Postgres, your data either way.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Button asChild size="lg">
-            <Link href="/#quickstart">Get started</Link>
+          <Button
+            asChild
+            className="h-12 bg-foreground px-7 text-base font-semibold text-background hover:bg-foreground/90"
+          >
+            <Link href={site.appUrl}>Start in the cloud</Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="border-border bg-transparent text-foreground shadow-none hover:bg-foreground/10 hover:text-foreground dark:bg-transparent"
+          >
             <Link href="/blog/why-radioso-exists">Why we built this</Link>
           </Button>
         </div>
+        <p className="mt-3 text-sm text-muted-foreground">No credit card required.</p>
       </div>
     </section>
   )

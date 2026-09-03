@@ -6,7 +6,7 @@ import {
   Wrench,
   Compass,
   Route,
-  Sparkles,
+  Cpu,
   Quote,
   Database,
   MessageCircle,
@@ -16,10 +16,12 @@ import {
   Terminal,
   Boxes,
   ArrowDown,
+  ArrowRight,
 } from 'lucide-react'
 import type { ComponentType, CSSProperties, SVGProps } from 'react'
+import Link from 'next/link'
 
-import { SparkMark } from '@/components/pixel-sprite'
+import { SignalMark } from '@/components/pixel-sprite'
 import { TraceOnView } from '@/components/trace-on-view'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
@@ -54,6 +56,12 @@ const SURFACES: { icon: Icon; label: string }[] = [
   { icon: Plug, label: 'REST API' },
   { icon: Boxes, label: 'TypeScript SDK' },
   { icon: Terminal, label: 'MCP server' },
+]
+
+const OVERVIEW_LANES: { icon: Icon; title: string; verb: string; note: string }[] = [
+  { icon: Compass, title: 'Directives', verb: 'steer', note: 'Your rules' },
+  { icon: Wrench, title: 'Skills', verb: 'act', note: 'Your tools' },
+  { icon: Route, title: 'Routines', verb: 'guide', note: 'Multi-step work' },
 ]
 
 /**
@@ -97,25 +105,101 @@ function cue(delay: number, dur?: number, extra?: Record<string, string>): CSSPr
   } as CSSProperties
 }
 
-export function PlatformDiagram() {
+/**
+ * Homepage-sized proof of the platform model. It keeps the visual idea and live
+ * trace, but leaves implementation details, deployment, and integration surfaces
+ * to the developer page.
+ */
+export function PlatformOverview() {
   return (
     <TraceOnView
       as="section"
       id="platform"
+      delay={320}
+      className="machine-band w-full scroll-mt-24 py-20 sm:py-24"
+    >
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <div className="max-w-xl">
+          <SignalMark className="mb-4" color="var(--primary)" />
+          <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+            One loop behind every agent.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+            Radioso combines the rules that steer an agent, the tools it can call, and the
+            routines that carry work through. Every conversation runs through the same loop.
+          </p>
+          <Link
+            href="/developers"
+            className="mt-7 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Explore the developer platform <ArrowRight className="size-4" />
+          </Link>
+        </div>
+
+        <CompactAgentCard />
+      </div>
+    </TraceOnView>
+  )
+}
+
+function CompactAgentCard() {
+  return (
+    <div className="panel relative rounded-2xl p-4 sm:p-6">
+      <div className="flex flex-col items-center gap-1">
+        <Inlet />
+        <CenterPill icon={Workflow} label="Assistant" emphasis delay={T.assistant} />
+        <p className="text-2xs text-muted-foreground">one turn · one governed loop</p>
+      </div>
+
+      <BranchDivider />
+
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        {OVERVIEW_LANES.map(({ icon: Icon, title, verb, note }, index) => (
+          <div
+            key={title}
+            className="interactive relative flex min-w-0 flex-col items-center rounded-xl p-2.5 text-center sm:p-4"
+          >
+            <div className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <Icon className="size-3.5" />
+            </div>
+            <p className="mt-2 text-xs font-semibold text-foreground sm:text-sm">{title}</p>
+            <p className="text-2xs italic text-muted-foreground">{verb}</p>
+            <p className="mt-2 text-2xs text-foreground/75 sm:text-xs">{note}</p>
+            <span aria-hidden className="trace trace-lane" style={cue(T.lanes[index], 1450)} />
+          </div>
+        ))}
+      </div>
+
+      <MergeDivider />
+
+      <div className="signal-glow relative rounded-xl border border-primary/35 bg-card px-4 py-3 text-center text-sm font-medium text-foreground">
+        Grounded answer <span className="text-muted-foreground/60">·</span> action{' '}
+        <span className="text-muted-foreground/60">·</span> human handoff
+        <span aria-hidden className="trace trace-resolve" style={cue(T.answer, 2100)} />
+      </div>
+    </div>
+  )
+}
+
+export function PlatformDiagram() {
+  return (
+    <TraceOnView
+      as="section"
+      id="architecture"
       delay={420}
-      className="machine-band w-full py-24 sm:py-28"
+      className="machine-band w-full scroll-mt-24 py-24 sm:py-28"
     >
       <div className="mx-auto w-full max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <div className="mb-4 flex justify-center">
-            <SparkMark className="size-6" color="var(--primary)" />
+            <SignalMark color="var(--primary)" />
           </div>
           <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
             Inside Radioso.
           </h2>
         </div>
 
-        <div className="mx-auto mt-14 max-w-4xl">
+        <div className="mx-auto mt-10 max-w-4xl">
           <AgentCard />
         </div>
 
@@ -124,10 +208,6 @@ export function PlatformDiagram() {
         <div className="mx-auto max-w-4xl">
           <SurfacesStrip />
         </div>
-
-        <p className="display-serif mx-auto mt-10 max-w-xl text-center font-serif text-lg italic text-muted-foreground">
-          Talks to your users and takes actions you need.
-        </p>
       </div>
     </TraceOnView>
   )
@@ -176,7 +256,7 @@ function AgentCard() {
 
         <MergeDivider />
 
-        <CenterPill icon={Sparkles} label="LLM" delay={T.llm} />
+        <CenterPill icon={Cpu} label="LLM" delay={T.llm} />
 
         <FlowArrow tight />
 
@@ -202,26 +282,21 @@ function AgentCard() {
 
 function SurfacesStrip() {
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {SURFACES.map(({ icon: Icon, label }, i) => (
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      {SURFACES.map(({ icon: Icon, label }, i) => (
+        <span
+          key={label}
+          className="relative inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-sm font-medium text-foreground/85 ring-1 ring-primary/20 transition-all duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:-translate-y-0.5 hover:border-primary/35 hover:text-foreground hover:ring-primary/35"
+        >
+          <Icon className="size-3.5 text-foreground/70" />
+          {label}
           <span
-            key={label}
-            className="relative inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3 py-1.5 text-sm font-medium text-foreground/85 ring-1 ring-primary/20 transition-all duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:-translate-y-0.5 hover:border-primary/35 hover:text-foreground hover:ring-primary/35"
-          >
-            <Icon className="size-3.5 text-foreground/70" />
-            {label}
-            <span
-              aria-hidden
-              className="trace trace-surface"
-              style={cue(T.surfaces + i * T.surfaceStep, 750)}
-            />
-          </span>
-        ))}
-      </div>
-      <p className="text-2xs text-muted-foreground">
-        Ask from any surface — the answer returns there.
-      </p>
+            aria-hidden
+            className="trace trace-surface"
+            style={cue(T.surfaces + i * T.surfaceStep, 750)}
+          />
+        </span>
+      ))}
     </div>
   )
 }

@@ -16,8 +16,7 @@ import type { ComponentType, CSSProperties, SVGProps } from 'react'
 
 import { Reveal } from '@/components/reveal'
 import { TraceOnView } from '@/components/trace-on-view'
-import { SparkMark } from '@/components/pixel-sprite'
-import { site } from '@/lib/site'
+import { SignalMark } from '@/components/pixel-sprite'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -80,13 +79,13 @@ const AUDIENCES: Audience[] = [
     icon: Code2,
     eyebrow: 'Builders',
     title: 'Put an agent in your own product',
-    body: 'Give your customers a grounded agent inside your app or site — drop in the website embed and public chat, or wire it in through the REST API, TypeScript SDK, or MCP server. No agent framework to adopt, no low-code canvas to drag boxes on. Bring your own LLM keys and self-host the whole thing.',
+    body: 'Give your customers a grounded agent inside your app or site. Build once, keep the same knowledge and rules everywhere, and choose the surface that fits your product.',
     points: [
-      'Website embed and public chat',
-      'REST API, TypeScript SDK, MCP server',
-      'Bring your own keys, self-hosted',
+      'One agent across every surface',
+      'Your knowledge and rules stay in sync',
+      'Cloud or self-hosted',
     ],
-    link: { href: `${site.docsUrl}/api-reference`, label: 'Read the API docs' },
+    link: { href: '/developers', label: 'Explore the developer platform' },
   },
   {
     icon: Headset,
@@ -124,7 +123,7 @@ export function AudienceSection() {
     <section id="who" className="mx-auto w-full max-w-6xl px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
         <div className="mb-4 flex justify-center">
-          <SparkMark className="size-6" color="var(--human)" />
+          <SignalMark color="var(--human)" />
         </div>
         <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
           One platform, not five vendors.

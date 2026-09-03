@@ -7,7 +7,9 @@ import { cn } from '@/lib/utils'
 // The exact snippet shown in the terminal — kept character-for-character identical to
 // the original static text. Everything the animation types or prints is derived from
 // this single source so the animated and static versions can never drift apart.
-const SNIPPET = `# requires Node 24 + Docker Desktop
+const SNIPPET = `curl -fsSL https://github.com/radioso-ai/radioso/archive/refs/heads/main.tar.gz | tar -xz
+cd radioso-main
+# requires Node 24 + Docker Desktop
 ./run-dev.sh
 
 # then open
@@ -28,7 +30,7 @@ type Frame = { text: string; delay: number }
 //   3. drop the cursor onto a final empty prompt line
 function buildFrames(): Frame[] {
   const lines = SNIPPET.split('\n')
-  const typed = lines.slice(0, 2).join('\n') // comment line + the run command
+  const typed = lines.slice(0, 4).join('\n') // download + enter project + requirements + run
   const frames: Frame[] = []
 
   for (let i = 1; i <= typed.length; i++) {
@@ -37,7 +39,7 @@ function buildFrames(): Frame[] {
 
   // End indices into `lines`: first stop reveals the blank separator + `# then open`
   // together, then each localhost line prints on its own.
-  for (const [idx, end] of [4, 5, 6].entries()) {
+  for (const [idx, end] of [6, 7, 8].entries()) {
     frames.push({ text: lines.slice(0, end).join('\n'), delay: idx === 0 ? 420 : 190 })
   }
 

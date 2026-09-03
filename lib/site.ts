@@ -6,7 +6,7 @@ export const site = {
   // people actually search rather than the evocative line.
   metaTitle: 'Radioso — open source platform for conversational AI agents',
   description:
-    'Radioso is a self-hosted platform for building all your conversational agents in one place — support, sales, docs, internal help. Each one grounded in your documents with citations, steered by your rules, running multi-step routines, taking real action, and handing off to a person when it should — across web, API, SDK, and MCP.',
+    'Radioso is an open-source platform for building all your conversational agents in one place — support, sales, docs, internal help. Each one grounded in your documents with citations, steered by your rules, running multi-step routines, taking real action, and handing off to a person when it should. Run it in Radioso Cloud or self-host it — across web, API, SDK, and MCP.',
   url: process.env.SITE_URL ?? 'https://radioso.ai',
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.ai',
   appUrl: process.env.APP_URL ?? 'https://app.radioso.ai',

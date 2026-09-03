@@ -2,26 +2,30 @@
 
 import Image from 'next/image'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { Building2, Copy, FileText, BadgeDollarSign, Users, Coins, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import type { ComponentType, CSSProperties, ReactNode, SVGProps } from 'react'
 
-import { PixelSprite, SparkMark, SPARK_GRID, AVATAR_CUSTOMER } from '@/components/pixel-sprite'
+import { PixelSprite, SignalMark, AVATAR_CUSTOMER } from '@/components/pixel-sprite'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
 
 /** A number that counts up when the scene plays. Renders its final value on the server. */
-type Amount = { amount: number }
-type Piece = string | Amount
+export type Amount = { amount: number }
+export type Piece = string | Amount
 
-type Action = { icon: Icon; label: string; amount?: number }
+export type Action = { icon: Icon; label: string; amount?: number }
 
-type Turn =
+export type Turn =
   | { who: 'customer'; text: string; pause?: number }
   | {
       who: 'radioso'
       text: string
       /** How long the typing beat runs before this reply lands. */
       think?: number
+      /** A copy-paste snippet rendered inside the bubble, after the text. */
+      code?: string
+      /** Citation chips rendered inside the bubble — numbered in array order. */
+      sources?: string[]
       actions?: Action[]
       /** Gap between action rows — the closing set gets more room. */
       actionGap?: number
@@ -29,62 +33,7 @@ type Turn =
       pause?: number
     }
 
-/**
- * A genuinely messy ticket Radioso resolves on its own: it diagnoses a problem
- * the customer didn't even name (overpaying for seats), checks the billing policy,
- * respects a "confirm before billing changes" guardrail, then executes a set of
- * coordinated actions across systems. That's an autonomous resolution agent — not
- * a doc-search box, and not a one-tap refund macro.
- */
-const CHAT: Turn[] = [
-  {
-    who: 'customer',
-    text: "We got charged twice this month and the invoice doesn't match our seat count. Can you sort it out?",
-  },
-  {
-    who: 'radioso',
-    text: 'On it — let me dig into the account.',
-    think: 620,
-    // The lookups are quick, overlapping housekeeping — they should feel brisk.
-    actionGap: 280,
-    actions: [
-      { icon: Building2, label: 'Pulled account · Acme Inc — Pro, 24 seats' },
-      { icon: Copy, label: 'Flagged duplicate charge · Mar 3, $480' },
-      { icon: FileText, label: 'Checked billing policy · billing.md' },
-    ],
-    pause: 520,
-  },
-  {
-    who: 'radioso',
-    // The reasoning beat: it gets the longest think, because this is the moment it
-    // works out the thing nobody asked it to look for.
-    think: 800,
-    text: "Two things: a failed payment retry double-charged you on Mar 3, and you're paying for 24 seats but only 18 are active. I can refund the duplicate and right-size the plan — that's a billing change, so I'll confirm before I touch it.",
-    pause: 760,
-  },
-  { who: 'customer', text: 'Yes please, go ahead 🙏', pause: 520 },
-  {
-    who: 'radioso',
-    text: 'All done.',
-    think: 620,
-    // The heart of the scene: these three land one at a time, with room to read.
-    // Each row gets its own beat — arrive, roll the figure, stamp the check.
-    actionGap: 720,
-    actions: [
-      { icon: BadgeDollarSign, label: 'Refunded duplicate · ', amount: 480 },
-      { icon: Users, label: 'Right-sized plan · 24 → 18 seats' },
-      { icon: Coins, label: 'Credited unused seats · ', amount: 312 },
-    ],
-    note: [
-      { amount: 792 },
-      " back to you, and next month's invoice drops to $1,440 — I've emailed the updated copy to your finance contact.",
-    ],
-    pause: 820,
-  },
-  { who: 'customer', text: "Incredible — that would've taken us an hour. Thank you!" },
-]
-
-/** Beat lengths, in ms. Tuned so the closing action rows get the most air. */
+/** Beat lengths, in ms. Tuned so closing action rows get the most air. */
 const LEAD_IN = 300 // lets the card's own Reveal settle before the chat starts
 const DEFAULT_THINK = 620
 const DEFAULT_PAUSE = 520
@@ -98,7 +47,7 @@ const MONEY_CHECK_LAG = COUNT_LAG + COUNT_MS - 20
 /** The card grows a touch ahead of each arrival, so nothing lands outside its edge. */
 const GROW_LEAD = 80
 
-type TurnPlan = {
+export type TurnPlan = {
   typingAt: number | null
   typingFor: number
   textAt: number
@@ -108,8 +57,8 @@ type TurnPlan = {
   avatarAt: number
 }
 
-/** Lays the whole conversation out on one timeline, once, at module scope. */
-function planChat(chat: Turn[]): TurnPlan[] {
+/** Lays a whole conversation out on one timeline. Pure — call it at module scope. */
+export function planChat(chat: Turn[]): TurnPlan[] {
   let t = LEAD_IN
 
   return chat.map((turn) => {
@@ -150,7 +99,7 @@ function planChat(chat: Turn[]): TurnPlan[] {
   })
 }
 
-const PLAN = planChat(CHAT)
+export type SceneScript = { chat: Turn[]; plan: TurnPlan[] }
 
 const delay = (ms: number) => ({ '--scene-delay': `${ms}ms` }) as CSSProperties
 
@@ -177,21 +126,22 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
 type GrowStep = { at: number; h: number }
 
 /**
- * The refund conversation, played as a timed sequence the first time it scrolls
- * into view.
+ * A scripted conversation, played as a timed sequence the first time it scrolls
+ * into view — or immediately, when mounted already in view by a tab switch.
  *
  * The transcript itself always sits in normal flow at its full, final height, so
  * the space it needs is reserved exactly and nothing on the page ever moves. What
- * animates is a separate chrome layer — the border, background and grid texture —
- * which starts as a slim header strip and grows to meet each line as it arrives.
- * The not-yet-filled area is therefore ordinary page background, never an empty
+ * animates is a separate chrome layer — the border and background — which starts
+ * as a slim header strip and grows to meet each line as it arrives. The
+ * not-yet-filled area is therefore ordinary page background, never an empty
  * bordered panel.
  *
  * Nothing is hidden until JS says so: the served HTML, a visitor without JS, and
  * anyone with `prefers-reduced-motion: reduce` all get the finished conversation
  * at the card's natural full height.
  */
-export function RefundScene() {
+export function ScriptedScene({ script, label }: { script: SceneScript; label: string }) {
+  const { chat, plan } = script
   const containerRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const stepsRef = useRef<GrowStep[]>([])
@@ -225,8 +175,9 @@ export function RefundScene() {
     return steps
   }, [])
 
-  // Arm before the first paint after hydration — while the section is still well
-  // below the fold — so the collapse down to a header strip is never seen.
+  // Arm before the first paint — below the fold on first load, or mid-viewport
+  // when a tab switch mounts a fresh scene — so the collapse down to a header
+  // strip is never seen.
   useIsomorphicLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -299,27 +250,17 @@ export function RefundScene() {
   }, [playing])
 
   return (
-    <div ref={containerRef} className={`relative mx-auto max-w-xl ${playing ? 'scene-play' : ''}`}>
-      <div
-        aria-hidden
-        className="scene-chrome pixel-grid surface absolute inset-x-0 top-0 rounded-2xl"
-      />
-      <PixelSprite
-        grid={SPARK_GRID}
-        palette={{ X: 'var(--secondary)' }}
-        className="pixel-spark absolute right-6 top-6 size-5"
-        style={{ animationDelay: '0.6s' }}
-      />
-
+    <div ref={containerRef} className={`relative mx-auto max-w-2xl ${playing ? 'scene-play' : ''}`}>
+      <div aria-hidden className="scene-chrome surface absolute inset-x-0 top-0 rounded-2xl" />
       <div ref={contentRef} className="relative p-5 sm:p-7">
         <div data-at="0" className="mb-5 flex items-center gap-2 border-b border-border/60 pb-3">
-          <SparkMark className="size-3.5" color="var(--human)" />
-          <span className="text-2xs font-medium text-muted-foreground">an example</span>
+          <SignalMark className="h-2.5 w-[1.125rem]" color="var(--human)" />
+          <span className="text-2xs font-medium text-muted-foreground">{label}</span>
         </div>
 
         <div className="flex flex-col gap-4">
-          {CHAT.map((turn, i) => (
-            <Bubble key={i} turn={turn} plan={PLAN[i]} playing={playing} />
+          {chat.map((turn, i) => (
+            <Bubble key={i} turn={turn} plan={plan[i]} playing={playing} />
           ))}
         </div>
       </div>
@@ -333,9 +274,9 @@ function Bubble({ turn, plan, playing }: { turn: Turn; plan: TurnPlan; playing: 
   const entersAt = plan.typingAt ?? plan.textAt
 
   return (
-    <div className={`flex items-end gap-2.5 ${isRadioso ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex items-end gap-2.5 ${isRadioso ? '' : 'flex-row-reverse'}`}>
       <AvatarTile who={turn.who} at={plan.avatarAt} />
-      <div className={`flex max-w-[80%] flex-col gap-1.5 ${isRadioso ? 'items-end' : 'items-start'}`}>
+      <div className={`flex max-w-[80%] flex-col gap-1.5 ${isRadioso ? 'items-start' : 'items-end'}`}>
         {isRadioso && (
           <span className="scene-step px-1 text-2xs font-medium text-muted-foreground" style={delay(entersAt)}>
             Radioso
@@ -346,9 +287,27 @@ function Bubble({ turn, plan, playing }: { turn: Turn; plan: TurnPlan; playing: 
         <div className="relative">
           <RadiosoText isRadioso={isRadioso} className="scene-step" at={plan.textAt}>
             {turn.text}
+            {isRadioso && turn.code && (
+              <pre className="mt-2 overflow-x-auto rounded-lg border border-primary/15 bg-background/60 px-3 py-2 text-left font-mono text-[13px] leading-relaxed">
+                {turn.code}
+              </pre>
+            )}
+            {isRadioso && turn.sources && (
+              <span className="mt-2 flex flex-wrap items-center gap-1.5">
+                {turn.sources.map((title, i) => (
+                  <span
+                    key={title}
+                    className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-card px-2 py-px font-mono text-2xs text-muted-foreground"
+                  >
+                    <span className="font-medium text-primary">{i + 1}</span>
+                    {title}
+                  </span>
+                ))}
+              </span>
+            )}
           </RadiosoText>
           {plan.typingAt !== null && (
-            <TypingBeat at={plan.typingAt} runFor={plan.typingFor} align={isRadioso ? 'right' : 'left'} />
+            <TypingBeat at={plan.typingAt} runFor={plan.typingFor} align={isRadioso ? 'left' : 'right'} />
           )}
         </div>
         {isRadioso && turn.actions && (
@@ -391,8 +350,8 @@ function RadiosoText({
       style={delay(at)}
       className={`${
         isRadioso
-          ? 'rounded-2xl rounded-br-md border border-primary/20 bg-primary/10 px-3.5 py-2 text-sm leading-relaxed text-foreground'
-          : 'rounded-2xl rounded-bl-md bg-muted px-3.5 py-2 text-sm leading-relaxed text-foreground'
+          ? 'rounded-2xl rounded-bl-md border border-primary/20 bg-primary/10 px-4 py-2.5 text-[15px] leading-relaxed text-foreground'
+          : 'rounded-2xl rounded-br-md bg-muted px-4 py-2.5 text-[15px] leading-relaxed text-foreground'
       } ${className ?? ''}`}
     >
       {children}
@@ -423,7 +382,7 @@ function ActionChip({ action, at, playing }: { action: Action; at: number; playi
   return (
     <div
       data-at={at}
-      className="scene-chip flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-2.5 py-1.5 text-xs text-foreground/90"
+      className="scene-chip flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-[13px] text-foreground/90"
       style={delay(at)}
     >
       <Icon className="size-3.5 shrink-0 text-primary" />

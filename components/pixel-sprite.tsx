@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react'
 
+import { cn } from '@/lib/utils'
+
 /**
  * Pixel-art renderer. Takes a grid of single-character rows + a palette mapping
  * each character to a fill, and draws one crisp `<rect>` per filled cell — the
@@ -46,23 +48,25 @@ export function PixelSprite({
   )
 }
 
-/* A clean four-point sparkle — decorative twinkle, distinct from the real mark. */
-export const SPARK_GRID = [
+/* Five bars peaking in the middle: signal strength, drawn in the logo's cell
+   grid. This replaced a four-point sparkle. The sparkle meant nothing, and
+   tiny twinkling stars are the single most legible tell of an AI-generated
+   landing page — there was one above every heading on the site. Bars at least
+   say what the colour already says: something is transmitting. */
+export const SIGNAL_GRID = [
   '    X    ',
-  '    X    ',
-  '   XXX   ',
-  ' XXXXXXX ',
-  'XXXXXXXXX',
-  ' XXXXXXX ',
-  '   XXX   ',
-  '    X    ',
-  '    X    ',
+  '  X X X  ',
+  '  X X X  ',
+  'X X X X X',
+  'X X X X X',
 ]
 
-/** A single twinkling pixel sparkle — the site's recurring quirky flourish. */
-export function SparkMark({
+/** The section marker. Blue where the machine is acting, `--human` yellow
+    where a person is being asked — see the colour notes in globals.css.
+    The 9x5 grid is why sizing is a width/height pair and not `size-*`. */
+export function SignalMark({
   className,
-  color = 'var(--secondary)',
+  color = 'var(--primary)',
   style,
 }: {
   className?: string
@@ -71,9 +75,9 @@ export function SparkMark({
 }) {
   return (
     <PixelSprite
-      grid={SPARK_GRID}
+      grid={SIGNAL_GRID}
       palette={{ X: color }}
-      className={`pixel-spark ${className ?? ''}`}
+      className={cn('h-4 w-[1.8rem]', className)}
       style={style}
     />
   )

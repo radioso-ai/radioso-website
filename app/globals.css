@@ -180,7 +180,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
   --font-serif: var(--font-fraunces), 'Fraunces', Georgia, serif;
   --color-background: var(--background);
@@ -310,79 +310,105 @@
   font-variation-settings: 'opsz' 72;
 }
 
-/* Hero atmosphere: a yellow sunrise and a blue radio wash, over a soft dot field. */
-.hero-aura {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: -10;
-  pointer-events: none;
+/* ── The hero band ─────────────────────────────────────────────────────
+   The hero is a lake and the mark is the sun over it. Everything in the
+   band emanates from that one point — the sun in the nav pill:
+
+     .signal-source  a warm core inside a cool falloff: light on water
+     .signal-rings   three broadcast waves leaving it
+
+   This replaced a cream ground with a dot grid and two blurred blobs
+   drifting in opposite corners. All three are house style for AI-assisted
+   SaaS mockups and none said anything about this product.
+
+   The band is scoped with plain custom properties rather than by
+   re-declaring the theme tokens the way `.machine-band` does: the Ask
+   Radioso card lives inside the hero, and re-pointing `--foreground`
+   here would repaint the card's text along with the headline.
+
+   Offsets centre the origin on the nav pill's sun mark at rest (sticky
+   top-4 + pill padding put its centre at y=43px; x = container padding +
+   pill inset + pill padding-left + half the mark, which steps with `sm`
+   and `md` alongside the pill's own padding). Measured against the
+   rendered lockup — its sun spans 21..279 of the 1173x300 viewBox. */
+/* Deep enough that the logo yellow sings and white copy clears AA; the hue
+   is the interactive blue's, so the band reads as the same family. */
+.hero-band {
+  --hero-bg: oklch(33% 0.093 253);
+  --hero-ink: oklch(97.5% 0.006 253);
+  --hero-ink-muted: oklch(81% 0.035 253);
 }
 
-.hero-aura::before,
-.hero-aura::after {
+.dark .hero-band {
+  --hero-bg: oklch(23% 0.072 253);
+}
+
+/* ── The closing bookend ───────────────────────────────────────────────
+   The landing page opens in brand navy and now closes in the exact same
+   colour. Re-scoping the semantic tokens here keeps the CTA and global
+   footer on one uninterrupted surface while preserving their ordinary
+   token-based typography, dividers, and interaction states. */
+.brand-bookend {
+  --background: oklch(33% 0.093 253);
+  --foreground: oklch(97.5% 0.006 253);
+  --card: oklch(36% 0.085 253);
+  --card-foreground: oklch(97.5% 0.006 253);
+  --muted: oklch(39% 0.07 253);
+  --muted-foreground: oklch(81% 0.035 253);
+  --border: oklch(54% 0.06 253);
+  --input: oklch(54% 0.06 253);
+  --ring: oklch(81% 0.08 253);
+
+  isolation: isolate;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dark .brand-bookend {
+  --background: oklch(23% 0.072 253);
+  --card: oklch(27% 0.067 253);
+  --muted: oklch(31% 0.058 253);
+  --border: oklch(45% 0.055 253);
+}
+
+/* A restrained echo of the hero's radio light, contained to the CTA so
+   the footer remains calm and useful. Both elements keep the same base. */
+.brand-bookend-signal::before {
   content: '';
   position: absolute;
-  border-radius: 9999px;
-  filter: blur(80px);
-  opacity: 0.55;
-  /* Slow, off-sync drift so the wash feels alive without ever distracting. */
-  animation: aura-drift 22s ease-in-out infinite;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      65% 100% at 50% 0%,
+      color-mix(in oklab, var(--signal) 18%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      30% 65% at 18% 15%,
+      color-mix(in oklab, var(--secondary) 7%, transparent),
+      transparent 75%
+    );
 }
 
-.hero-aura::before {
-  width: 720px;
-  height: 720px;
-  top: -260px;
-  right: -160px;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--secondary) 50%, transparent), transparent 70%);
-  animation-duration: 26s;
+/* Reaches back up over the sticky nav's flow height — a constant 54px at
+   every breakpoint (measured 390 through 1440) — so the layer spans exactly
+   main-top to hero-bottom and the band ends on the trust strip's own top
+   border without a magic height that only holds at one width. */
+.hero-backdrop {
+  position: absolute;
+  top: -54px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--hero-bg);
 }
 
-.hero-aura::after {
-  width: 820px;
-  height: 820px;
-  top: -120px;
-  left: -240px;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--signal) 50%, transparent), transparent 70%);
-  animation-delay: -8s;
-}
-
-@keyframes aura-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translate3d(36px, 30px, 0) scale(1.12);
-    opacity: 0.62;
-  }
-}
-
-.dark .hero-aura::before,
-.dark .hero-aura::after {
-  animation-name: aura-drift-dim;
-}
-
-@keyframes aura-drift-dim {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translate3d(36px, 30px, 0) scale(1.12);
-    opacity: 0.42;
-  }
-}
-
-/* Emanating radio waves — the sun logo broadcasting. The offsets centre the origin
-   on the nav pill's sun mark at rest (sticky top-4 + pill padding put its centre at
-   y=43px; x = container padding + pill inset + pill padding-left + half the mark,
-   which steps with `sm` and `md` alongside the pill's own padding). Measured against
-   the rendered lockup — its sun spans 21..279 of the 1173×300 viewBox. */
-.signal-rings {
+.signal-origin {
   position: absolute;
   top: 43px;
   left: 55px;
@@ -392,17 +418,80 @@
 }
 
 @media (min-width: 640px) {
-  .signal-rings {
+  .signal-origin {
     left: 73px;
   }
 }
 
 @media (min-width: 768px) {
-  .signal-rings {
+  .signal-origin {
     left: 77px;
   }
 }
 
+/* The source: the logo yellow at the core, the signal blue falling off
+   around it, both centred on the mark so the wash has a reason to sit
+   where it does rather than in whichever corners looked balanced. */
+.signal-source {
+  width: 1240px;
+  height: 1240px;
+  margin: -620px 0 0 -620px;
+}
+
+.signal-source::before,
+.signal-source::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  filter: blur(70px);
+  /* Slow and off-sync, so the source reads as lit rather than painted. */
+  animation: source-breathe 24s ease-in-out infinite;
+}
+
+.signal-source::before {
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--signal) 26%, transparent), transparent 70%);
+}
+
+.signal-source::after {
+  inset: 28%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--secondary) 42%, transparent), transparent 66%);
+  animation-duration: 19s;
+  animation-delay: -7s;
+}
+
+@keyframes source-breathe {
+  0%,
+  100% {
+    opacity: 0.52;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.06);
+  }
+}
+
+.dark .signal-source::before,
+.dark .signal-source::after {
+  animation-name: source-breathe-dim;
+}
+
+@keyframes source-breathe-dim {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.42;
+    transform: scale(1.06);
+  }
+}
+
+/* The three waves. A pixelated reflection (rings of grid-snapped squares)
+   and a static hairline ring field were both tried in this slot and cut —
+   the broadcast animation on open water is the keeper. */
 .signal-rings span {
   position: absolute;
   top: 0;
@@ -411,15 +500,11 @@
   height: 320px;
   margin: -160px 0 0 -160px;
   border-radius: 9999px;
-  /* The logo yellow at glow strength — at 85% L it needs 70% to read on cream. */
-  border: 1px solid color-mix(in oklab, var(--secondary) 70%, transparent);
+  /* The logo yellow. The band is navy in both themes, so one edge-strength
+     value serves — 70% was for cream and glares here. */
+  border: 1px solid color-mix(in oklab, var(--secondary) 45%, transparent);
   opacity: 0;
   animation: signal-ring 6s ease-out infinite;
-}
-
-.dark .signal-rings span {
-  /* The same yellow is loud on the dark ground; edge strength is enough. */
-  border-color: color-mix(in oklab, var(--secondary) 35%, transparent);
 }
 
 .signal-rings span:nth-child(2) {
@@ -443,25 +528,35 @@
   }
 }
 
-/* One rung down the ladder in dark mode — the rings read much hotter
-   against the dark background at the same alpha. */
-.dark .signal-rings span {
-  border-color: color-mix(in oklab, var(--signal) 20%, transparent);
+/* The shared reduced-motion block kills the animation, and these start at
+   opacity 0 — park the waves at fixed radii instead: the same picture,
+   held still. */
+@media (prefers-reduced-motion: reduce) {
+  .signal-rings span {
+    opacity: 0.3;
+  }
+  .signal-rings span:nth-child(1) {
+    transform: scale(0.55);
+  }
+  .signal-rings span:nth-child(2) {
+    transform: scale(1.25);
+  }
+  .signal-rings span:nth-child(3) {
+    transform: scale(2);
+  }
 }
 
-.hero-dots {
-  position: absolute;
-  inset: 0;
-  z-index: -9;
-  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 22%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 80%);
-  opacity: 0.35;
-  pointer-events: none;
+/* The hero subhead's deep links into the demo tabs. Quiet by default so the
+   paragraph still reads as a sentence, unmistakably links on hover. */
+.hero-link {
+  text-underline-offset: 4px;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--hero-ink) 35%, transparent);
+  transition: text-decoration-color var(--dur-fast) var(--ease-out);
 }
 
-.dark .hero-dots {
-  opacity: 0.25;
+.hero-link:hover {
+  text-decoration-color: var(--hero-ink);
 }
 
 /* Scroll-reveal: sections rise and fade as they enter the viewport. */
@@ -1054,13 +1149,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-aura::before,
-  .hero-aura::after,
+  .signal-source::before,
+  .signal-source::after,
   .signal-rings span,
   .rise-in,
   .flow-conduit::after,
   .signal-glow::before,
-  .pixel-spark,
   .pulse-dot::after,
   .thinking-shimmer {
     animation: none !important;
@@ -1068,9 +1162,6 @@
   .thinking-shimmer {
     background: none;
     color: var(--muted-foreground);
-  }
-  .pixel-spark {
-    opacity: 0.7;
   }
   .rise-in {
     opacity: 1;
@@ -1201,38 +1292,6 @@
 }
 
 /* Chunky pixel-cell grid texture — echoes the way the logo is built from cells. */
-.pixel-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-position: -1px -1px;
-}
-
-.dark .pixel-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--foreground) 9%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 9%, transparent) 1px, transparent 1px);
-}
-
-/* Twinkling pixel spark — the logo motif scattered as living confetti. */
-.pixel-spark {
-  animation: pixel-twinkle 3.2s ease-in-out infinite;
-  transform-origin: center;
-}
-
-@keyframes pixel-twinkle {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: scale(0.82) rotate(-8deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.08) rotate(8deg);
-  }
-}
-
 /* Scrollable region with no visible scrollbar chrome. */
 .no-scrollbar {
   scrollbar-width: none;
@@ -1241,5 +1300,4 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
 
