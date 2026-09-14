@@ -11,8 +11,9 @@ import { site } from '@/lib/site'
  * your own rates. Say that wherever the plans appear, or Planet reads as the
  * expensive tier that takes something away.
  *
- * Numbers approved 2026-09-07 and refined 2026-09-14 (conversation definition,
- * top-up packs). Change them here and nowhere else.
+ * Numbers approved 2026-09-07, refined 2026-09-14 (conversation definition,
+ * top-up packs, Satellite raised from €99 to €149, storage limits). Change them
+ * here and nowhere else.
  */
 
 /** A conversation is up to this many agent replies. Longer ones count again. */
@@ -21,7 +22,7 @@ export const REPLIES_PER_CONVERSATION = 10
 /** Prepaid top-up, available on every cloud plan including the free one. */
 export const TOP_UP = {
   price: '€50',
-  conversations: 400,
+  conversations: 300,
   note: 'One-off, no subscription. Never expires.',
 }
 
@@ -54,6 +55,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     pitch: 'The whole platform, with the models on us. That is why there is a ceiling.',
     features: [
       '100 conversations a month',
+      '10 MB of content, about 3,000 pages',
       'Every product feature',
       'Unlimited agents and seats',
       'Every surface: embed, API, SDK, Slack, MCP',
@@ -66,12 +68,13 @@ export const CLOUD_PLANS: CloudPlan[] = [
     name: 'Satellite',
     label: 'monthly',
     sprite: 'satellite',
-    price: '€99',
+    price: '€149',
     priceNote: 'per month · 1,000 conversations',
-    annualNote: '€990 a year, two months free',
+    annualNote: '€1,490 a year, two months free',
     pitch: 'You pay for conversations, and nothing else. Not seats, and not resolutions.',
     features: [
       '1,000 conversations a month',
+      '50 MB of content, about 15,000 pages',
       'Models included, no keys to set up',
       'Unlimited agents and seats',
       'Every surface: embed, API, SDK, Slack, MCP',
@@ -91,6 +94,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     pitch: 'Your model keys, your rates, your provider agreements. We run the platform.',
     features: [
       '10,000 conversations a month',
+      '250 MB of content, about 80,000 pages',
       'Bring your own model keys',
       'Unlimited agents and seats',
       'Every surface: embed, API, SDK, Slack, MCP',
