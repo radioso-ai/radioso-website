@@ -35,6 +35,18 @@ export const COUNTS_AS: { what: string; counts: number }[] = [
   { what: 'Publishing routines, crawling, indexing', counts: 0 },
 ]
 
+/**
+ * The managed service. Deliberately not a card and not a plan: it is a fee
+ * for us running the agent, on top of whichever plan the workspace is on.
+ * The first customer to pay it was a small publisher on the free plan, which
+ * is the point: at that scale the software is free and the service is not.
+ */
+export const MANAGED = {
+  price: '€99',
+  note: 'a month, on any plan',
+  scope: 'We set up your agent, tune it, and review what your visitors asked every month.',
+}
+
 /** Prepaid top-up, available on every cloud plan including the free one. */
 export const TOP_UP = {
   price: '€50',

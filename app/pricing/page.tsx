@@ -5,7 +5,7 @@ import { PageShell } from '@/components/page-shell'
 import { PricingPlans } from '@/components/pricing-plans'
 import { SignalMark } from '@/components/pixel-sprite'
 import { Reveal } from '@/components/reveal'
-import { COUNTS_AS, MANAGED_ANSWER_MODEL, REPLIES_PER_CONVERSATION, TOP_UP } from '@/lib/pricing'
+import { COUNTS_AS, MANAGED, MANAGED_ANSWER_MODEL, REPLIES_PER_CONVERSATION, TOP_UP } from '@/lib/pricing'
 import { site } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -73,6 +73,10 @@ const NOTES: { question: string; answer: ReactNode }[] = [
     question: 'Is anything gated behind a paid plan?',
     answer:
       'No. Every product feature is on every plan, including the free one. The plans differ in how many conversations a month, who pays for the models, and how quickly we answer your email.',
+  },
+  {
+    question: 'Can you run it for us?',
+    answer: `Yes. ${MANAGED.scope} ${MANAGED.price} ${MANAGED.note}, including the free one. Most of the organisations we run agents for are small teams who would rather have it done than learn to do it, and the software stays yours either way.`,
   },
   {
     question: 'Can I move between the cloud and self-hosting?',
