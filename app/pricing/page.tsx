@@ -57,7 +57,7 @@ const NOTES: { question: string; answer: ReactNode }[] = [
   {
     question: 'What counts toward content storage?',
     answer:
-      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 50 MB roughly 15,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan; nothing already indexed is deleted.',
+      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan; nothing already indexed is deleted.',
   },
   {
     question: 'Why do you not charge per seat?',
