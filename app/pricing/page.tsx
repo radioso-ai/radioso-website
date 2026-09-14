@@ -11,7 +11,7 @@ import { site } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Radioso pricing: free for 100 conversations a month, €149 for 1,000, €499 for 10,000 with your own model keys. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
+    'Radioso pricing: free for 50 conversations a month, €149 for 1,000, €499 for 10,000 with your own model keys. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
   alternates: { canonical: `${site.url}/pricing` },
 }
 
