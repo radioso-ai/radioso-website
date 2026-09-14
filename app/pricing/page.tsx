@@ -10,7 +10,7 @@ import { site } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Radioso pricing: free for 100 conversations a month, €99 for 1,000, €499 for 10,000 with your own model keys. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
+    'Radioso pricing: free for 100 conversations a month, €149 for 1,000, €499 for 10,000 with your own model keys. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
   alternates: { canonical: `${site.url}/pricing` },
 }
 
@@ -25,6 +25,11 @@ const NOTES: { question: string; answer: string }[] = [
   {
     question: 'What happens when I reach the limit?',
     answer: `The agent tells you before you get there, at 80 percent. At the limit you can move up a plan, or buy a top-up: ${TOP_UP.price} for ${TOP_UP.conversations} more conversations, one-off, and they never expire. Nothing is charged automatically and there is no overage bill at the end of the month.`,
+  },
+  {
+    question: 'What counts toward content storage?',
+    answer:
+      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 50 MB roughly 15,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan; nothing already indexed is deleted.',
   },
   {
     question: 'Why do you not charge per seat?',
