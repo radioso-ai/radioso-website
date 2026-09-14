@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 
 import { PageShell } from '@/components/page-shell'
 import { PricingPlans } from '@/components/pricing-plans'
 import { SignalMark } from '@/components/pixel-sprite'
 import { Reveal } from '@/components/reveal'
-import { REPLIES_PER_CONVERSATION, TOP_UP } from '@/lib/pricing'
+import { COUNTS_AS, MANAGED_ANSWER_MODEL, REPLIES_PER_CONVERSATION, TOP_UP } from '@/lib/pricing'
 import { site } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -17,10 +18,37 @@ export const metadata: Metadata = {
 // Answers the questions a volume-priced plan raises before someone has to email
 // to ask them. Kept as plain copy rather than an accordion — on a pricing page
 // the objections should be readable at a glance, not behind a click.
-const NOTES: { question: string; answer: string }[] = [
+const NOTES: { question: string; answer: ReactNode }[] = [
   {
     question: 'What counts as a conversation?',
-    answer: `One person talking to one agent, up to ${REPLIES_PER_CONVERSATION} replies. Retrieval, tool calls, and the steps of a routine are not counted separately: a routine that takes six internal steps to answer someone is still one reply. A conversation that runs past ${REPLIES_PER_CONVERSATION} replies counts as another one for every further ${REPLIES_PER_CONVERSATION}, so a long, unusual chat costs a little more and a normal one never does.`,
+    answer: (
+      <>
+        <p>
+          One person talking to one agent, up to {REPLIES_PER_CONVERSATION} replies. Retrieval, tool
+          calls, and the steps of a routine are not counted separately: a routine that takes six
+          internal steps to answer someone is still one reply. A conversation that runs past{' '}
+          {REPLIES_PER_CONVERSATION} replies counts again for every further {REPLIES_PER_CONVERSATION}.
+        </p>
+        <p className="mt-3">Your own work with the agent counts too, lightly:</p>
+        <table className="mt-3 w-full text-sm">
+          <tbody>
+            {COUNTS_AS.map((row) => (
+              <tr key={row.what} className="border-t border-border/70">
+                <td className="py-2 pr-4 text-muted-foreground">{row.what}</td>
+                <td className="py-2 text-right font-mono tabular-nums text-foreground">{row.counts}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="mt-3">
+          Every line shows up in your usage view, so the month adds up in front of you.
+        </p>
+      </>
+    ),
+  },
+  {
+    question: 'Which model answers my customers?',
+    answer: `Comet and Satellite run on ${MANAGED_ANSWER_MODEL}, with smaller models for the steps around it. There are no model multipliers and no credit tables: a conversation is a conversation. If you want a different model, Planet runs on your own keys with any model you choose, and we charge the same per conversation.`,
   },
   {
     question: 'What happens when I reach the limit?',
