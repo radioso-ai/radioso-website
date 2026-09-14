@@ -102,7 +102,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     pitch: 'You pay for conversations, and nothing else. Not seats, and not resolutions.',
     features: [
       '1,000 conversations a month',
-      '50 MB of content, about 15,000 pages',
+      '20 MB of content, about 6,000 pages',
       'Models included, no keys to set up',
       'Unlimited agents and seats',
       'Every surface: embed, API, SDK, Slack, MCP',
@@ -122,7 +122,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     pitch: 'Your model keys, your rates, your provider agreements. We run the platform.',
     features: [
       '10,000 conversations a month',
-      '250 MB of content, about 80,000 pages',
+      '100 MB of content, about 30,000 pages',
       'Bring your own model keys',
       'Unlimited agents and seats',
       'Every surface: embed, API, SDK, Slack, MCP',
