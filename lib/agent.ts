@@ -15,6 +15,7 @@
  * static export; live answers happen client-side once a visitor asks.
  */
 
+import { CLOUD_PLANS, REPLIES_PER_CONVERSATION, TOP_UP } from '@/lib/pricing'
 import { site } from '@/lib/site'
 
 export type AgentSource = {
@@ -48,6 +49,7 @@ const RADIOSO_SOURCES = {
   runLocally: { title: 'Run locally', url: `${site.docsUrl}/quickstarts/run-locally` },
   embed: { title: 'Website embed', url: `${site.docsUrl}/quickstarts/website-embed` },
   source: { title: 'github.com/radioso-ai', url: site.githubUrl },
+  pricing: { title: 'Pricing', url: `${site.url}/pricing` },
 } satisfies Record<string, Omit<AgentSource, 'n'>>
 
 export const PRERENDERED: Record<string, AgentAnswerData> = {
@@ -107,9 +109,16 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.why },
     ],
   },
+  pricing: {
+    body: `Radioso Cloud prices on conversations, and every feature is on every plan[1]. ${CLOUD_PLANS.map((p) => `**${p.name}** is ${p.price === 'Free' ? 'free' : `${p.price} a month`} for ${p.features[0].replace(' a month', '')}`).join('; ')}. A conversation is one person talking to one agent, up to ${REPLIES_PER_CONVERSATION} replies. No per-seat fees and no per-resolution billing. Need more in a month? ${TOP_UP.price} buys ${TOP_UP.conversations} more, one-off, and they never expire. Self-hosting is free and has no conversation limit[2].`,
+    sources: [
+      { n: 1, ...RADIOSO_SOURCES.pricing },
+      { n: 2, ...RADIOSO_SOURCES.source },
+    ],
+  },
   licensing: {
     body:
-      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. You bring your own model keys — in Radioso Cloud or self-hosted — so there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
+      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. On the cloud, the free and Satellite plans run on our model keys; Planet and self-hosting run on yours, with no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.source },
       { n: 2, ...RADIOSO_SOURCES.deployment },
@@ -141,15 +150,16 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
   if (!q) return PRERENDERED.refuse
 
   const matches: [RegExp, keyof typeof PRERENDERED][] = [
-    // First, and deliberately narrow: only explicit "I want to buy" phrasings. A general
-    // pricing question ("what does it cost") must still reach `licensing`, whose
-    // everything-is-open-source answer is the better one — same split the live routine's
-    // trigger description draws.
+    // First, and deliberately narrow: only explicit "I want to buy" phrasings — same
+    // split the live routine's trigger description draws.
     [/take my money|shut up and take|\bbuy (it|this|radioso)\b|sign me up/, 'takeMyMoney'],
+    // Money questions get the plan ladder; open-source and licensing questions stay
+    // with `licensing` below.
+    [/\bprice|pricing|cost|how much|plans?\b|subscri|per (seat|month|conversation)|top[- ]?up/, 'pricing'],
     [/\bself[- ]?host|deploy|docker|cloud run\b/, 'selfHosting'],
     [/\bmcp|cursor|claude desktop|chatgpt\b/, 'mcp'],
     [/\bembed|widget|iframe\b/, 'embed'],
-    [/\bprice|pricing|cost|free|paid|licen[cs]|open[- ]?source|enterprise\b/, 'licensing'],
+    [/\bfree|paid|gated|licen[cs]|open[- ]?source|enterprise\b/, 'licensing'],
     [/\blangchain|framework|low[- ]?code|compare|vs\b/, 'whyNotLangchain'],
     [/\bwhat( is|'s) radioso|what does radioso|tldr\b/, 'whatIsRadioso'],
     // Last on purpose. Both patterns below are deliberately broad, so they sit behind the
