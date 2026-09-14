@@ -47,6 +47,14 @@ export const MANAGED = {
   scope: 'We set up your agent, tune it, and review what your visitors asked every month.',
 }
 
+/** The ceiling on self-serve. Above it is a conversation, not a checkout. */
+export const ABOVE_PLANET = {
+  threshold: '5,000',
+  text: 'Need more than 5,000 a month?',
+  cta: 'Talk to us',
+  href: `mailto:${site.contactEmail}?subject=More%20than%205%2C000%20conversations%20a%20month`,
+}
+
 /** Prepaid top-up, available on every cloud plan including the free one. */
 export const TOP_UP = {
   price: '€50',
@@ -128,7 +136,6 @@ export const CLOUD_PLANS: CloudPlan[] = [
       'Every surface: embed, API, SDK, Slack, MCP',
       'Priority support',
       'A quarterly review of what your visitors ask',
-      'Above 5,000 a month, talk to us',
     ],
     cta: { text: 'Start free, upgrade in-app', href: site.appUrl },
   },

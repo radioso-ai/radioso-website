@@ -4,7 +4,7 @@ import { Check, ArrowRight, Github } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { PixelSprite, PLAN_SPRITES } from '@/components/pixel-sprite'
 import { Button } from '@/components/ui/button'
-import { CLOUD_PLANS, SELF_HOSTED, TOP_UP } from '@/lib/pricing'
+import { ABOVE_PLANET, CLOUD_PLANS, SELF_HOSTED, TOP_UP } from '@/lib/pricing'
 import { cn } from '@/lib/utils'
 
 /**
@@ -68,13 +68,22 @@ export function PricingPlans() {
         ))}
       </div>
 
-      {/* One line, deliberately not a card: a top-up is a safety valve, not a plan. */}
-      <Reveal delay={300} className="mt-5 text-center text-sm text-muted-foreground">
-        Need more this month on any plan?{' '}
-        <span className="font-medium text-foreground">
-          {TOP_UP.price} for {TOP_UP.conversations} more conversations.
-        </span>{' '}
-        {TOP_UP.note}
+      {/* Two sentences, deliberately not cards: a top-up is a safety valve, not a
+          plan, and the ceiling on self-serve is a conversation, not a checkout. */}
+      <Reveal delay={300} className="mt-5 flex flex-col items-center gap-1.5 text-center text-sm text-muted-foreground">
+        <p>
+          Need more this month on any plan?{' '}
+          <span className="font-medium text-foreground">
+            {TOP_UP.price} for {TOP_UP.conversations} more conversations.
+          </span>{' '}
+          {TOP_UP.note}
+        </p>
+        <p>
+          {ABOVE_PLANET.text}{' '}
+          <a href={ABOVE_PLANET.href} className="font-medium text-primary underline-offset-4 hover:underline">
+            {ABOVE_PLANET.cta}
+          </a>
+        </p>
       </Reveal>
 
       <Reveal delay={360} className="surface mt-8 rounded-2xl p-6 sm:p-8">
