@@ -30,7 +30,7 @@ export const MANAGED_ANSWER_MODEL = 'Claude Sonnet 5'
 export const COUNTS_AS: { what: string; counts: number }[] = [
   { what: `A customer conversation, up to ${REPLIES_PER_CONVERSATION} replies`, counts: 1 },
   { what: 'A message to Ray, the operator copilot', counts: 1 },
-  { what: '10 test runs in Workbench or evals', counts: 1 },
+  { what: '2 test runs in Workbench or evals', counts: 1 },
   { what: 'An on-demand Audience Pulse report', counts: 10 },
   { what: 'The scheduled monthly Pulse report, publishing routines, crawling, indexing', counts: 0 },
 ]
