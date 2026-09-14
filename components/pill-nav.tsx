@@ -11,6 +11,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 
 const NAV = [
   { href: '/developers', label: 'Developers' },
+  { href: '/pricing', label: 'Pricing' },
   { href: site.docsUrl, label: 'Docs' },
   { href: '/blog', label: 'Blog' },
 ]
