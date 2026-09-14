@@ -98,7 +98,7 @@ export function SiteFooter() {
               Terms of Service
             </Link>
             <CookieSettingsButton className="cursor-pointer hover:text-foreground" />
-            <p>Self-hosted. Multi-provider. API-first.</p>
+            <p>Cloud or self-hosted. Multi-provider. API-first.</p>
           </div>
         </div>
       </div>
