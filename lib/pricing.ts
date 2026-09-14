@@ -32,7 +32,7 @@ export const COUNTS_AS: { what: string; counts: number }[] = [
   { what: 'A message to Ray, the operator copilot', counts: 1 },
   { what: '2 test runs in Workbench or evals', counts: 1 },
   { what: 'An on-demand Audience Pulse report', counts: 10 },
-  { what: 'The scheduled monthly Pulse report, publishing routines, crawling, indexing', counts: 0 },
+  { what: 'Publishing routines, crawling, indexing', counts: 0 },
 ]
 
 /** Prepaid top-up, available on every cloud plan including the free one. */
@@ -67,10 +67,10 @@ export const CLOUD_PLANS: CloudPlan[] = [
     label: 'free',
     sprite: 'comet',
     price: 'Free',
-    priceNote: '100 conversations a month · no card required',
+    priceNote: '50 conversations a month · no card required',
     pitch: 'The whole platform, with the models on us. That is why there is a ceiling.',
     features: [
-      '100 conversations a month',
+      '50 conversations a month',
       '10 MB of content, about 3,000 pages',
       'Every product feature',
       'Unlimited agents and seats',
