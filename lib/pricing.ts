@@ -19,6 +19,22 @@ import { site } from '@/lib/site'
 /** A conversation is up to this many agent replies. Longer ones count again. */
 export const REPLIES_PER_CONVERSATION = 10
 
+/**
+ * What counts against the monthly allowance, in conversations. One unit,
+ * everything counts, most things count for very little. There are deliberately
+ * no model multipliers: managed plans run one model, and on Planet the
+ * customer's own provider bill is the multiplier.
+ */
+export const MANAGED_ANSWER_MODEL = 'Claude Sonnet 5'
+
+export const COUNTS_AS: { what: string; counts: number }[] = [
+  { what: `A customer conversation, up to ${REPLIES_PER_CONVERSATION} replies`, counts: 1 },
+  { what: 'A message to Ray, the operator copilot', counts: 1 },
+  { what: '10 test runs in Workbench or evals', counts: 1 },
+  { what: 'An on-demand Audience Pulse report', counts: 10 },
+  { what: 'The scheduled monthly Pulse report, publishing routines, crawling, indexing', counts: 0 },
+]
+
 /** Prepaid top-up, available on every cloud plan including the free one. */
 export const TOP_UP = {
   price: '€50',
