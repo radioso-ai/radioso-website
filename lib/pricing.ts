@@ -128,7 +128,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
       'Every surface: embed, API, SDK, Slack, MCP',
       'Priority support',
       'A quarterly review of what your visitors ask',
-      `Top up any time: ${TOP_UP.price} for ${TOP_UP.conversations} more`,
+      'Above 5,000 a month, talk to us',
     ],
     cta: { text: 'Start free, upgrade in-app', href: site.appUrl },
   },
