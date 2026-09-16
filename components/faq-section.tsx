@@ -5,29 +5,9 @@ import { ChevronDown } from 'lucide-react'
 
 import { SignalMark } from '@/components/pixel-sprite'
 import { useAsk } from '@/lib/ask-context'
+import { FAQ_ITEMS } from '@/lib/faq'
 import { cn } from '@/lib/utils'
 
-type Item = { question: string; answer: string }
-
-// Keep the homepage questions buyer-facing. Provider, integration, architecture,
-// and deployment detail belongs on /developers and in the docs.
-const ITEMS: Item[] = [
-  {
-    question: 'Is Radioso really open source, or is there a paid tier?',
-    answer:
-      'Every product feature ships in the open release. The Enterprise Edition covers multi-tenant deployments at scale.',
-  },
-  {
-    question: 'Can I self-host it?',
-    answer:
-      'Yes — run the whole platform on your own infrastructure, or use Radioso Cloud with the same product and your own model keys.',
-  },
-  {
-    question: 'Can it take actions, or is it just a chatbot?',
-    answer:
-      'It calls tools, fires webhooks, and runs multi-step routines — then hands off to a person with full context when it should.',
-  },
-]
 
 export function FaqSection() {
   const { ask, pending } = useAsk()
@@ -51,7 +31,7 @@ export function FaqSection() {
       </div>
 
       <div className="mx-auto mt-14 max-w-3xl space-y-3">
-        {ITEMS.map((item, i) => {
+        {FAQ_ITEMS.map((item, i) => {
           const isOpen = open === i
           const buttonId = `faq-button-${i}`
           const panelId = `faq-panel-${i}`

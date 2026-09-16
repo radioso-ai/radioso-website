@@ -8,11 +8,14 @@ import { FaqSection } from '@/components/faq-section'
 import { ClosingCta } from '@/components/closing-cta'
 import { AgentDemos } from '@/components/agent-demos'
 import { Reveal } from '@/components/reveal'
+import { JsonLd } from '@/components/json-ld'
 import { AskProvider } from '@/lib/ask-context'
+import { homepageGraph } from '@/lib/structured-data'
 
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
+      <JsonLd data={homepageGraph()} />
       <AskProvider>
         <main className="relative flex-1">
           <PillNav />
