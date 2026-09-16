@@ -2,10 +2,12 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { JsonLd } from '@/components/json-ld'
 import { Markdown } from '@/components/markdown'
 import { PageShell } from '@/components/page-shell'
 import { formatPostDate, getAllPosts, getPost } from '@/lib/blog'
 import { site } from '@/lib/site'
+import { blogPostingGraph } from '@/lib/structured-data'
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>
@@ -53,6 +55,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <PageShell>
+      <JsonLd data={blogPostingGraph(post)} />
       <article className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
         <Link href="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground">
           ← Back to blog
