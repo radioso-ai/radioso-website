@@ -103,14 +103,14 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   embed: {
     body:
-      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one surface among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
+      "The website embed is one script tag on an approved origin. It opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one channel among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.embed },
       { n: 2, ...RADIOSO_SOURCES.why },
     ],
   },
   pricing: {
-    body: `Radioso Cloud prices on conversations, and every feature is on every plan[1]. ${CLOUD_PLANS.map((p) => `**${p.name}** is ${p.price === 'Free' ? 'free' : `${p.price} a month`} for ${p.features[0].replace(' a month', '')}`).join('; ')}. A conversation is one person talking to one agent, up to ${REPLIES_PER_CONVERSATION} replies. No per-seat fees and no per-resolution billing. Need more in a month? ${TOP_UP.price} buys ${TOP_UP.conversations} more, one-off, and they never expire. Self-hosting is free and has no conversation limit[2].`,
+    body: `Radioso Cloud prices on conversations, and every feature is on every plan[1]. ${CLOUD_PLANS.map((p) => `**${p.name}** is ${p.price === 'Free' ? 'free' : `${p.price} a month`} for ${p.conversations.replace(' a month', '')}`).join('; ')}. A conversation is one person talking to one agent, up to ${REPLIES_PER_CONVERSATION} replies. No per-seat fees and no per-resolution billing. Need more in a month? On Satellite and Planet, ${TOP_UP.price} buys ${TOP_UP.conversations} more, one-off, good for 12 months. Self-hosting is free and has no conversation limit[2].`,
     sources: [
       { n: 1, ...RADIOSO_SOURCES.pricing },
       { n: 2, ...RADIOSO_SOURCES.source },
@@ -118,7 +118,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   licensing: {
     body:
-      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. On the cloud, the free and Satellite plans run on our model keys; Planet and self-hosting run on yours, with no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
+      "Every product feature is open source: grounded answers, directives, routines, actions, every channel. Nothing is feature-gated and nothing is held back for a paid tier[1]. On the cloud, Comet and Satellite run on our model keys. Planet runs on yours or ours, and self-hosting runs on yours with no markup on inference[2]. Enterprise Edition exists only for running many separate organizations from one deployment. Tell us what yours needs and we'll work it out with you.",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.source },
       { n: 2, ...RADIOSO_SOURCES.deployment },

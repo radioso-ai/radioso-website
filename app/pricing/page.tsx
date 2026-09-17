@@ -5,21 +5,29 @@ import { PageShell } from '@/components/page-shell'
 import { PricingPlans } from '@/components/pricing-plans'
 import { SignalMark } from '@/components/pixel-sprite'
 import { Reveal } from '@/components/reveal'
-import { COUNTS_AS, MANAGED, MANAGED_ANSWER_MODEL, REPLIES_PER_CONVERSATION, TOP_UP } from '@/lib/pricing'
+import {
+  COUNTS_AS,
+  MANAGED,
+  MANAGED_ANSWER_MODEL,
+  PLANET_MANAGED,
+  REPLIES_PER_CONVERSATION,
+  TOP_UP,
+} from '@/lib/pricing'
 import { site } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Radioso pricing: free for 50 conversations a month, €149 for 1,000, €499 for 5,000 with your own model keys. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
+    'Radioso pricing: free for 50 conversations a month, €149 for 1,000, €499 for 5,000 with your own model keys or €749 with ours. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
   alternates: { canonical: `${site.url}/pricing` },
 }
 
 // Answers the questions a volume-priced plan raises before someone has to email
 // to ask them. Kept as plain copy rather than an accordion — on a pricing page
 // the objections should be readable at a glance, not behind a click.
-const NOTES: { question: string; answer: ReactNode }[] = [
+const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   {
+    id: 'what-counts',
     question: 'What counts as a conversation?',
     answer: (
       <>
@@ -40,34 +48,36 @@ const NOTES: { question: string; answer: ReactNode }[] = [
             ))}
           </tbody>
         </table>
-        <p className="mt-3">
-          Every line shows up in your usage view, so the month adds up in front of you.
-        </p>
+        <p className="mt-3">Every line shows up in your usage view.</p>
       </>
     ),
   },
   {
     question: 'Which model answers my customers?',
-    answer: `Comet and Satellite run on ${MANAGED_ANSWER_MODEL}, with smaller models for the steps around it. There are no model multipliers and no credit tables: a conversation is a conversation. If you want a different model, Planet runs on your own keys with any model you choose, and we charge the same per conversation.`,
+    answer: `Comet, Satellite, and Planet with the models on us run on ${MANAGED_ANSWER_MODEL}, with smaller models for the steps around it. There are no model multipliers and no credit tables. If you want a different model, bring your own keys on Planet: any model you choose, and the platform price is the same.`,
   },
   {
     question: 'What happens when I reach the limit?',
-    answer: `The agent tells you before you get there, at 80 percent. At the limit you can move up a plan, or buy a top-up: ${TOP_UP.price} for ${TOP_UP.conversations} more conversations, one-off, and they never expire. Nothing is charged automatically and there is no overage bill at the end of the month.`,
+    answer: `The agent tells you before you get there, at 80 percent. At the limit you can move up a plan. On Satellite and Planet you can also buy a top-up: ${TOP_UP.price} for ${TOP_UP.conversations} more conversations, one-off, good for 12 months. ${TOP_UP.auto} Otherwise nothing is charged without you asking, and there is no overage bill at the end of the month. On Comet the next step is Satellite.`,
+  },
+  {
+    question: 'Do unused conversations roll over?',
+    answer:
+      'No. The monthly allowance resets on your billing date, on monthly and annual plans alike. Top-up packs are the exception: whatever is left in a pack stays yours for 12 months from purchase.',
   },
   {
     question: 'What counts toward content storage?',
     answer:
-      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan; nothing already indexed is deleted.',
+      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
   },
   {
     question: 'Why do you not charge per seat?',
     answer:
-      'Because seat pricing punishes you for letting your team use the thing. Invite your whole support desk, your engineers, and everyone who writes documentation. Headcount is not our business.',
+      'Seat pricing discourages you from letting your team use the product. Invite your whole support desk, your engineers, and everyone who writes documentation. The price does not change with headcount.',
   },
   {
-    question: 'Why does Planet use my keys instead of yours?',
-    answer:
-      'At volume, teams already have negotiated model contracts, their own rate limits, and their own data-processing agreements with providers. Planet lets you keep all of that, and it is why Planet costs half as much per conversation as Satellite. It is a plan for using your own terms, not a plan with the models removed.',
+    question: 'Why would I bring my own model keys?',
+    answer: `At volume, teams often have negotiated model contracts, their own rate limits, and their own data-processing agreements with providers. On Planet you can keep all of that and pay ${PLANET_MANAGED.uplift} a month less, because the inference is yours. With your own keys Planet costs a third less per conversation than Satellite. If you would rather have nothing to set up, leave the models to us for ${PLANET_MANAGED.total}: the same rate per conversation as Satellite, with five times the room, more storage, priority support, and the quarterly review.`,
   },
   {
     question: 'Is anything gated behind a paid plan?',
@@ -76,12 +86,21 @@ const NOTES: { question: string; answer: ReactNode }[] = [
   },
   {
     question: 'Can you run it for us?',
-    answer: `Yes. ${MANAGED.scope} ${MANAGED.price} ${MANAGED.note}, including the free one. Most of the organisations we run agents for are small teams who would rather have it done than learn to do it, and the software stays yours either way.`,
+    answer: (
+      <>
+        Yes. {MANAGED.scope} It is priced by agreement, on top of whichever plan you are on,
+        including the free one. Most of the organisations we run agents for are small teams who
+        would rather have it done than learn to do it.{' '}
+        <a href={MANAGED.href} className="font-medium text-primary underline-offset-4 hover:underline">
+          {MANAGED.cta}
+        </a>
+      </>
+    ),
   },
   {
     question: 'Can I move between the cloud and self-hosting?',
     answer:
-      'Yes, in both directions. It is the same open source code either way. The cloud is us running the servers, not a different product, and there is no proprietary tier to get stranded on.',
+      'Yes. It is the same open source code whether you self-host or use the cloud, so you can move either way. The cloud is us running the servers.',
   },
 ]
 
@@ -102,7 +121,8 @@ export default function PricingPage() {
             one line.
           </p>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Every feature is on every plan. The plans differ in volume, and in who pays for the models.
+            Every feature is on every plan. The plans differ in how many conversations a month, and
+            in who pays for the models.
           </p>
         </div>
 
@@ -117,7 +137,10 @@ export default function PricingPage() {
           <dl className="mt-12 space-y-8">
             {NOTES.map((note, i) => (
               <Reveal key={note.question} delay={i * 90} className="border-t border-border/70 pt-6">
-                <dt className="display-serif font-serif text-base font-semibold text-foreground sm:text-lg">
+                <dt
+                  id={note.id}
+                  className="display-serif scroll-mt-28 font-serif text-base font-semibold text-foreground sm:text-lg"
+                >
                   {note.question}
                 </dt>
                 <dd className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -130,14 +153,14 @@ export default function PricingPage() {
 
         <div className="mx-auto mt-20 max-w-2xl text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Something here not quite fitting your shape?{' '}
+            Something else in mind?{' '}
             <a
               href={`mailto:${site.contactEmail}`}
               className="font-medium text-primary hover:underline"
             >
               Tell us what you need
-            </a>{' '}
-            and we will work it out together.
+            </a>
+            .
           </p>
         </div>
       </div>
