@@ -143,3 +143,188 @@ export const AVATAR_TEAMMATE = {
     P: '#3a3f4b',
   } satisfies PixelPalette,
 }
+
+/* ── Plan sprites for /pricing ─────────────────────────────────────────── */
+const PLAN_BODY = 'var(--primary)'
+const PLAN_ACCENT = 'var(--secondary)'
+
+/* Comet — head and tail as one fused wedge; a circle on a thin trail reads as a
+   lollipop. The glint rides the leading edge, because a lone accent cell inside
+   the head reads as a keyhole and turns the whole thing into a key. */
+export const COMET_SPRITE = {
+  grid: [
+    '                         ',
+    '                         ',
+    '                         ',
+    '               ooooo     ',
+    '              XXooooo    ',
+    '             XXXXooooo   ',
+    '            XXXXXXXoooo  ',
+    '            XXXXXXXXooo  ',
+    '           XXXXXXXXXooo  ',
+    '           XXXXXXXXXXoo  ',
+    '          XXXXXXXXXXXoo  ',
+    '         XXXXXXXXXXXXX   ',
+    '         XXXXXXXXXXXX    ',
+    '        XXXXXXXXXXXX     ',
+    '       XXXXXXXXXX        ',
+    '       XXXXXXXX          ',
+    '      XXXXXXX            ',
+    '     XXXXXX              ',
+    '     XXXX                ',
+    '    XXX                  ',
+    '   XX                    ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+  ],
+  palette: { X: PLAN_BODY, o: PLAN_ACCENT } satisfies PixelPalette,
+}
+
+/* Satellite — panelled arrays flanking the body, joined by a strut row so it reads
+   as one object. The seam every third row is what makes them read as solar arrays
+   rather than two plain slabs; thin stub wings just read as an aeroplane. */
+export const SATELLITE_SPRITE = {
+  grid: [
+    '                         ',
+    '           ooo           ',
+    '          ooooo          ',
+    '          ooooo          ',
+    '          ooooo          ',
+    '           XXX           ',
+    '           XXX           ',
+    '         XXXXXXX         ',
+    'oooooo   XXXXXXX   oooooo',
+    'oooooo   XXXXXXX   oooooo',
+    '         XXXXXXX         ',
+    'ooooooXXXXXXXXXXXXXoooooo',
+    'ooooooXXXXXXXXXXXXXoooooo',
+    '         XXXXXXX         ',
+    'oooooo   XXXXXXX   oooooo',
+    'oooooo   XXXXXXX   oooooo',
+    '         XXXXXXX         ',
+    '         XXXXXXX         ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+  ],
+  palette: { X: PLAN_BODY, o: PLAN_ACCENT } satisfies PixelPalette,
+}
+
+/* Planet — sphere plus a ring in perspective. The ring is occluded by the sphere
+   on the far side and drawn over it on the near side; without that it is just a
+   bar skewering a circle. */
+export const PLANET_SPRITE = {
+  grid: [
+    '                         ',
+    '                         ',
+    '                         ',
+    '           XXX           ',
+    '        XXXXXXXXX        ',
+    '       XXXXXXXXXXX       ',
+    '      XXXXXXXXXXXXX      ',
+    '     XXXXXXXXXXXXXXX     ',
+    '     XXXXXXXXXXXXXXX     ',
+    '     XXXXXXXXXXXXXXX     ',
+    '    XXXXXXXXXXXXXXXXX    ',
+    '    XXXXXXXXXXXXXXXXX    ',
+    '  ooXXXXXXXXXXXXXXXXXoo  ',
+    'oooooXXXXXXXXXXXXXXXooooo',
+    'oooooXXXXXXXXXXXXXXXooooo',
+    '  ooooooXXXXXXXXXoooooo  ',
+    '      ooooooooooooo      ',
+    '       XXXXXXXXXXX       ',
+    '        XXXXXXXXX        ',
+    '           XXX           ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+    '                         ',
+  ],
+  palette: { X: PLAN_BODY, o: PLAN_ACCENT } satisfies PixelPalette,
+}
+
+/* Star — a disc with eight thick rays, the tier above Planet. Not a four-point
+   sparkle (see SIGNAL_GRID): the disc dominates and the rays are chunky and
+   few, so it reads as a sun. Keeps the cloud palette, blue body and yellow
+   accent, because it is a cloud tier; only Own Galaxy inverts. */
+export const STAR_SPRITE = {
+  grid: [
+    '                         ',
+    '                         ',
+    '           ooo           ',
+    '    oo     ooo     oo    ',
+    '    oo     ooo     oo    ',
+    '      oo   ooo   oo      ',
+    '      oo         oo      ',
+    '          XXXXX          ',
+    '         XXXXXXX         ',
+    '        XXXXXXXXX        ',
+    '        XXXXXXXXX        ',
+    '  oooo XXXXXXXXXXX oooo  ',
+    '  oooo XXXXXXXXXXX oooo  ',
+    '  oooo XXXXXXXXXXX oooo  ',
+    '        XXXXXXXXX        ',
+    '        XXXXXXXXX        ',
+    '         XXXXXXX         ',
+    '          XXXXX          ',
+    '      oo         oo      ',
+    '      oo   ooo   oo      ',
+    '    oo     ooo     oo    ',
+    '    oo     ooo     oo    ',
+    '           ooo           ',
+    '                         ',
+    '                         ',
+  ],
+  palette: { X: PLAN_BODY, o: PLAN_ACCENT } satisfies PixelPalette,
+}
+
+/* Own Galaxy — a two-arm logarithmic spiral around a bright core. Palette inverts
+   from the cloud three so the self-hosted tier reads as their sibling, not a
+   fourth one of them. */
+export const GALAXY_SPRITE = {
+  grid: [
+    '                         ',
+    '                         ',
+    '       o                 ',
+    '     ooo                 ',
+    '    ooo                  ',
+    '    ooo                  ',
+    '    ooo                  ',
+    '    oo                   ',
+    '    oo       oo          ',
+    '    ooo    XXXoooo       ',
+    '    ooo   XXXXXoooo      ',
+    '    ooo  XXXXXXXoooo     ',
+    '     ooo XXXXXXX ooo     ',
+    '     ooooXXXXXXX  ooo    ',
+    '      ooooXXXXX   ooo    ',
+    '       ooooXXX    ooo    ',
+    '          oo       oo    ',
+    '                   oo    ',
+    '                  ooo    ',
+    '                  ooo    ',
+    '                  ooo    ',
+    '                 ooo     ',
+    '                 o       ',
+    '                         ',
+    '                         ',
+  ],
+  palette: { X: PLAN_ACCENT, o: PLAN_BODY } satisfies PixelPalette,
+}
+
+export const PLAN_SPRITES = {
+  comet: COMET_SPRITE,
+  satellite: SATELLITE_SPRITE,
+  planet: PLANET_SPRITE,
+  star: STAR_SPRITE,
+  galaxy: GALAXY_SPRITE,
+} as const
+
+export type PlanSpriteKey = keyof typeof PLAN_SPRITES
