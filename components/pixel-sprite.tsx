@@ -250,6 +250,41 @@ export const PLANET_SPRITE = {
   palette: { X: PLAN_BODY, o: PLAN_ACCENT } satisfies PixelPalette,
 }
 
+/* Star — a disc with eight thick rays, the tier above Planet. Not a four-point
+   sparkle (see SIGNAL_GRID): the disc dominates and the rays are chunky and
+   few, so it reads as a sun. Keeps the cloud palette, blue body and yellow
+   accent, because it is a cloud tier; only Own Galaxy inverts. */
+export const STAR_SPRITE = {
+  grid: [
+    '                         ',
+    '                         ',
+    '           ooo           ',
+    '    oo     ooo     oo    ',
+    '    oo     ooo     oo    ',
+    '      oo   ooo   oo      ',
+    '      oo         oo      ',
+    '          XXXXX          ',
+    '         XXXXXXX         ',
+    '        XXXXXXXXX        ',
+    '        XXXXXXXXX        ',
+    '  oooo XXXXXXXXXXX oooo  ',
+    '  oooo XXXXXXXXXXX oooo  ',
+    '  oooo XXXXXXXXXXX oooo  ',
+    '        XXXXXXXXX        ',
+    '        XXXXXXXXX        ',
+    '         XXXXXXX         ',
+    '          XXXXX          ',
+    '      oo         oo      ',
+    '      oo   ooo   oo      ',
+    '    oo     ooo     oo    ',
+    '    oo     ooo     oo    ',
+    '           ooo           ',
+    '                         ',
+    '                         ',
+  ],
+  palette: { X: PLAN_BODY, o: PLAN_ACCENT } satisfies PixelPalette,
+}
+
 /* Own Galaxy — a two-arm logarithmic spiral around a bright core. Palette inverts
    from the cloud three so the self-hosted tier reads as their sibling, not a
    fourth one of them. */
@@ -288,6 +323,7 @@ export const PLAN_SPRITES = {
   comet: COMET_SPRITE,
   satellite: SATELLITE_SPRITE,
   planet: PLANET_SPRITE,
+  star: STAR_SPRITE,
   galaxy: GALAXY_SPRITE,
 } as const
 
