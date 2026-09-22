@@ -53,7 +53,7 @@ const RADIOSO_SOURCES = {
 export const PRERENDERED: Record<string, AgentAnswerData> = {
   whatIsRadioso: {
     body:
-      "Radioso is an open-source platform for conversational agents — grounded in your data and following your rules[1]. Run it in Radioso Cloud, or self-host it on your own infrastructure. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
+      "Radioso is the customer service platform for AI agents. It is open source end to end — grounded in your data and following your rules[1]. Run it in Radioso Cloud, or self-host it on your own infrastructure. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every channel: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.why },
       { n: 2, ...RADIOSO_SOURCES.architecture },
@@ -93,7 +93,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   mcp: {
     body:
-      "Radioso speaks MCP. Self-hosted, the backend can serve an MCP endpoint directly; there's also a standalone `@radioso/mcp-server` package when you want MCP as its own connector surface[1]. Clients get both shapes: tools to converse with an agent, and tools to search, read, and write workspace documents — with citations attached[1]. It runs the same retrieval and the same rules as every other surface, so answers stay consistent[2].",
+      "Radioso speaks MCP. Self-hosted, the backend can serve an MCP endpoint directly; there's also a standalone `@radioso/mcp-server` package when you want MCP as its own connector channel[1]. Clients get both shapes: tools to converse with an agent, and tools to search, read, and write workspace documents — with citations attached[1]. It runs the same retrieval and the same rules as every other channel, so answers stay consistent[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.why },
       { n: 2, ...RADIOSO_SOURCES.architecture },
@@ -101,7 +101,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   embed: {
     body:
-      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one surface among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
+      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one channel among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.embed },
       { n: 2, ...RADIOSO_SOURCES.why },
@@ -109,7 +109,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   licensing: {
     body:
-      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. You bring your own model keys — in Radioso Cloud or self-hosted — so there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
+      "Every product feature is open source — grounded answers, directives, routines, actions, every channel. Nothing is feature-gated and nothing is held back for a paid tier[1]. You bring your own model keys — in Radioso Cloud or self-hosted — so there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.source },
       { n: 2, ...RADIOSO_SOURCES.deployment },
@@ -125,7 +125,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   refuse: {
     body:
-      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, handing off to a person, the surfaces it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
+      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, handing off to a person, the channels it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
     sources: [],
   },
 }

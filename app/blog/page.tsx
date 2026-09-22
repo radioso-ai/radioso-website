@@ -8,8 +8,16 @@ import { site } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Blog',
-  description: 'Notes from the Radioso team on conversational agents, grounded answers, and building in the open.',
+  description: 'Notes from the Radioso team on customer service agents, grounded answers, and building in the open.',
   alternates: { canonical: `${site.url}/blog` },
+  openGraph: {
+    title: 'Blog',
+    description:
+      'Notes from the Radioso team on customer service agents, grounded answers, and building in the open.',
+    url: `${site.url}/blog`,
+    siteName: site.name,
+    images: ['/og.png'],
+  },
 }
 
 export default async function BlogIndexPage() {
@@ -19,7 +27,7 @@ export default async function BlogIndexPage() {
     <PageShell>
       <div className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
         <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-          Notes from the Radioso team on conversational agents, grounded answers, and building in the open.
+          Notes from the Radioso team on customer service agents, grounded answers, and building in the open.
         </p>
         {posts.length === 0 ? (
           <p className="mt-12 text-sm leading-7 text-muted-foreground">No posts yet — check back soon.</p>

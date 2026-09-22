@@ -15,7 +15,7 @@ export async function GET() {
     '',
     `> ${site.description}`,
     '',
-    'Radioso is built for three audiences: developers building conversational agents into their own products, customer-facing teams running support and sales agents, and organizations that want a grounded assistant over their internal knowledge. Every product feature ships in the open-source release; the Enterprise Edition adds multi-tenant deployment at scale. Use Radioso Cloud with your own model keys, or self-host.',
+    'Radioso is the customer service platform for AI agents, built for three audiences: customer-facing teams running support and pre-sales agents over their help center, developers embedding a service agent in their own product, and organizations that want one grounded knowledge base for customers and staff alike. Every product feature ships in the open-source release; the Enterprise Edition adds multi-tenant deployment at scale. Use Radioso Cloud with your own model keys, or self-host — the same agent across every channel: web, Slack, API, SDK, and MCP.',
     '',
     '## Pages',
     '',

@@ -55,11 +55,11 @@ const STRIKE_LEAD = 420
 const STRIKE_STEP = 420
 
 // What Radioso collapses the drawer into: content once, rules once, an agent
-// per surface, one thing to review.
+// per channel, one thing to review.
 const CHIPS = [
   'one knowledge base',
   'your rules, set once',
-  'an agent per surface',
+  'an agent per channel',
   'one deployment to review',
 ]
 
@@ -76,22 +76,10 @@ type Audience = {
 // the first screenful, then the rest of the page proves the mechanics.
 const AUDIENCES: Audience[] = [
   {
-    icon: Code2,
-    eyebrow: 'Builders',
-    title: 'Put an agent in your own product',
-    body: 'Give your customers a grounded agent inside your app or site. Build once, keep the same knowledge and rules everywhere, and choose the surface that fits your product.',
-    points: [
-      'One agent across every surface',
-      'Your knowledge and rules stay in sync',
-      'Cloud or self-hosted',
-    ],
-    link: { href: '/developers', label: 'Explore the developer platform' },
-  },
-  {
     icon: Headset,
     eyebrow: 'High-volume CX teams',
     title: 'Resolve routine tickets end to end',
-    body: 'Ground the agent in your help center and policies and it clears the routine queue itself — running routines like returns and escalations, honoring your directives every step. When a case is genuinely hard, it hands a person the full transcript with every action attached.',
+    body: 'Ground the agent in your help center and policies and it clears the routine queue itself: running routines like returns and escalations, honoring your directives every step. When a case is genuinely hard, it hands a person the full transcript with every action attached.',
     points: [
       'Grounded in your help center and policies',
       'Runs routines like returns and escalations',
@@ -100,10 +88,22 @@ const AUDIENCES: Audience[] = [
     link: { href: '#people', label: 'See a ticket resolved' },
   },
   {
+    icon: Code2,
+    eyebrow: 'Builders',
+    title: 'Put the service agent inside your product',
+    body: 'Give customers grounded answers and real actions right where they already are, inside your app or site. One set of knowledge and rules, running the same way on every channel you build.',
+    points: [
+      'One agent across every channel',
+      'Your knowledge and rules stay in sync',
+      'Cloud or self-hosted',
+    ],
+    link: { href: '/developers', label: 'Explore the developer platform' },
+  },
+  {
     icon: BookOpenCheck,
     eyebrow: 'Knowledge-base teams',
-    title: 'One knowledge base, cited answers everywhere',
-    body: 'Ingest and curate your documents once, then let both sides of the house draw from the same grounded source. Your team asks in Slack or web chat; your customers ask through the embed or public chat — same citations, no second copy to keep in sync.',
+    title: 'One correct answer on every channel',
+    body: 'Staff ask in Slack, customers ask through the embed or public chat, and everyone draws on the same cited source, curated once.',
     points: [
       'Curate documents once, reuse everywhere',
       'Grounded answers with citations',
@@ -130,9 +130,9 @@ export function AudienceSection() {
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
           A support agent from one vendor, cart recovery from another, lead qualification from a
-          third — each with its own contract, its own integration, its own copy of your knowledge
+          third: each with its own contract, its own integration, its own copy of your knowledge
           going quietly stale. Radioso runs them all in one place: your content once, your rules
-          once, and a purpose-built agent on every surface.
+          once, and a purpose-built agent on every channel.
         </p>
       </div>
 
@@ -143,11 +143,6 @@ export function AudienceSection() {
 
         <RadiosoCard />
       </div>
-
-      {/* The bridge from the platform argument to the people it pays off for. */}
-      <p className="display-serif mx-auto mt-10 max-w-xl text-center font-serif text-lg italic text-muted-foreground">
-        Different teams, same engine.
-      </p>
 
       <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3">
         {AUDIENCES.map(({ icon: Icon, eyebrow, title, body, points, link }, i) => (
@@ -200,10 +195,18 @@ export function AudienceSection() {
  * winds it back before the first paint and only plays it once, on scroll. The
  * whole effect is colour and text-decoration (see the vendor block in
  * globals.css), so it cannot move a pixel of layout.
+ *
+ * Below `md` the pills stack into a tall column that reads as a list rather than
+ * a drawer, so the cluster is hidden there and the section's own paragraph
+ * carries the argument into the Radioso card.
  */
 function VendorCluster() {
   return (
-    <TraceOnView arm delay={STRIKE_LEAD} className="flex flex-col items-center gap-3">
+    <TraceOnView
+      arm
+      delay={STRIKE_LEAD}
+      className="hidden flex-col items-center gap-3 md:flex"
+    >
       <div className="flex flex-wrap items-center justify-center gap-2">
         {VENDORS.map(({ icon: Icon, capability, vendor, rotate }, i) => (
           <span
@@ -234,10 +237,11 @@ function VendorCluster() {
 }
 
 // Downward connector — the visual language of the non-tight FlowArrow in
-// platform-diagram.tsx (a thin gradient line + ArrowDown).
+// platform-diagram.tsx (a thin gradient line + ArrowDown). It travels with the
+// cluster: below `md` there is nothing above it to point from.
 function ConnectorArrow() {
   return (
-    <div className="flex flex-col items-center py-4" aria-hidden>
+    <div className="hidden flex-col items-center py-4 md:flex" aria-hidden>
       <div className="h-9 w-px bg-gradient-to-b from-border to-primary/35" />
       <ArrowDown className="-mt-1 size-4 text-primary/50" />
     </div>

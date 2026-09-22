@@ -1,7 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 import { Check } from 'lucide-react'
 import type { ComponentType, CSSProperties, ReactNode, SVGProps } from 'react'
 
@@ -34,7 +41,7 @@ export type Turn =
     }
 
 /** Beat lengths, in ms. Tuned so closing action rows get the most air. */
-const LEAD_IN = 300 // lets the card's own Reveal settle before the chat starts
+const LEAD_IN = 300 // a breath at the top of the track before the first line lands
 const DEFAULT_THINK = 620
 const DEFAULT_PAUSE = 520
 const ACTION_LEAD = 300 // from a reply landing to its first action row
@@ -44,8 +51,10 @@ const COUNT_MS = 620
 /** A plain row is confirmed almost at once; a row with a figure waits for it to land. */
 const CHECK_LAG = 300
 const MONEY_CHECK_LAG = COUNT_LAG + COUNT_MS - 20
-/** The card grows a touch ahead of each arrival, so nothing lands outside its edge. */
-const GROW_LEAD = 80
+/** After the last mark: room for its own animation and any figure to finish. */
+const SETTLE = 900
+/** How long the transcript takes to slide up to its new resting place. `--dur-base`. */
+const CHAT_SCROLL_MS = 420
 
 export type TurnPlan = {
   typingAt: number | null
@@ -99,168 +108,266 @@ export function planChat(chat: Turn[]): TurnPlan[] {
   })
 }
 
+/** The point on the timeline where the scene is finished: last mark plus a settle. */
+export function sceneEnd(plan: TurnPlan[]): number {
+  let end = 0
+  for (const p of plan) {
+    end = Math.max(end, p.textAt, p.avatarAt, p.noteAt ?? 0, ...p.actionsAt)
+    if (p.typingAt !== null) end = Math.max(end, p.typingAt + p.typingFor)
+  }
+  return end + SETTLE
+}
+
 export type SceneScript = { chat: Turn[]; plan: TurnPlan[] }
 
 const delay = (ms: number) => ({ '--scene-delay': `${ms}ms` }) as CSSProperties
 
-const MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+export const MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
-function subscribeMotion(onChange: () => void) {
-  const mq = window.matchMedia(MOTION_QUERY)
-  mq.addEventListener('change', onChange)
-  return () => mq.removeEventListener('change', onChange)
+export const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
+
+/* ---------------------------------------------------------------------------
+   The scene clock.
+
+   Scroll position, not a timer, is the transport: the track in agent-demos.tsx
+   turns scroll progress into a point on the same `planChat` timeline and pushes
+   it here once per frame. Everything downstream is a pure function of `t`, which
+   is why scrubbing backwards costs nothing — the CSS animations are paused and
+   positioned by a negative `animation-delay`, and the two things CSS can't do
+   (the transcript's own scroll offset and the dollar figures) read `t` straight
+   off the clock and write to the DOM without a re-render.
+   --------------------------------------------------------------------------- */
+/** Everything downstream of the track needs to know, in one object. */
+export type SceneFrame = {
+  /** Where the scene is, in ms on the `planChat` timeline. */
+  t: number
+  /** False until the track arms: no JS, or reduced motion, means the finished scene. */
+  armed: boolean
+  /** The scene has played through once. It stays said, and the card is the visitor's. */
+  done: boolean
 }
 
-/** Read during render, so the finished figure is what a reduced-motion user ever sees. */
-function useReducedMotion() {
-  return useSyncExternalStore(
-    subscribeMotion,
-    () => window.matchMedia(MOTION_QUERY).matches,
-    () => false,
-  )
+export type SceneClock = {
+  /** Registers a frame listener and returns its unsubscribe. */
+  subscribe: (fn: (frame: SceneFrame) => void) => () => void
+  /** Pushes a new position on the timeline, and whether the scene is finished. */
+  emit: (t: number, done: boolean) => void
+  /** Called once by the track when it takes over: until then, nothing is hidden. */
+  arm: () => void
+  /** The current frame, for anything mounting mid-track (a tab switch). */
+  read: () => SceneFrame
 }
 
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
+/** State lives in the closure, so the object handed around is never mutated. */
+export function createSceneClock(): SceneClock {
+  const subs = new Set<(frame: SceneFrame) => void>()
+  let frame: SceneFrame = { t: 0, armed: false, done: false }
 
-/** A height the card should have grown to by a given point in the timeline. */
-type GrowStep = { at: number; h: number }
+  return {
+    subscribe(fn) {
+      subs.add(fn)
+      return () => {
+        subs.delete(fn)
+      }
+    },
+    emit(t, done) {
+      frame = { t, armed: frame.armed, done }
+      for (const fn of subs) fn(frame)
+    },
+    arm() {
+      frame = { ...frame, armed: true }
+    },
+    read: () => frame,
+  }
+}
+
+const SceneClockContext = createContext<SceneClock | null>(null)
+
+export const SceneClockProvider = SceneClockContext.Provider
+
+/** Subscribes to the clock for the life of the component. `fn` must be stable. */
+function useSceneFrame(fn: (frame: SceneFrame) => void) {
+  const clock = useContext(SceneClockContext)
+  useIsomorphicLayoutEffect(() => {
+    if (!clock) return
+    fn(clock.read())
+    return clock.subscribe(fn)
+  }, [clock, fn])
+}
+
+/** Where the transcript should sit, in px, once everything up to `at` has landed. */
+type ScrollStep = { at: number; y: number }
+
+const easeOut = (p: number) => 1 - Math.pow(1 - p, 3)
+
+/** Flags "there is conversation above this" for the top fade. */
+function markEdge(viewport: HTMLElement) {
+  const atTop = viewport.scrollTop < 4
+  const next = atTop ? 'true' : 'false'
+  if (viewport.dataset.top !== next) viewport.dataset.top = next
+}
 
 /**
- * A scripted conversation, played as a timed sequence the first time it scrolls
- * into view — or immediately, when mounted already in view by a tab switch.
+ * A scripted conversation, scrubbed by the page's scroll position.
  *
- * The transcript itself always sits in normal flow at its full, final height, so
- * the space it needs is reserved exactly and nothing on the page ever moves. What
- * animates is a separate chrome layer — the border and background — which starts
- * as a slim header strip and grows to meet each line as it arrives. The
- * not-yet-filled area is therefore ordinary page background, never an empty
- * bordered panel.
+ * The card is a chat window: a fixed height with the header strip pinned at the
+ * top and the transcript scrolling underneath it, so the newest line is always the
+ * one at the bottom edge. Scroll progress drives the container's own `scrollTop`,
+ * from offsets measured off the real elements on arm (and again on resize), so the
+ * same page position always produces the same frame, forwards or backwards — and
+ * once the scene has played out, the visitor can scroll the transcript themselves.
  *
  * Nothing is hidden until JS says so: the served HTML, a visitor without JS, and
  * anyone with `prefers-reduced-motion: reduce` all get the finished conversation
- * at the card's natural full height.
+ * at the card's natural full height, in normal flow, with no pinning.
  */
 export function ScriptedScene({ script, label }: { script: SceneScript; label: string }) {
   const { chat, plan } = script
-  const containerRef = useRef<HTMLDivElement | null>(null)
+  const cardRef = useRef<HTMLDivElement | null>(null)
+  const viewportRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
-  const stepsRef = useRef<GrowStep[]>([])
-  const appliedRef = useRef(0)
-  const armedRef = useRef(false)
-  const [playing, setPlaying] = useState(false)
+  const stepsRef = useRef<ScrollStep[]>([])
+  /** The offset currently written to the node, so a still frame costs no DOM write. */
+  const appliedRef = useRef(Number.NaN)
+  /** Set once the closing frame is in and the scroll container is the visitor's. */
+  const releasedRef = useRef(false)
 
   /**
-   * Where the card's bottom edge belongs after each beat: the lowest point of
-   * everything that has arrived by then, plus the card's own bottom padding.
+   * The transcript's resting `scrollTop` after each beat: everything that has
+   * landed by then, measured against the height of the window it is read through.
+   * Offsets are differences between two live rects, so the container's own scroll
+   * position cancels out and the numbers mean the same thing at any offset.
    */
-  const measure = useCallback((): GrowStep[] => {
-    const container = containerRef.current
+  const measure = useCallback((): ScrollStep[] => {
+    const viewport = viewportRef.current
     const content = contentRef.current
-    if (!container || !content) return []
+    if (!viewport || !content) return []
 
-    const top = container.getBoundingClientRect().top
+    // The content box carries the card's own padding, so `top` is the top of the
+    // scrollable area and the bottom pad is part of what has to fit.
+    const top = content.getBoundingClientRect().top
     const padBottom = parseFloat(getComputedStyle(content).paddingBottom) || 0
-    const marks = [...container.querySelectorAll<HTMLElement>('[data-at]')]
-      .map((el) => ({ at: Number(el.dataset.at), h: el.getBoundingClientRect().bottom - top + padBottom }))
+    const frame = viewport.clientHeight
+    if (frame <= 0) return []
+
+    const marks = [...content.querySelectorAll<HTMLElement>('[data-at]')]
+      .map((el) => ({ at: Number(el.dataset.at), bottom: el.getBoundingClientRect().bottom - top }))
       .sort((a, b) => a.at - b.at)
 
-    const steps: GrowStep[] = []
+    const steps: ScrollStep[] = []
     let lowest = 0
     for (const mark of marks) {
-      lowest = Math.max(lowest, mark.h)
+      lowest = Math.max(lowest, mark.bottom)
+      const y = Math.max(0, lowest + padBottom - frame)
       const last = steps[steps.length - 1]
-      if (last && last.at === mark.at) last.h = lowest
-      else steps.push({ at: mark.at, h: lowest })
+      if (last && last.at === mark.at) last.y = y
+      else steps.push({ at: mark.at, y })
     }
     return steps
   }, [])
 
-  // Arm before the first paint — below the fold on first load, or mid-viewport
-  // when a tab switch mounts a fresh scene — so the collapse down to a header
-  // strip is never seen.
+  const paint = useCallback(({ t, armed, done }: SceneFrame) => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+    if (!armed) {
+      viewport.scrollTop = 0
+      return
+    }
+    const steps = stepsRef.current
+    if (!steps.length) return
+    // Once the scene has played through, the card belongs to the visitor: the
+    // clock writes the closing frame one last time and then keeps its hands off,
+    // so their own scrolling back through the conversation is never undone.
+    if (done && releasedRef.current) return
+
+    // The last step at or before `t`, and how far the slide into it has run.
+    let i = -1
+    while (i + 1 < steps.length && steps[i + 1].at <= t) i += 1
+    const from = i < 0 ? 0 : (steps[i - 1]?.y ?? 0)
+    const to = i < 0 ? 0 : steps[i].y
+    const p = i < 0 ? 1 : Math.min(1, (t - steps[i].at) / CHAT_SCROLL_MS)
+    const y = from + (to - from) * easeOut(p)
+
+    if (done && !releasedRef.current) {
+      releasedRef.current = true
+      // Give the finished transcript a tab stop of its own, so the conversation
+      // is scrollable from the keyboard and not just by wheel or touch.
+      viewport.tabIndex = 0
+      viewport.setAttribute('role', 'region')
+      viewport.setAttribute('aria-label', 'Conversation transcript')
+    }
+
+    // Skip the write when nothing moved: a scroll frame in the tail of the track
+    // shouldn't touch the DOM at all.
+    if (Math.abs(y - appliedRef.current) < 0.5) return
+    appliedRef.current = y
+    viewport.scrollTop = y
+    markEdge(viewport)
+  }, [])
+
+  useSceneFrame(paint)
+
+  // Arm before the first paint, while the measurement is still of the finished
+  // card: hide the transcript only once we know where every line belongs.
   useIsomorphicLayoutEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    const card = cardRef.current
+    if (!card) return
     if (window.matchMedia(MOTION_QUERY).matches) return
 
     const steps = measure()
     if (steps.length < 2) return // couldn't measure — leave the finished card alone
 
     stepsRef.current = steps
-    appliedRef.current = 0
-    armedRef.current = true
-    container.dataset.armed = 'true'
-    container.style.setProperty('--chrome-h', `${steps[0].h}px`)
+    appliedRef.current = Number.NaN
+    releasedRef.current = false
+    card.dataset.armed = 'true'
   }, [measure])
 
-  // Re-measure if the card reflows mid-sequence (font swap, resize, zoom).
+  // The top fade is history above the fold, so it has no business being there
+  // when the visitor has scrolled the conversation back to its first line.
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-    const observer = new ResizeObserver(() => {
-      if (!armedRef.current) return
-      stepsRef.current = measure()
-      const step = stepsRef.current[appliedRef.current]
-      if (!step) return
-      container.style.setProperty(
-        '--chrome-h',
-        appliedRef.current >= stepsRef.current.length - 1 ? '100%' : `${step.h}px`,
-      )
-    })
-    observer.observe(container)
-    return () => observer.disconnect()
-  }, [measure])
-
-  useEffect(() => {
-    const node = containerRef.current
-    if (!node) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setPlaying(true) // once — the observer disconnects and never re-arms
-            observer.disconnect()
-          }
-        }
-      },
-      // Fires once the top of the card is comfortably on screen, whatever its height.
-      { rootMargin: '0px 0px -20% 0px', threshold: 0 },
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
+    const viewport = viewportRef.current
+    if (!viewport) return
+    const onScroll = () => markEdge(viewport)
+    viewport.addEventListener('scroll', onScroll, { passive: true })
+    return () => viewport.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Grow the card in step with the transcript.
+  // Re-measure if the card reflows (font swap, resize, zoom) and repaint at the
+  // clock's current position, so a resize mid-track never loses the frame.
+  const clock = useContext(SceneClockContext)
   useEffect(() => {
-    const container = containerRef.current
-    if (!playing || !container || !armedRef.current) return
-
-    const timers = stepsRef.current.map((step, i) =>
-      window.setTimeout(
-        () => {
-          appliedRef.current = i
-          // On the final beat, hand the height back to CSS so the card stays fluid.
-          const last = i === stepsRef.current.length - 1
-          container.style.setProperty('--chrome-h', last ? '100%' : `${step.h}px`)
-        },
-        Math.max(0, step.at - GROW_LEAD),
-      ),
-    )
-    return () => timers.forEach((t) => window.clearTimeout(t))
-  }, [playing])
+    const card = cardRef.current
+    if (!card) return
+    const observer = new ResizeObserver(() => {
+      if (card.dataset.armed !== 'true') return
+      stepsRef.current = measure()
+      appliedRef.current = Number.NaN
+      const frame = clock?.read()
+      if (frame) paint(frame)
+    })
+    observer.observe(card)
+    return () => observer.disconnect()
+  }, [measure, paint, clock])
 
   return (
-    <div ref={containerRef} className={`relative mx-auto max-w-2xl ${playing ? 'scene-play' : ''}`}>
-      <div aria-hidden className="scene-chrome surface absolute inset-x-0 top-0 rounded-2xl" />
-      <div ref={contentRef} className="relative p-5 sm:p-7">
-        <div data-at="0" className="mb-5 flex items-center gap-2 border-b border-border/60 pb-3">
-          <SignalMark className="h-2.5 w-[1.125rem]" color="var(--human)" />
-          <span className="text-2xs font-medium text-muted-foreground">{label}</span>
-        </div>
+    <div
+      ref={cardRef}
+      className="scene-card surface relative mx-auto flex max-w-2xl flex-col overflow-hidden rounded-2xl"
+    >
+      <div className="flex shrink-0 items-center gap-2 border-b border-border/60 px-5 py-3.5 sm:px-7">
+        <SignalMark className="h-2.5 w-[1.125rem]" color="var(--human)" />
+        <span className="text-2xs font-medium text-muted-foreground">{label}</span>
+      </div>
 
-        <div className="flex flex-col gap-4">
+      {/* A real scroll container, not a transform: while the scene is being
+          scrubbed it is `overflow: hidden` (still scrollable from script, so a
+          wheel over the card can't steal the page scroll and break the pin), and
+          the moment the scene finishes it becomes the visitor's to scroll. */}
+      <div ref={viewportRef} className="scene-viewport no-scrollbar relative min-h-0 flex-1">
+        <div ref={contentRef} className="scene-content flex flex-col gap-4 px-5 py-5 sm:px-7">
           {chat.map((turn, i) => (
-            <Bubble key={i} turn={turn} plan={plan[i]} playing={playing} />
+            <Bubble key={i} turn={turn} plan={plan[i]} />
           ))}
         </div>
       </div>
@@ -268,7 +375,7 @@ export function ScriptedScene({ script, label }: { script: SceneScript; label: s
   )
 }
 
-function Bubble({ turn, plan, playing }: { turn: Turn; plan: TurnPlan; playing: boolean }) {
+function Bubble({ turn, plan }: { turn: Turn; plan: TurnPlan }) {
   const isRadioso = turn.who === 'radioso'
   const noteAt = plan.noteAt
   const entersAt = plan.typingAt ?? plan.textAt
@@ -313,7 +420,7 @@ function Bubble({ turn, plan, playing }: { turn: Turn; plan: TurnPlan; playing: 
         {isRadioso && turn.actions && (
           <div className="flex w-full flex-col gap-1.5 pt-0.5">
             {turn.actions.map((a, i) => (
-              <ActionChip key={a.label} action={a} at={plan.actionsAt[i]} playing={playing} />
+              <ActionChip key={a.label} action={a} at={plan.actionsAt[i]} />
             ))}
           </div>
         )}
@@ -323,7 +430,7 @@ function Bubble({ turn, plan, playing }: { turn: Turn; plan: TurnPlan; playing: 
               typeof piece === 'string' ? (
                 piece
               ) : (
-                <Figure key={i} value={piece.amount} at={noteAt + COUNT_LAG} playing={playing} />
+                <Figure key={i} value={piece.amount} at={noteAt + COUNT_LAG} />
               ),
             )}
           </RadiosoText>
@@ -376,7 +483,7 @@ function TypingBeat({ at, runFor, align }: { at: number; runFor: number; align: 
   )
 }
 
-function ActionChip({ action, at, playing }: { action: Action; at: number; playing: boolean }) {
+function ActionChip({ action, at }: { action: Action; at: number }) {
   const { icon: Icon, label, amount } = action
 
   return (
@@ -388,7 +495,7 @@ function ActionChip({ action, at, playing }: { action: Action; at: number; playi
       <Icon className="size-3.5 shrink-0 text-primary" />
       <span className="font-medium">
         {label}
-        {amount !== undefined && <Figure value={amount} at={at + COUNT_LAG} playing={playing} />}
+        {amount !== undefined && <Figure value={amount} at={at + COUNT_LAG} />}
       </span>
       <Check
         className="scene-check ml-auto size-3 shrink-0 text-primary"
@@ -398,44 +505,40 @@ function ActionChip({ action, at, playing }: { action: Action; at: number; playi
   )
 }
 
-const easeOut = (p: number) => 1 - Math.pow(1 - p, 3)
-
 /**
- * A dollar figure that ticks up once the scene reaches it. Its value is derived,
- * not stored: before the scene plays — and always under reduced motion — it renders
- * the real number, so the served HTML and the reduced-motion view are both correct
- * without waiting on a timer. Tabular digits plus a reserved min-width mean the
- * count can never re-wrap the line it sits in.
+ * A dollar figure whose value is a function of where the scene is: it rolls up as
+ * the visitor scrolls through its beat and rolls back down when they scroll back.
+ * React renders the real number, so the served HTML, a visitor without JS and a
+ * reduced-motion visitor are all correct without waiting on anything; the clock
+ * then writes the scrubbed value straight to the node, off React's books. Tabular
+ * digits plus a reserved min-width mean the count can never re-wrap its line.
  */
-function Figure({ value, at, playing }: { value: number; at: number; playing: boolean }) {
-  const reduced = useReducedMotion()
-  const [counted, setCounted] = useState<number | null>(null)
-  const shown = playing && !reduced ? (counted ?? 0) : value
+function Figure({ value, at }: { value: number; at: number }) {
+  const ref = useRef<HTMLSpanElement | null>(null)
+  const shownRef = useRef<number | null>(null)
 
-  useEffect(() => {
-    if (!playing || reduced) return
-    let frame = 0
-    const timer = window.setTimeout(() => {
-      const startedAt = performance.now()
-      const tick = (now: number) => {
-        const p = Math.min(1, (now - startedAt) / COUNT_MS)
-        setCounted(Math.round(easeOut(p) * value))
-        if (p < 1) frame = requestAnimationFrame(tick)
-      }
-      frame = requestAnimationFrame(tick)
-    }, at)
-    return () => {
-      window.clearTimeout(timer)
-      cancelAnimationFrame(frame)
-    }
-  }, [playing, reduced, at, value])
+  const paint = useCallback(
+    ({ t, armed }: SceneFrame) => {
+      const node = ref.current
+      if (!node) return
+      const p = armed ? Math.min(1, Math.max(0, (t - at) / COUNT_MS)) : 1
+      const next = Math.round(easeOut(p) * value)
+      if (next === shownRef.current) return
+      shownRef.current = next
+      node.textContent = `$${next.toLocaleString('en-US')}`
+    },
+    [at, value],
+  )
+
+  useSceneFrame(paint)
 
   return (
     <span
+      ref={ref}
       className="inline-block tabular-nums"
       style={{ minWidth: `${`$${value.toLocaleString('en-US')}`.length}ch` }}
     >
-      {`$${shown.toLocaleString('en-US')}`}
+      {`$${value.toLocaleString('en-US')}`}
     </span>
   )
 }

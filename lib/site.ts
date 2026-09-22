@@ -4,9 +4,9 @@ export const site = {
   // Kept separate from the tagline. The tagline is the brand line under the logo;
   // a <title> only renders ~60 characters in results, so it front-loads the terms
   // people actually search rather than the evocative line.
-  metaTitle: 'Radioso — open source platform for conversational AI agents',
+  metaTitle: 'Radioso — customer service platform for AI agents',
   description:
-    'Radioso is an open-source platform for building all your conversational agents in one place — support, sales, docs, internal help. Each one grounded in your documents with citations, steered by your rules, running multi-step routines, taking real action, and handing off to a person when it should. Run it in Radioso Cloud or self-host it — across web, API, SDK, and MCP.',
+    'Radioso is the customer service platform for AI agents. Customers get grounded answers with citations, steered by your directives, running routines, taking real action, and handing off to a person when it should. Run it in Radioso Cloud or self-host it, across web, Slack, API, SDK, and MCP.',
   url: process.env.SITE_URL ?? 'https://radioso.ai',
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.ai',
   appUrl: process.env.APP_URL ?? 'https://app.radioso.ai',

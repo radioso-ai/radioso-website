@@ -167,29 +167,28 @@ export function AskHero() {
               style={{ '--rise-delay': '60ms' } as React.CSSProperties}
             >
               {/* At `lg`+ the headline shares the row with the demo card, and `text-balance`
-                  breaks the narrow column mid-sentence ("agents. One" on its own line). Each
-                  sentence becomes a block there so the break lands between them instead.
+                  breaks the narrow column mid-sentence ("service, handled" on its own line). The
+                  clause after the comma becomes a block there so the break lands on it instead.
                   The type ramp stays gentle (30 / 36 / 38) because the two-column layout caps
                   what fits: a wider step would make some breakpoint render larger than the
                   desktop hero. Below `lg` the headline is full-width and breaks fine on its
                   own — `self-hosted` just needs to stay whole so it can't split at the hyphen. */}
-              <span className="lg:block">All your conversational agents.</span>{' '}
-              <span className="lg:block">One platform you own.</span>
+              <span className="lg:block">Customer service,</span>{' '}
+              <span className="lg:block">handled by agents you own.</span>
             </h1>
 
             <p
               className="rise-in mx-auto mt-5 max-w-xl text-pretty text-base leading-relaxed text-[color:var(--hero-ink-muted)] sm:mt-6 sm:text-lg lg:mx-0"
               style={{ '--rise-delay': '160ms' } as React.CSSProperties}
             >
-              {/* Each named agent deep-links to its demo tab below — the tab section
-                  listens for these #demo-* hashes. */}
-              <a href="#demo-support" className="hero-link">
-                A support agent resolving tickets
-              </a>
-              , <a href="#demo-docs" className="hero-link">a docs assistant citing sources</a>,{' '}
-              <a href="#demo-leads" className="hero-link">a lead qualifier on your marketing site</a>{' '}
-              &mdash; and the one you haven&apos;t thought of yet. All of them on one platform,
-              drawing on the same knowledge and following the same rules.
+              {/* The category line comes first so the title tag, JSON-LD, and hero all say
+                  the same thing. Each named demo deep-links to its tab below — the tab
+                  section listens for these #demo-* hashes. */}
+              Radioso is the customer service platform for AI agents. Open source, priced per
+              conversation, run in our cloud or yours. See it{' '}
+              <a href="#demo-support" className="hero-link">resolve a ticket</a>,{' '}
+              <a href="#demo-docs" className="hero-link">answer from your help center</a>, and{' '}
+              <a href="#demo-leads" className="hero-link">qualify a lead</a>.
             </p>
 
             <div

@@ -42,15 +42,21 @@ export const metadata: Metadata = {
   applicationName: site.name,
   alternates: { canonical: site.url },
   openGraph: {
-    title: site.name,
+    title: {
+      default: site.metaTitle,
+      template: `%s | ${site.name}`,
+    },
     description: site.description,
     url: site.url,
     siteName: site.name,
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — all your conversational agents on one platform you own' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — the customer service platform for AI agents' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: site.name,
+    title: {
+      default: site.metaTitle,
+      template: `%s | ${site.name}`,
+    },
     description: site.description,
     images: ['/og.png'],
   },

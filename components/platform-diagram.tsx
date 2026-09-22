@@ -148,7 +148,6 @@ function CompactAgentCard() {
       <div className="flex flex-col items-center gap-1">
         <Inlet />
         <CenterPill icon={Workflow} label="Assistant" emphasis delay={T.assistant} />
-        <p className="text-2xs text-muted-foreground">one turn · one governed loop</p>
       </div>
 
       <BranchDivider />

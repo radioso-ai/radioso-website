@@ -10,8 +10,16 @@ import { site } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Radioso for Slack',
   description:
-    'Add the Radioso app to your Slack workspace to ask grounded questions of your documents, run agent routines, and take action — without leaving Slack.',
+    'Add the Radioso app to your Slack workspace to ask grounded questions of your documents, run agent routines, and take action, without leaving Slack.',
   alternates: { canonical: `${site.url}/slack` },
+  openGraph: {
+    title: 'Radioso for Slack',
+    description:
+      'Add the Radioso app to your Slack workspace to ask grounded questions of your documents, run agent routines, and take action, without leaving Slack.',
+    url: `${site.url}/slack`,
+    siteName: site.name,
+    images: ['/og.png'],
+  },
 }
 
 const features = [
@@ -23,7 +31,7 @@ const features = [
   {
     icon: FileSearch,
     title: 'Grounded in your content',
-    note: 'Answers cite your uploaded documents and knowledge — not a generic model guess.',
+    note: 'Answers cite your uploaded documents and knowledge, with sources you can check.',
   },
   {
     icon: Workflow,
@@ -32,8 +40,8 @@ const features = [
   },
   {
     icon: ShieldCheck,
-    title: 'Self-hosted & private',
-    note: 'Runs on your own Radioso instance. Your data and LLM keys stay with you.',
+    title: 'Your data, your instance',
+    note: 'Runs in Radioso Cloud or on your own infrastructure, your model keys, your Postgres.',
   },
 ]
 
@@ -85,11 +93,11 @@ export default function SlackLandingPage() {
         <section className="mx-auto w-full max-w-4xl px-6 py-12 md:py-16">
           <p className="text-sm font-medium text-primary">Radioso for Slack</p>
           <h1 className="display-serif mt-3 font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
-            Grounded answers and agents that act — inside Slack.
+            Grounded answers and agents that act, inside Slack.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
             The Radioso Slack app brings your agents into your workspace. Ask
-            questions of your documents, run multi-step routines, and hand off to a teammate — without
+            questions of your documents, run multi-step routines, and hand off to a teammate, without
             leaving the conversation.
           </p>
 

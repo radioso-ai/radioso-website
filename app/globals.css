@@ -657,25 +657,72 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Refund scene: the chat plays itself once it scrolls into view.
+   Agent demos: the chat is scrubbed by the page's scroll position.
 
    The finished conversation is the default state, so the served HTML and a
-   visitor without JS both get the whole thing. Only once the script measures the
-   card and sets `data-armed` does anything hide, and only `.scene-play` starts
-   the clock; each element carries its own `--scene-delay`.
+   visitor without JS both get the whole thing in normal flow, at the card's
+   natural height, with nothing pinned. Only once components/agent-demos.tsx has
+   measured the stage does the track grow its scroll distance, the stage go
+   sticky, and the card wind back to its first frame (`data-armed`).
 
-   The transcript always occupies its full height in normal flow, so the space it
-   needs is reserved exactly and nothing on the page shifts. The card's border and
-   background are a separate layer that grows to meet each line as it lands, which
-   keeps the not-yet-filled area as ordinary page background rather than an empty
-   bordered panel.
+   From there every animation is *paused* and positioned by a negative delay:
+   `--scene-t` is the scene's position on the planChat timeline, written once per
+   scroll frame on the stage, and each element carries its own `--scene-delay`.
+   The frame CSS renders is therefore a pure function of scroll position, which
+   is what makes scrolling back rewind the scene for free.
    --------------------------------------------------------------------------- */
-.scene-chrome {
-  height: var(--chrome-h, 100%);
+/* The runway is the scroll distance the pinned stage is watched over. Unarmed it
+   does not exist, so the section is exactly as tall as its contents. */
+.scene-runway {
+  display: none;
 }
 
-.scene-play .scene-chrome {
-  transition: height var(--dur-base) var(--ease-out);
+[data-scrub='on'] > .scene-runway {
+  display: block;
+  height: 140vh;
+}
+
+/* The card is a chat window once armed: a fixed height with the transcript
+   sliding underneath the header strip. Tuned to leave room for the heading, the
+   tab bar and the rail — which on a phone carries the active step's sentence as
+   well as its title — inside a 900px-tall viewport, and inside an 812px phone.
+   300px is the floor: below that the transcript stops reading as a conversation,
+   so anything that still does not fit gives way before the card does. */
+[data-armed].scene-card {
+  height: min(38vh, 300px);
+}
+
+@media (min-width: 640px) {
+  [data-armed].scene-card {
+    height: min(56vh, 480px);
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-armed].scene-card {
+    height: min(56vh, 500px);
+  }
+}
+
+/* The transcript is clipped by the window it is read through, not just by the
+   card, so a line scrolling up never rides over the header strip. The fade is the
+   same idea in soft form, and deep enough (3rem) that the line leaving the top
+   reads as conversation continuing above rather than as a cut-off bubble. It lifts
+   at the very top, where there is no history left to suggest. */
+[data-armed] .scene-viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent 0, black 3rem);
+}
+
+[data-armed] .scene-viewport[data-top='true'] {
+  mask-image: none;
+}
+
+/* A played-out scene gives its card back: the visitor can scroll the whole
+   conversation by wheel, trackpad, touch or keyboard. Scroll chaining stays on,
+   so carrying on past the last line keeps the page moving. */
+[data-scene='done'] [data-armed] .scene-viewport {
+  overflow-y: auto;
 }
 
 [data-armed] .scene-step,
@@ -689,16 +736,31 @@
   opacity: 0;
 }
 
-[data-armed].scene-play .scene-step {
-  animation: rise-in var(--dur-base) var(--ease-out) both;
-  animation-delay: var(--scene-delay, 0ms);
+/* Every scrubbed animation reads the same clock: hold it paused, and let the
+   negative delay pick the frame. Before its beat the delay is positive and the
+   backwards fill hides the element; after it, the forwards fill holds it. */
+[data-armed] .scene-step,
+[data-armed] .scene-chip,
+[data-armed] .scene-check,
+[data-armed] .scene-typing {
+  animation-play-state: paused;
+  animation-delay: calc(var(--scene-delay, 0ms) - var(--scene-t, 0ms));
+}
+
+[data-armed] .scene-step {
+  animation-name: rise-in;
+  animation-duration: var(--dur-base);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
 }
 
 /* Action rows land with a touch more weight than a message — they're the
    "it actually did the thing" beats, so they settle with a soft ring. */
-[data-armed].scene-play .scene-chip {
-  animation: chip-land var(--dur-slow) var(--ease-out) both;
-  animation-delay: var(--scene-delay, 0ms);
+[data-armed] .scene-chip {
+  animation-name: chip-land;
+  animation-duration: var(--dur-slow);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
 }
 
 @keyframes chip-land {
@@ -719,10 +781,12 @@
 }
 
 /* The check mark settles a beat after its row, with a small overshoot. */
-[data-armed].scene-play .scene-check {
+[data-armed] .scene-check {
   transform-origin: center;
-  animation: check-pop var(--dur-base) var(--ease-spring) both;
-  animation-delay: var(--scene-delay, 0ms);
+  animation-name: check-pop;
+  animation-duration: var(--dur-base);
+  animation-timing-function: var(--ease-spring);
+  animation-fill-mode: both;
 }
 
 @keyframes check-pop {
@@ -742,9 +806,11 @@
 
 /* The thinking beat before a reply. Absolutely positioned inside the bubble it
    precedes, so it occupies no layout at all. */
-[data-armed].scene-play .scene-typing {
-  animation: typing-beat var(--scene-typing-dur, 660ms) linear both;
-  animation-delay: var(--scene-delay, 0ms);
+[data-armed] .scene-typing {
+  animation-name: typing-beat;
+  animation-duration: var(--scene-typing-dur, 660ms);
+  animation-timing-function: linear;
+  animation-fill-mode: both;
 }
 
 @keyframes typing-beat {
@@ -766,15 +832,17 @@
   }
 }
 
-[data-armed].scene-play .scene-typing span {
+/* The dots keep their own time: they are the one thing in the scene that reads
+   as live rather than scrubbed, and they are only ever on screen for a beat. */
+[data-armed] .scene-typing span {
   animation: typing-dot 1.05s ease-in-out infinite;
 }
 
-[data-armed].scene-play .scene-typing span:nth-child(2) {
+[data-armed] .scene-typing span:nth-child(2) {
   animation-delay: 0.15s;
 }
 
-[data-armed].scene-play .scene-typing span:nth-child(3) {
+[data-armed] .scene-typing span:nth-child(3) {
   animation-delay: 0.3s;
 }
 
@@ -788,6 +856,30 @@
   30% {
     opacity: 1;
     transform: translateY(-3px);
+  }
+}
+
+/* The rail follows the scene: the step being played reads at full strength and
+   the others step back. Below `lg` there is no room for the rail beside the
+   card, so one step is shown at a time — title and sentence both — and it swaps
+   as the scene moves. */
+.scene-rail-step {
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* Three states, because two read as on/off: the step being played, the ones the
+   scene has already been through, and the ones still to come. */
+[data-scrub='on'] .scene-rail-step[data-state='done'] {
+  opacity: 0.7;
+}
+
+[data-scrub='on'] .scene-rail-step[data-state='upcoming'] {
+  opacity: 0.45;
+}
+
+@media (max-width: 1023px) {
+  [data-scrub='on'] .scene-rail-step:not([data-state='active']) {
+    display: none;
   }
 }
 
@@ -1183,10 +1275,11 @@
   .trace {
     opacity: 0 !important;
   }
-  /* The refund scene shows its finished state outright: the card at its natural
-     full height, every message, action row and check mark visible, nothing
-     animating and nothing waiting on a timer. The script also declines to arm
-     itself here, so these are a backstop for a mid-session preference change. */
+  /* The agent demos show their finished state outright: no pinning, no scroll
+     distance, the card at its natural full height, every message, action row and
+     check mark visible, nothing animating and nothing waiting on a clock. The
+     script also declines to arm here, so these are a backstop for a mid-session
+     preference change. */
   .scene-step,
   .scene-chip,
   .scene-check {
@@ -1195,9 +1288,28 @@
     transform: none !important;
     box-shadow: none !important;
   }
-  .scene-chrome {
-    height: 100% !important;
-    transition: none !important;
+  .scene-card,
+  [data-armed].scene-card {
+    height: auto !important;
+  }
+  .scene-content {
+    transform: none !important;
+  }
+  .scene-viewport,
+  [data-scene='done'] [data-armed] .scene-viewport {
+    overflow: visible !important;
+    mask-image: none !important;
+  }
+  .scene-stage[data-scrub='on'] {
+    position: static !important;
+  }
+  [data-scrub='on'] > .scene-runway {
+    display: none !important;
+  }
+  .scene-rail-step,
+  [data-scrub='on'] .scene-rail-step:not([data-state='active']) {
+    display: flex !important;
+    opacity: 1 !important;
   }
   /* The typing beat is a pure motion device — there's nothing to show without it. */
   .scene-typing,

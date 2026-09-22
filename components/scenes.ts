@@ -45,7 +45,7 @@ const SUPPORT_CHAT: Turn[] = [
     // The lookups are quick, overlapping housekeeping — they should feel brisk.
     actionGap: 280,
     actions: [
-      { icon: Building2, label: 'Pulled account · Acme Inc — Pro, 24 seats' },
+      { icon: Building2, label: 'Pulled account · Acme Inc, Pro, 24 seats' },
       { icon: Users, label: 'Checked active users · 18 of 24' },
       { icon: FileText, label: 'Checked billing policy · billing.md' },
     ],
@@ -77,7 +77,6 @@ const SUPPORT_CHAT: Turn[] = [
     ],
     pause: 820,
   },
-  { who: 'customer', text: "Incredible, that would've taken us an hour. Thank you!" },
 ]
 
 /**
