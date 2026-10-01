@@ -166,13 +166,13 @@ const TABS: Tab[] = [
     id: 'agents',
     label: 'Serve your customers’ agents',
     railTitle: 'When the customer sends an agent.',
-    railIntro: 'Your customer’s AI assistant asks about your product, and Radioso answers it over MCP.',
+    railIntro: 'Your customer’s AI assistant finds you through your llms.txt, then asks Radioso about your product over MCP.',
     steps: [
       {
         marker: { icon: Plug },
         title: 'Connect once',
-        body: 'One MCP server for Claude, ChatGPT, Cursor, and any other MCP client, each with its own credential.',
-        at: AGENTS_BEATS.sources[0],
+        body: 'An llms.txt on your site tells assistants what you offer and where to ask. The MCP server is where they ask, one credential per client.',
+        at: AGENTS_BEATS.llms,
       },
       {
         marker: { icon: Repeat },

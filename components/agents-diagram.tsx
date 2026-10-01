@@ -26,9 +26,10 @@ const LIGHT = 600
  * The beat table, in ms on the same timeline the chat scenes use. Scroll position
  * picks the frame; these only set the order and spacing of what lights.
  *
- *   sources light → their wires converge on Radioso → Radioso pulses → the MCP
- *   channel opens toward the clients → Claude asks (question travels right to
- *   left) → Radioso pulses, checks the help center and policies → the cited
+ *   sources light → their wires converge on Radioso → Radioso pulses → Claude
+ *   lights → its wire runs past the channel to `llms.txt`, which says what you
+ *   offer and where to ask → the MCP channel opens → the question travels right
+ *   to left → Radioso pulses, checks the help center and policies → the cited
  *   answer travels back → the other clients connect → your rules light.
  */
 export const AGENTS_BEATS = {
@@ -36,25 +37,31 @@ export const AGENTS_BEATS = {
   leftBus: 1220,
   leftTrunk: 1440,
   hub: 1680,
-  rightTrunk: 2060,
-  rightBus: 2300,
-  mcp: 2480,
-  /** Claude lights and its wire opens; the question lands in the log just after. */
-  ask: 3140,
-  question: 3240,
-  qStub: 3480,
-  qBus: 3780,
-  qTrunk: 4080,
-  arrive: 4380,
+  /** Claude comes online and its wire opens toward you. */
+  ask: 2200,
+  /** Discovery: a signal runs from Claude to `llms.txt`, which lights with its caption. */
+  dStub: 2300,
+  dReach: 2600,
+  llms: 2900,
+  /** Then the MCP channel opens: trunk out of Radioso, bus, the label. */
+  rightTrunk: 3500,
+  rightBus: 3740,
+  mcp: 3920,
+  /** The question lands in the log as it sets off. */
+  question: 4300,
+  qStub: 4500,
+  qBus: 4800,
+  qTrunk: 5100,
+  arrive: 5400,
   /** Help center, then policies: what the answer is checked against. */
-  lookup: [4580, 4740],
-  aTrunk: 5060,
-  aBus: 5360,
-  aStub: 5660,
-  answer: 5880,
+  lookup: [5600, 5760],
+  aTrunk: 6080,
+  aBus: 6380,
+  aStub: 6680,
+  answer: 6900,
   /** ChatGPT, Cursor, any MCP client: the same channel, one after another. */
-  clients: [6580, 6880, 7180],
-  rules: 7800,
+  clients: [7600, 7900, 8200],
+  rules: 8820,
 } as const
 
 const B = AGENTS_BEATS
@@ -138,16 +145,31 @@ function Tile({ icon: Icon, label, at, pings = [] }: { icon: Icon; label: string
   )
 }
 
-function Caption({ icon: Icon, label, at, mono = false }: { icon?: Icon; label: string; at: number; mono?: boolean }) {
+function Caption({
+  icon: Icon,
+  label,
+  at,
+  mono = false,
+  pings = [],
+}: {
+  icon?: Icon
+  label: string
+  at: number
+  mono?: boolean
+  pings?: number[]
+}) {
   return (
     <span
-      className={`scene-light inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-primary/35 bg-card px-2 py-0.5 text-2xs text-foreground/85 ${
+      className={`scene-light relative inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-primary/35 bg-card px-2 py-0 text-2xs text-foreground/85 sm:py-0.5 ${
         mono ? 'font-mono' : 'font-medium'
       }`}
       style={cue(at, LIGHT)}
     >
       {Icon && <Icon className="hidden size-3 shrink-0 text-primary sm:block" />}
       {label}
+      {pings.map((p) => (
+        <span key={p} aria-hidden className="scene-ping rounded-[inherit]" style={cue(p)} />
+      ))}
     </span>
   )
 }
@@ -184,8 +206,8 @@ export function AgentsDiagramScene({ label }: { label: string }) {
         <span className="text-2xs font-medium text-muted-foreground">{label}</span>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col justify-center px-4 py-3 sm:px-7 sm:py-6">
-        <div className="mx-auto grid h-28 w-full grid-cols-[minmax(0,auto)_0.875rem_5.75rem_0.875rem_minmax(0,auto)] justify-center sm:h-52 sm:grid-cols-[minmax(0,10rem)_2.5rem_8.5rem_2.5rem_minmax(0,10rem)]">
+      <div className="flex min-h-0 flex-1 flex-col justify-center px-4 py-2 sm:px-7 sm:py-5">
+        <div className="mx-auto grid h-32 w-full grid-cols-[minmax(0,auto)_0.875rem_5.75rem_0.875rem_minmax(0,auto)] justify-center sm:h-60 sm:grid-cols-[minmax(0,10rem)_2.5rem_8.5rem_2.5rem_minmax(0,10rem)]">
           <ul className="grid grid-rows-3" aria-label="What Radioso answers from">
             {SOURCES.map((s, i) => (
               <li key={s.label} className="self-center">
@@ -214,8 +236,26 @@ export function AgentsDiagramScene({ label }: { label: string }) {
             <Wire at={B.leftBus} axis="y" origin="origin-bottom" style={{ right: 0, top: '50%', bottom: row(0, 3) }} />
           </div>
 
-          {/* Radioso, with the trunks running in under its tile from either side. */}
+          {/* Radioso, with the trunks running in under its tile from either side, and
+              `llms.txt` above it on Claude's row: the first thing an assistant reads. */}
           <div className="relative">
+            <Wire at={B.dReach} axis="x" origin="origin-right" style={{ left: '50%', right: 0, top: row(0, 4) }} />
+            <Dot at={B.dReach} from="100% 0" to="0 0" style={{ left: '50%', right: 0, top: row(0, 4), height: 1 }} />
+            <div
+              className="absolute left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1"
+              style={{ top: row(0, 4) }}
+            >
+              <Caption label="llms.txt" at={B.llms} mono pings={[B.llms]} />
+            </div>
+            {/* What the file is for. Desktop only: on a phone the rail step beside
+                this beat says it, and the card has no room for a second line. */}
+            <span
+              className="scene-step absolute left-1/2 z-10 hidden w-full -translate-x-1/2 text-balance text-center text-2xs leading-tight text-muted-foreground sm:block"
+              style={{ ...delay(B.llms + 100), top: `calc(${row(0, 4)} + 1rem)` }}
+            >
+              what you offer, where to ask
+            </span>
+
             <Wire at={B.leftTrunk} axis="x" origin="origin-left" style={{ left: 0, right: '50%', top: '50%' }} />
             <Wire at={B.rightTrunk} axis="x" origin="origin-left" style={{ left: '50%', right: 0, top: '50%' }} />
             <Dot at={B.qTrunk} from="100% 0" to="0 0" style={{ left: '50%', right: 0, top: '50%', height: 1 }} />
@@ -223,18 +263,16 @@ export function AgentsDiagramScene({ label }: { label: string }) {
 
             <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
               <div
-                className="scene-light relative flex size-10 items-center justify-center rounded-xl border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))] sm:size-14 sm:rounded-2xl"
+                className="scene-light relative flex size-8 items-center justify-center rounded-lg border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))] sm:size-14 sm:rounded-2xl"
                 style={cue(B.hub, LIGHT)}
               >
-                <Image src="/radioso-icon.svg" alt="Radioso" width={28} height={28} className="size-5 sm:size-7" />
+                <Image src="/radioso-icon.svg" alt="Radioso" width={28} height={28} className="size-4 sm:size-7" />
                 <span aria-hidden className="scene-ping rounded-[inherit]" style={cue(B.hub)} />
                 <span aria-hidden className="scene-ping rounded-[inherit]" style={cue(B.arrive)} />
               </div>
-              <div className="absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 sm:mb-2.5">
-                <Caption icon={ShieldCheck} label="Your rules" at={B.rules} />
-              </div>
-              <div className="absolute left-1/2 top-full mt-1.5 -translate-x-1/2 sm:mt-2.5">
+              <div className="absolute left-1/2 top-full mt-1 flex -translate-x-1/2 flex-col items-center gap-1 sm:mt-2.5 sm:gap-1.5">
                 <Caption label="MCP server" at={B.mcp} mono />
+                <Caption icon={ShieldCheck} label="Your rules" at={B.rules} />
               </div>
             </div>
           </div>
@@ -253,7 +291,8 @@ export function AgentsDiagramScene({ label }: { label: string }) {
                 style={{ left: 0, right: 0, top: row(i, 4) }}
               />
             ))}
-            {/* The question in, the answer back, along Claude's route. */}
+            {/* Discovery first, then the question in and the answer back, along Claude's route. */}
+            <Dot at={B.dStub} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
             <Dot at={B.qStub} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
             <Dot at={B.qBus} from="0 0" to="0 100%" style={{ left: 0, width: 1, top: row(0, 4), bottom: '50%' }} />
             <Dot at={B.aBus} from="0 100%" to="0 0" style={{ left: 0, width: 1, top: row(0, 4), bottom: '50%' }} />
@@ -271,7 +310,7 @@ export function AgentsDiagramScene({ label }: { label: string }) {
 
         {/* The exchange itself, in the same bubbles as the chat scenes: the asking
             assistant on the right, Radioso on the left. */}
-        <div className="mt-3 flex flex-col gap-1.5 sm:mt-6 sm:gap-2.5">
+        <div className="mt-2 flex flex-col gap-1.5 sm:mt-4 sm:gap-2.5">
           <div className="flex flex-col items-end gap-1">
             <span
               className="scene-step hidden items-center gap-1 px-1 text-2xs font-medium text-muted-foreground sm:inline-flex"
