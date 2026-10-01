@@ -928,6 +928,28 @@
   }
 }
 
+/* A person's lane (the handoff) settles on the human yellow edge instead. */
+[data-armed] .scene-light-human {
+  animation-name: scene-light-human;
+}
+
+@keyframes scene-light-human {
+  0% {
+    opacity: 0.45;
+    border-color: var(--border);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  55% {
+    opacity: 1;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--human) 35%, transparent);
+  }
+  100% {
+    opacity: 1;
+    border-color: color-mix(in oklab, var(--human) 50%, transparent);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
 /* One signal crossing one wire segment. The wrapper is the segment; the dot sits
    at its start corner and `translate` (a percentage of the segment) carries it to
    the far end. A motion device only: it never rests on screen. */
