@@ -29,7 +29,7 @@ import {
   useIsomorphicLayoutEffect,
 } from '@/components/scene-engine'
 import { SUPPORT_SCENE, DOCS_SCENE, LEADS_SCENE } from '@/components/scenes'
-import { PixelSprite, SignalMark, AVATAR_CUSTOMER, AVATAR_TEAMMATE } from '@/components/pixel-sprite'
+import { PixelSprite, AVATAR_CUSTOMER, AVATAR_TEAMMATE } from '@/components/pixel-sprite'
 import { Button } from '@/components/ui/button'
 import { track as trackEvent } from '@/lib/analytics'
 import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
@@ -340,7 +340,7 @@ export function AgentDemos() {
     // the viewport off the tab bar mid-swap, whatever the height delta.
     <section
       id="people"
-      className="relative w-full scroll-mt-24 py-24 [overflow-anchor:none] sm:py-28"
+      className="relative w-full scroll-mt-24 pb-24 pt-10 [overflow-anchor:none] sm:pb-28 sm:pt-12"
     >
       {/* Native anchor targets for the hero's deep links: the browser scrolls
           here even before (or without) JS, and the hashchange listener above
@@ -358,10 +358,7 @@ export function AgentDemos() {
           className="scene-stage mx-auto w-full max-w-6xl px-6 data-[scrub=on]:sticky data-[scrub=on]:top-24 xl:max-w-7xl"
         >
           <Reveal className="mx-auto max-w-4xl text-center">
-            <div className="mb-4 flex justify-center">
-              <SignalMark color="var(--human)" />
-            </div>
-            <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 className="display-serif font-serif text-2xl font-bold tracking-tight sm:text-3xl">
               What your agents handle.
             </h2>
 

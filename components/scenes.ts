@@ -81,48 +81,6 @@ const SUPPORT_CHAT: Turn[] = [
 ]
 
 /**
- * The support ticket again, cut down to fit the widget in the hero's customer
- * site. Same story and same beats: diagnose, ask before touching billing, hand
- * the credit to Jonas, close on the money. Lines and action rows are shortened
- * to sit on one line in a 320px widget, and the right-sizing row is dropped
- * because the closing line already says it.
- */
-const HERO_SUPPORT_CHAT: Turn[] = [
-  { who: 'radioso', think: 420, text: 'Hello Maria, how can I help?', pause: 640 },
-  { who: 'customer', text: "Our invoice doesn't match our seat count." },
-  {
-    who: 'radioso',
-    text: 'On it. Let me check the account.',
-    think: 620,
-    actionGap: 280,
-    actions: [
-      { icon: Building2, label: 'Pulled account · Pro, 24 seats' },
-      { icon: Users, label: 'Checked active users · 18 of 24' },
-      { icon: FileText, label: 'Read billing policy' },
-    ],
-    pause: 520,
-  },
-  {
-    who: 'radioso',
-    think: 800,
-    text: 'Found it. Only 18 of your 24 seats are active. I can credit the unused seats, $312 this cycle. Want me to go ahead?',
-    pause: 760,
-  },
-  { who: 'customer', text: 'Yes please 🙏', pause: 520 },
-  {
-    who: 'radioso',
-    text: 'A credit that size needs a sign-off. One moment.',
-    think: 620,
-    actionGap: 720,
-    actions: [
-      { icon: Headset, label: 'Handed to Jonas · chat attached' },
-      { icon: UserCheck, label: 'Jonas approved the credit' },
-    ],
-    note: [{ amount: 312 }, " back, and next month's invoice drops to $1,440."],
-  },
-]
-
-/**
  * Radioso's own docs assistant, asked the self-referential question. The wow
  * beat is the opener: the agent knows it is the thing being asked about. No
  * action rows here — citations carry the grounding story, which also keeps the
@@ -214,11 +172,6 @@ const LEADS_CHAT: Turn[] = [
   },
 ]
 
-export const HERO_SUPPORT_SCENE: ChatScript = {
-  kind: 'chat',
-  chat: HERO_SUPPORT_CHAT,
-  plan: planChat(HERO_SUPPORT_CHAT),
-}
 export const SUPPORT_SCENE: ChatScript = { kind: 'chat', chat: SUPPORT_CHAT, plan: planChat(SUPPORT_CHAT) }
 export const DOCS_SCENE: ChatScript = { kind: 'chat', chat: DOCS_CHAT, plan: planChat(DOCS_CHAT) }
 export const LEADS_SCENE: ChatScript = { kind: 'chat', chat: LEADS_CHAT, plan: planChat(LEADS_CHAT) }

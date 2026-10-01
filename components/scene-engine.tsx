@@ -7,11 +7,10 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
 } from 'react'
-import { Check, Minus, Send } from 'lucide-react'
-import type { ComponentType, CSSProperties, ReactNode, RefObject, SVGProps } from 'react'
+import { Check } from 'lucide-react'
+import type { ComponentType, CSSProperties, ReactNode, SVGProps } from 'react'
 
 import { PixelSprite, SignalMark, AVATAR_CUSTOMER } from '@/components/pixel-sprite'
 
@@ -195,107 +194,6 @@ const SceneClockContext = createContext<SceneClock | null>(null)
 
 export const SceneClockProvider = SceneClockContext.Provider
 
-/**
- * The scroll track's sibling: the same clock, driven by time instead of scroll.
- *
- * Used where a scene is a picture to watch rather than a section to read, the
- * hero's widget. It arms before the first paint (so the card winds back to an
- * empty transcript), waits until the host is on screen and at least `startDelay`
- * has passed since mount, then plays once at the `planChat` timing and holds the
- * finished frame. Each frame advances by at most 64ms, so a background tab pauses
- * the scene rather than jumping it to the end. Reduced motion never arms: the
- * finished transcript stands, exactly as served.
- */
-export function useTimerClock(
-  end: number,
-  hostRef: RefObject<HTMLElement | null>,
-  startDelay = 600,
-): SceneClock {
-  const clock = useMemo(() => createSceneClock(), [])
-
-  useIsomorphicLayoutEffect(() => {
-    const host = hostRef.current
-    if (!host) return
-    if (window.matchMedia(MOTION_QUERY).matches) return
-
-    clock.arm()
-    host.style.setProperty('--scene-t', '0ms')
-    clock.emit(0, false)
-
-    const mountedAt = performance.now()
-    let raf = 0
-    let timer = 0
-    let last = 0
-    let t = 0
-    let started = false
-
-    const tick = (now: number) => {
-      t = Math.min(end, t + Math.min(64, now - last))
-      last = now
-      const done = t >= end
-      host.style.setProperty('--scene-t', `${t.toFixed(1)}ms`)
-      clock.emit(t, done)
-      if (!done) raf = requestAnimationFrame(tick)
-    }
-
-    const start = () => {
-      if (started) return
-      started = true
-      last = performance.now()
-      raf = requestAnimationFrame(tick)
-    }
-
-    // On a phone the widget sits under the calls to action, so the clock waits
-    // for it to be seen rather than playing to an empty viewport.
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return
-        observer.disconnect()
-        const wait = startDelay - (performance.now() - mountedAt)
-        if (wait > 0) timer = window.setTimeout(start, wait)
-        else start()
-      },
-      { threshold: 0.3 },
-    )
-    observer.observe(host)
-
-    return () => {
-      observer.disconnect()
-      window.clearTimeout(timer)
-      cancelAnimationFrame(raf)
-    }
-  }, [clock, end, hostRef, startDelay])
-
-  return clock
-}
-
-/**
- * A chat scene played on a timer inside a host element that carries `--scene-t`.
- * The host is the wrapper this renders; size it with `className`.
- */
-export function TimedScene({
-  script,
-  label,
-  className,
-  startDelay = 600,
-}: {
-  script: ChatScript
-  label: string
-  className?: string
-  startDelay?: number
-}) {
-  const hostRef = useRef<HTMLDivElement | null>(null)
-  const clock = useTimerClock(sceneEnd(script.plan), hostRef, startDelay)
-
-  return (
-    <div ref={hostRef} className={className}>
-      <SceneClockProvider value={clock}>
-        <ScriptedScene script={script} label={label} variant="widget" />
-      </SceneClockProvider>
-    </div>
-  )
-}
-
 /** Subscribes to the clock for the life of the component. `fn` must be stable. */
 function useSceneFrame(fn: (frame: SceneFrame) => void) {
   const clock = useContext(SceneClockContext)
@@ -319,16 +217,6 @@ function markEdge(viewport: HTMLElement) {
 }
 
 /**
- * How a scene is framed. `stage` is the demo section's card: a labelled window
- * that hands its transcript to the visitor once the scene has played. `widget` is
- * a picture of the embed on a customer's site: compact bubbles, the product's own
- * header and a disabled input, decorative from end to end, so it never takes a
- * tab stop. Unarmed, a widget shows the end of the conversation, because its
- * height is fixed and the close is the point.
- */
-export type SceneVariant = 'stage' | 'widget'
-
-/**
  * A scripted conversation, scrubbed by the page's scroll position.
  *
  * The card is a chat window: a fixed height with the header strip pinned at the
@@ -342,17 +230,8 @@ export type SceneVariant = 'stage' | 'widget'
  * anyone with `prefers-reduced-motion: reduce` all get the finished conversation
  * at the card's natural full height, in normal flow, with no pinning.
  */
-export function ScriptedScene({
-  script,
-  label,
-  variant = 'stage',
-}: {
-  script: ChatScript
-  label: string
-  variant?: SceneVariant
-}) {
+export function ScriptedScene({ script, label }: { script: ChatScript; label: string }) {
   const { chat, plan } = script
-  const isWidget = variant === 'widget'
   const cardRef = useRef<HTMLDivElement | null>(null)
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -418,7 +297,7 @@ export function ScriptedScene({
     const p = i < 0 ? 1 : Math.min(1, (t - steps[i].at) / CHAT_SCROLL_MS)
     const y = from + (to - from) * easeOut(p)
 
-    if (done && !releasedRef.current && !isWidget) {
+    if (done && !releasedRef.current) {
       releasedRef.current = true
       // Give the finished transcript a tab stop of its own, so the conversation
       // is scrollable from the keyboard and not just by wheel or touch.
@@ -433,7 +312,7 @@ export function ScriptedScene({
     appliedRef.current = y
     viewport.scrollTop = y
     markEdge(viewport)
-  }, [isWidget])
+  }, [])
 
   useSceneFrame(paint)
 
@@ -480,36 +359,6 @@ export function ScriptedScene({
     return () => observer.disconnect()
   }, [measure, paint, clock])
 
-  if (isWidget) {
-    return (
-      <div
-        ref={cardRef}
-        className="scene-widget relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left shadow-xl shadow-black/10 dark:shadow-black/40"
-      >
-        <div className="flex shrink-0 items-center gap-2 border-b border-border/70 px-3.5 py-2.5">
-          <Image src="/radioso-icon.svg" alt="" width={16} height={16} className="size-4" />
-          <span className="text-[13px] font-medium text-foreground/90">{label}</span>
-          <Minus className="ml-auto size-3.5 text-muted-foreground/70" />
-        </div>
-        <div ref={viewportRef} className="scene-viewport no-scrollbar relative min-h-0 flex-1">
-          <div ref={contentRef} className="scene-content flex shrink-0 flex-col gap-3 px-3.5 py-4">
-            {chat.map((turn, i) => (
-              <Bubble key={i} turn={turn} plan={plan[i]} compact />
-            ))}
-          </div>
-        </div>
-        <div className="shrink-0 border-t border-border/70 p-2.5">
-          <div className="flex items-center gap-2 rounded-full border border-border bg-background/60 py-1 pl-3.5 pr-1">
-            <span className="flex-1 text-[13px] text-muted-foreground/80">Write a message</span>
-            <span className="inline-flex size-7 items-center justify-center rounded-full bg-primary/20 text-primary">
-              <Send className="size-3 -translate-x-px translate-y-px" />
-            </span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div
       ref={cardRef}
@@ -535,21 +384,16 @@ export function ScriptedScene({
   )
 }
 
-function Bubble({ turn, plan, compact = false }: { turn: Turn; plan: TurnPlan; compact?: boolean }) {
+function Bubble({ turn, plan }: { turn: Turn; plan: TurnPlan }) {
   const isRadioso = turn.who === 'radioso'
   const noteAt = plan.noteAt
   const entersAt = plan.typingAt ?? plan.textAt
 
   return (
-    <div className={`flex items-end ${compact ? 'gap-2' : 'gap-2.5'} ${isRadioso ? '' : 'flex-row-reverse'}`}>
-      <AvatarTile who={turn.who} at={plan.avatarAt} compact={compact} />
-      <div
-        className={`flex flex-col gap-1.5 ${compact ? 'max-w-[86%]' : 'max-w-[80%]'} ${
-          isRadioso ? 'items-start' : 'items-end'
-        }`}
-      >
-        {/* The widget's header already names who is answering. */}
-        {isRadioso && !compact && (
+    <div className={`flex items-end gap-2.5 ${isRadioso ? '' : 'flex-row-reverse'}`}>
+      <AvatarTile who={turn.who} at={plan.avatarAt} />
+      <div className={`flex max-w-[80%] flex-col gap-1.5 ${isRadioso ? 'items-start' : 'items-end'}`}>
+        {isRadioso && (
           <span className="scene-step px-1 text-2xs font-medium text-muted-foreground" style={delay(entersAt)}>
             Radioso
           </span>
@@ -557,7 +401,7 @@ function Bubble({ turn, plan, compact = false }: { turn: Turn; plan: TurnPlan; c
         {/* The typing beat is absolutely positioned at the top of the bubble's own
             box, so it costs no layout and the reply grows downward out of it. */}
         <div className="relative">
-          <RadiosoText isRadioso={isRadioso} className="scene-step" at={plan.textAt} compact={compact}>
+          <RadiosoText isRadioso={isRadioso} className="scene-step" at={plan.textAt}>
             {turn.text}
             {isRadioso && turn.code && (
               <pre className="mt-2 overflow-x-auto rounded-lg border border-primary/15 bg-background/60 px-3 py-2 text-left font-mono text-[13px] leading-relaxed">
@@ -585,12 +429,12 @@ function Bubble({ turn, plan, compact = false }: { turn: Turn; plan: TurnPlan; c
         {isRadioso && turn.actions && (
           <div className="flex w-full flex-col gap-1.5 pt-0.5">
             {turn.actions.map((a, i) => (
-              <ActionChip key={a.label} action={a} at={plan.actionsAt[i]} compact={compact} />
+              <ActionChip key={a.label} action={a} at={plan.actionsAt[i]} />
             ))}
           </div>
         )}
         {isRadioso && turn.note && noteAt !== null && (
-          <RadiosoText isRadioso className="scene-step" at={noteAt} compact={compact}>
+          <RadiosoText isRadioso className="scene-step" at={noteAt}>
             {turn.note.map((piece, i) =>
               typeof piece === 'string' ? (
                 piece
@@ -609,24 +453,21 @@ function RadiosoText({
   isRadioso,
   className,
   at,
-  compact = false,
   children,
 }: {
   isRadioso: boolean
   className?: string
   at: number
-  compact?: boolean
   children: ReactNode
 }) {
-  const size = compact ? 'px-3 py-2 text-[13px] leading-snug' : 'px-4 py-2.5 text-[15px] leading-relaxed'
   return (
     <div
       data-at={at}
       style={delay(at)}
       className={`${
         isRadioso
-          ? `rounded-2xl rounded-bl-md border border-primary/20 bg-primary/10 ${size} text-foreground`
-          : `rounded-2xl rounded-br-md bg-muted ${size} text-foreground`
+          ? 'rounded-2xl rounded-bl-md border border-primary/20 bg-primary/10 px-4 py-2.5 text-[15px] leading-relaxed text-foreground'
+          : 'rounded-2xl rounded-br-md bg-muted px-4 py-2.5 text-[15px] leading-relaxed text-foreground'
       } ${className ?? ''}`}
     >
       {children}
@@ -651,15 +492,13 @@ function TypingBeat({ at, runFor, align }: { at: number; runFor: number; align: 
   )
 }
 
-function ActionChip({ action, at, compact = false }: { action: Action; at: number; compact?: boolean }) {
+function ActionChip({ action, at }: { action: Action; at: number }) {
   const { icon: Icon, label, amount } = action
 
   return (
     <div
       data-at={at}
-      className={`scene-chip flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 text-foreground/90 ${
-        compact ? 'px-2.5 py-1.5 text-xs' : 'px-3 py-2 text-[13px]'
-      }`}
+      className="scene-chip flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-[13px] text-foreground/90"
       style={delay(at)}
     >
       <Icon className="size-3.5 shrink-0 text-primary" />
@@ -713,38 +552,23 @@ function Figure({ value, at }: { value: number; at: number }) {
   )
 }
 
-function AvatarTile({ who, at, compact = false }: { who: Turn['who']; at: number; compact?: boolean }) {
+function AvatarTile({ who, at }: { who: Turn['who']; at: number }) {
   if (who === 'radioso') {
     return (
       <div
-        className={`scene-step flex shrink-0 items-center justify-center border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))] ${
-          compact ? 'size-7 rounded-lg' : 'size-9 rounded-xl'
-        }`}
+        className="scene-step flex size-9 shrink-0 items-center justify-center rounded-xl border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))]"
         style={delay(at)}
       >
-        <Image
-          src="/radioso-icon.svg"
-          alt="Radioso"
-          width={20}
-          height={20}
-          className={compact ? 'size-4' : 'size-5'}
-        />
+        <Image src="/radioso-icon.svg" alt="Radioso" width={20} height={20} className="size-5" />
       </div>
     )
   }
   return (
     <div
-      className={`scene-step flex shrink-0 items-end justify-center overflow-hidden border border-human/35 bg-human/10 ${
-        compact ? 'size-7 rounded-lg' : 'size-9 rounded-xl'
-      }`}
+      className="scene-step flex size-9 shrink-0 items-end justify-center overflow-hidden rounded-xl border border-human/35 bg-human/10"
       style={delay(at)}
     >
-      <PixelSprite
-        grid={AVATAR_CUSTOMER.grid}
-        palette={AVATAR_CUSTOMER.palette}
-        className={compact ? 'size-6' : 'size-8'}
-        title="Someone"
-      />
+      <PixelSprite grid={AVATAR_CUSTOMER.grid} palette={AVATAR_CUSTOMER.palette} className="size-8" title="Someone" />
     </div>
   )
 }
