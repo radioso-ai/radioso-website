@@ -742,7 +742,11 @@
 [data-armed] .scene-step,
 [data-armed] .scene-chip,
 [data-armed] .scene-check,
-[data-armed] .scene-typing {
+[data-armed] .scene-typing,
+[data-armed] .scene-draw,
+[data-armed] .scene-light,
+[data-armed] .scene-dot,
+[data-armed] .scene-ping {
   animation-play-state: paused;
   animation-delay: calc(var(--scene-delay, 0ms) - var(--scene-t, 0ms));
 }
@@ -857,6 +861,132 @@
     opacity: 1;
     transform: translateY(-3px);
   }
+}
+
+/* The agents tab is a diagram on the same clock (components/agents-diagram.tsx).
+   Same contract as the transcript: lit is the resting state, so the served HTML,
+   no JS and reduced motion all show the finished picture, and `data-armed` winds
+   it back to the grey skeleton for the scroll to light again.
+
+   Wires draw themselves lit from the end the signal leaves. */
+[data-armed] .scene-draw {
+  animation-duration: var(--scene-dur, 360ms);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
+}
+
+[data-armed] .scene-draw-x {
+  animation-name: scene-draw-x;
+}
+
+[data-armed] .scene-draw-y {
+  animation-name: scene-draw-y;
+}
+
+@keyframes scene-draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes scene-draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* A tile or label coming online: it steps up from the dimmed skeleton, rings once
+   like an action row landing, and settles on its lit border. The end frame is the
+   element's own resting style. */
+[data-armed] .scene-light {
+  animation-name: scene-light;
+  animation-duration: var(--scene-dur, 600ms);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
+}
+
+@keyframes scene-light {
+  0% {
+    opacity: 0.45;
+    border-color: var(--border);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  55% {
+    opacity: 1;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--signal) 20%, transparent);
+  }
+  100% {
+    opacity: 1;
+    border-color: color-mix(in oklab, var(--primary) 35%, transparent);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* One signal crossing one wire segment. The wrapper is the segment; the dot sits
+   at its start corner and `translate` (a percentage of the segment) carries it to
+   the far end. A motion device only: it never rests on screen. */
+.scene-dot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scene-dot::after {
+  content: '';
+  position: absolute;
+  left: -2.5px;
+  top: -2.5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--primary);
+  box-shadow: 0 0 8px 1px color-mix(in oklab, var(--signal) 70%, transparent);
+}
+
+[data-armed] .scene-dot {
+  animation-name: scene-dot;
+  animation-duration: var(--scene-dur, 300ms);
+  animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes scene-dot {
+  0% {
+    opacity: 0;
+    translate: var(--dot-from, 0 0);
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: var(--dot-to, 0 0);
+  }
+}
+
+/* A node taking the signal: one ring, the same one the platform diagram uses. */
+.scene-ping {
+  position: absolute;
+  inset: -4px;
+  border: 1.5px solid color-mix(in oklab, var(--signal) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-armed] .scene-ping {
+  animation-name: trace-ping;
+  animation-duration: var(--scene-dur, 900ms);
+  animation-fill-mode: both;
 }
 
 /* The rail follows the scene: the step being played reads at full strength and
@@ -1310,6 +1440,18 @@
   [data-scrub='on'] .scene-rail-step:not([data-state='active']) {
     display: flex !important;
     opacity: 1 !important;
+  }
+  /* The agents diagram rests lit; its travelling signals and rings are motion
+     devices with nothing to show at rest. */
+  .scene-draw,
+  .scene-light {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .scene-dot,
+  .scene-ping {
+    display: none !important;
   }
   /* The typing beat is a pure motion device — there's nothing to show without it. */
   .scene-typing,

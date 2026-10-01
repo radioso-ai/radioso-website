@@ -1,10 +1,26 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Wrench, Code2, MessageCircle, Quote, Store, UserSearch } from 'lucide-react'
-import type { ComponentType, ReactNode, SVGProps } from 'react'
+import {
+  ArrowRight,
+  ArrowUp,
+  Check,
+  Code2,
+  Copy,
+  Quote,
+  MessageCircle,
+  Plug,
+  Repeat,
+  ShieldCheck,
+  Store,
+  UserSearch,
+  Wrench,
+} from 'lucide-react'
+import type { ComponentType, SVGProps } from 'react'
 
 import { Reveal } from '@/components/reveal'
+import { AGENTS_BEATS, AGENTS_SCENE, AgentsDiagramScene } from '@/components/agents-diagram'
 import {
   MOTION_QUERY,
   ScriptedScene,
@@ -15,6 +31,9 @@ import {
 } from '@/components/scene-engine'
 import { SUPPORT_SCENE, DOCS_SCENE, LEADS_SCENE } from '@/components/scenes'
 import { PixelSprite, SignalMark, AVATAR_CUSTOMER, AVATAR_TEAMMATE } from '@/components/pixel-sprite'
+import { Button } from '@/components/ui/button'
+import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
+import { EMBED_SNIPPET, site } from '@/lib/site'
 import type { SceneScript } from '@/components/scene-engine'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
@@ -28,8 +47,16 @@ type Step = {
   at: number
 }
 
+/** Where the visitor goes once the job is shown. Buttons name the action. */
+type Exit =
+  | { kind: 'link'; label: string; href: string }
+  /** The same question the hero chip asks, sent to the live agent at the top of the page. */
+  | { kind: 'ask'; label: string; question: string; hint: string }
+  | { kind: 'snippet'; label: string; code: string }
+
 type Tab = {
   id: string
+  /** A job the agent does, not a kind of agent. */
   label: string
   railTitle: string
   railIntro: string
@@ -39,13 +66,13 @@ type Tab = {
   steps: Step[]
   scene: SceneScript
   sceneLabel: string
-  note: ReactNode
+  exit: Exit
 }
 
 const TABS: Tab[] = [
   {
     id: 'support',
-    label: 'Support agent',
+    label: 'Resolve tickets',
     railTitle: 'Knows when to act, and when to ask.',
     railIntro: 'One billing ticket, start to finish.',
     steps: [
@@ -70,11 +97,11 @@ const TABS: Tab[] = [
     ],
     scene: SUPPORT_SCENE,
     sceneLabel: 'a support ticket',
-    note: null,
+    exit: { kind: 'link', label: 'Start in the cloud', href: site.appUrl },
   },
   {
     id: 'docs',
-    label: 'Help center',
+    label: 'Answer from your help center',
     railTitle: 'Your docs, answering for themselves.',
     railIntro: 'Asked about Radioso, answered from the Radioso docs.',
     steps: [
@@ -99,11 +126,11 @@ const TABS: Tab[] = [
     ],
     scene: DOCS_SCENE,
     sceneLabel: 'on your docs site',
-    note: null,
+    exit: { kind: 'snippet', label: 'Add it to your site', code: EMBED_SNIPPET },
   },
   {
     id: 'leads',
-    label: 'Pre-sales agent',
+    label: 'Qualify leads',
     railTitle: 'From visitor to warm lead.',
     railIntro: 'A routine qualifies, collects, and hands off.',
     steps: [
@@ -128,11 +155,41 @@ const TABS: Tab[] = [
     ],
     scene: LEADS_SCENE,
     sceneLabel: 'on your marketing site',
-    note: (
-      <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-muted-foreground sm:mt-6">
-        This routine runs live on this page — the 💸 chip in the hero triggers it for real.
-      </p>
-    ),
+    exit: {
+      kind: 'ask',
+      label: 'Talk to the team',
+      question: TALK_TO_THE_TEAM,
+      hint: 'Runs this routine live in the chat at the top of the page.',
+    },
+  },
+  {
+    id: 'agents',
+    label: 'Serve your customers’ agents',
+    railTitle: 'When the customer sends an agent.',
+    railIntro: 'Your customer’s AI assistant asks about your product, and Radioso answers it over MCP.',
+    steps: [
+      {
+        marker: { icon: Plug },
+        title: 'Connect once',
+        body: 'One MCP server for Claude, ChatGPT, Cursor, and any other MCP client, each with its own credential.',
+        at: AGENTS_BEATS.sources[0],
+      },
+      {
+        marker: { icon: Repeat },
+        title: 'Same answer everywhere',
+        body: 'The knowledge, rules, and citations behind your chat and your help center answer every assistant.',
+        at: AGENTS_BEATS.answer,
+      },
+      {
+        marker: { icon: ShieldCheck },
+        title: 'Your terms',
+        body: 'Your rules decide what an agent is told, and what it is not.',
+        at: AGENTS_BEATS.rules,
+      },
+    ],
+    scene: AGENTS_SCENE,
+    sceneLabel: 'over MCP',
+    exit: { kind: 'link', label: 'Read the MCP docs', href: `${site.docsUrl}/guides/mcp-server` },
   },
 ]
 
@@ -154,8 +211,14 @@ const TAIL = 0.12
 /** The scene never shows an empty card: the opening exchange (greeting and the
     customer's ask) is already on screen at the top of the track, so a hero
     deep-link or a slow approach lands on a conversation, not a blank window.
-    Scroll scrubs from that point to the end. */
-const opening = (plan: { textAt: number }[]) => (plan[1] ?? plan[0]).textAt + 440 // past its rise-in (--dur-base)
+    Scroll scrubs from that point to the end. A diagram names its own first
+    frame: its first beat, already landed. */
+const opening = (scene: SceneScript) =>
+  scene.kind === 'diagram'
+    ? scene.start
+    : (scene.plan[1] ?? scene.plan[0]).textAt + 440 // past its rise-in (--dur-base)
+
+const ending = (scene: SceneScript) => (scene.kind === 'diagram' ? scene.end : sceneEnd(scene.plan))
 
 const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n)
 
@@ -170,11 +233,11 @@ export function AgentDemos() {
   const clock = useMemo(() => createSceneClock(), [])
 
   const tab = useMemo(() => TABS.find((t) => t.id === active) ?? TABS[0], [active])
-  const end = useMemo(() => sceneEnd(tab.scene.plan), [tab])
+  const end = useMemo(() => ending(tab.scene), [tab])
 
   // The scroll loop reads the live scene through refs, so switching tabs never
   // tears the listener down and the visitor keeps their place in the track.
-  const sceneRef = useRef({ id: tab.id, end, start: opening(tab.scene.plan), steps: tab.steps.map((s) => s.at) })
+  const sceneRef = useRef({ id: tab.id, end, start: opening(tab.scene), steps: tab.steps.map((s) => s.at) })
   const stepRef = useRef(0)
   // Scenes that have played through once. A finished conversation stays finished:
   // scrolling back up over the section must not un-say what the agent said.
@@ -182,7 +245,7 @@ export function AgentDemos() {
   const applyRef = useRef<() => void>(() => {})
 
   useIsomorphicLayoutEffect(() => {
-    sceneRef.current = { id: tab.id, end, start: opening(tab.scene.plan), steps: tab.steps.map((s) => s.at) }
+    sceneRef.current = { id: tab.id, end, start: opening(tab.scene), steps: tab.steps.map((s) => s.at) }
   }, [end, tab])
 
   useEffect(() => {
@@ -294,18 +357,20 @@ export function AgentDemos() {
           ref={stageRef}
           className="scene-stage mx-auto w-full max-w-6xl px-6 data-[scrub=on]:sticky data-[scrub=on]:top-24 xl:max-w-7xl"
         >
-          <Reveal className="mx-auto max-w-2xl text-center">
+          <Reveal className="mx-auto max-w-4xl text-center">
             <div className="mb-4 flex justify-center">
               <SignalMark color="var(--human)" />
             </div>
             <h2 className="display-serif font-serif text-3xl font-bold tracking-tight sm:text-4xl">
-              Different agents, one platform.
+              What your agents handle.
             </h2>
 
             <div
               role="tablist"
               aria-label="Agent demos"
-              className="mx-auto mt-6 inline-flex flex-wrap items-center justify-center gap-1 rounded-full border border-border/70 bg-card/90 p-1.5"
+              // The radius is the pills' own plus the padding, so a bar that wraps
+              // to two rows on a phone stays concentric with the pills inside it.
+              className="mx-auto mt-6 inline-flex flex-wrap items-center justify-center gap-1 rounded-[1.375rem] border border-border/70 bg-card/90 p-1.5"
             >
               {TABS.map((t) => (
                 <button
@@ -376,15 +441,24 @@ export function AgentDemos() {
                   </li>
                 ))}
               </ol>
+
+              {/* The way out of the story. Beside the card on desktop; on a phone it
+                  waits under the section (below), where it lands as the stage lets go. */}
+              <div className="mt-8 hidden lg:block">
+                <RailExit exit={tab.exit} />
+              </div>
             </div>
 
             <div className="min-w-0">
               <SceneClockProvider value={clock}>
                 {/* Keyed by tab: a fresh mount re-measures the new transcript and
                     picks up the scroll position the visitor is already at. */}
-                <ScriptedScene key={tab.id} script={tab.scene} label={tab.sceneLabel} />
+                {tab.scene.kind === 'diagram' ? (
+                  <AgentsDiagramScene key={tab.id} label={tab.sceneLabel} />
+                ) : (
+                  <ScriptedScene key={tab.id} script={tab.scene} label={tab.sceneLabel} />
+                )}
               </SceneClockProvider>
-              {tab.note}
             </div>
           </div>
         </div>
@@ -394,6 +468,86 @@ export function AgentDemos() {
             would give the stage nothing to stick through. */}
         <div aria-hidden className="scene-runway" />
       </div>
+
+      {/* Below `lg` there is no room in the pinned stage for the exit, so it sits
+          just past the track: it arrives directly under the card as the stage
+          releases, once the scene has played. */}
+      <div className="mx-auto mt-6 flex max-w-2xl justify-center px-6 lg:hidden">
+        <RailExit exit={tab.exit} />
+      </div>
     </section>
+  )
+}
+
+function RailExit({ exit }: { exit: Exit }) {
+  if (exit.kind === 'snippet') return <SnippetExit label={exit.label} code={exit.code} />
+  if (exit.kind === 'ask') return <AskExit label={exit.label} question={exit.question} hint={exit.hint} />
+  return (
+    <Button asChild variant="outline">
+      <Link href={exit.href}>
+        {exit.label} <ArrowRight className="size-4" />
+      </Link>
+    </Button>
+  )
+}
+
+/** Sends the hero chip's question to the live agent; the hero scrolls itself into view. */
+function AskExit({ label, question, hint }: { label: string; question: string; hint: string }) {
+  const { ask, pending } = useAsk()
+
+  const onClick = () => {
+    // Mid-answer the hero won't take another question, so just go to it.
+    if (pending) {
+      document.getElementById('ask-radioso')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    void ask(question)
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-2 lg:items-start">
+      <Button variant="outline" onClick={onClick}>
+        {label} <ArrowUp className="size-4" />
+      </Button>
+      <p className="text-center text-sm text-muted-foreground lg:text-left">{hint}</p>
+    </div>
+  )
+}
+
+/** The install tag, compact, with a copy button. */
+function SnippetExit({ label, code }: { label: string; code: string }) {
+  const [copied, setCopied] = useState(false)
+  const timer = useRef(0)
+
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      window.clearTimeout(timer.current)
+      timer.current = window.setTimeout(() => setCopied(false), 1800)
+    } catch {
+      // Clipboard blocked (insecure origin, denied permission): the code is selectable.
+    }
+  }
+
+  return (
+    <div className="w-full min-w-0 overflow-hidden rounded-xl border border-border/70 bg-card text-left">
+      <div className="flex items-center justify-between gap-3 border-b border-border/60 py-1 pl-3 pr-1">
+        <span className="text-sm font-medium text-foreground">{label}</span>
+        <button
+          type="button"
+          onClick={() => void copy()}
+          className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          {copied ? <Check className="size-3.5 text-primary" /> : <Copy className="size-3.5" />}
+          <span aria-live="polite">{copied ? 'Copied' : 'Copy'}</span>
+        </button>
+      </div>
+      <pre className="no-scrollbar overflow-x-auto px-3 py-2.5 font-mono text-[11px] leading-relaxed text-foreground/85">
+        {code}
+      </pre>
+    </div>
   )
 }

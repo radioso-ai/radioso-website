@@ -52,7 +52,7 @@ const COUNT_MS = 620
 const CHECK_LAG = 300
 const MONEY_CHECK_LAG = COUNT_LAG + COUNT_MS - 20
 /** After the last mark: room for its own animation and any figure to finish. */
-const SETTLE = 900
+export const SETTLE = 900
 /** How long the transcript takes to slide up to its new resting place. `--dur-base`. */
 const CHAT_SCROLL_MS = 420
 
@@ -118,9 +118,18 @@ export function sceneEnd(plan: TurnPlan[]): number {
   return end + SETTLE
 }
 
-export type SceneScript = { chat: Turn[]; plan: TurnPlan[] }
+export type ChatScript = { kind: 'chat'; chat: Turn[]; plan: TurnPlan[] }
 
-const delay = (ms: number) => ({ '--scene-delay': `${ms}ms` }) as CSSProperties
+/**
+ * A scene that is not a conversation: a diagram on the same clock. It has no
+ * transcript to measure, so it states its own timeline: `start` is the frame the
+ * top of the track shows, `end` the frame where it is finished.
+ */
+export type DiagramScript = { kind: 'diagram'; start: number; end: number }
+
+export type SceneScript = ChatScript | DiagramScript
+
+export const delay = (ms: number) => ({ '--scene-delay': `${ms}ms` }) as CSSProperties
 
 export const MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
@@ -221,7 +230,7 @@ function markEdge(viewport: HTMLElement) {
  * anyone with `prefers-reduced-motion: reduce` all get the finished conversation
  * at the card's natural full height, in normal flow, with no pinning.
  */
-export function ScriptedScene({ script, label }: { script: SceneScript; label: string }) {
+export function ScriptedScene({ script, label }: { script: ChatScript; label: string }) {
   const { chat, plan } = script
   const cardRef = useRef<HTMLDivElement | null>(null)
   const viewportRef = useRef<HTMLDivElement | null>(null)

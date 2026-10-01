@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { AgentAnswer } from '@/components/agent-answer'
 import { AskInput } from '@/components/ask-input'
 import { Button } from '@/components/ui/button'
-import { useAsk } from '@/lib/ask-context'
+import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
 import { site } from '@/lib/site'
 
 // useLayoutEffect warns during SSR; fall back to useEffect on the server.
@@ -25,7 +25,7 @@ const SUGGESTIONS = [
   'How does Radioso take actions?',
   'Can I self-host it?',
   'How is Radioso different from LangChain?',
-  'Shut up and take my money! 💸',
+  TALK_TO_THE_TEAM,
 ]
 
 /** Tailwind's `lg` — where the hero splits into headline | conversation columns. */
@@ -233,6 +233,7 @@ export function AskHero() {
           <div className="min-w-0">
             <div
               ref={frameRef}
+              id="ask-radioso"
               style={{ '--rise-delay': '360ms' } as React.CSSProperties}
               className="rise-in flex scroll-mt-28 flex-col overflow-hidden rounded-2xl border border-border bg-card/90 text-left shadow-lg shadow-black/5 ring-1 ring-black/[0.03] backdrop-blur-md dark:shadow-black/30 dark:ring-white/[0.06]"
             >

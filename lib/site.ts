@@ -20,3 +20,14 @@ export const site = {
   // into the app to run the install. Override with SLACK_INSTALL_URL if needed.
   slackInstallUrl: process.env.SLACK_INSTALL_URL ?? (process.env.APP_URL ?? 'https://app.radioso.ai'),
 }
+
+/**
+ * The website-embed install tag, as the docs give it (quickstarts/website-embed):
+ * the launcher is served by the app at /radioso-embed.js and the token comes from
+ * the agent's Channels → Web chat → Website widget settings. Shared by the docs
+ * demo transcript and the copyable snippet under it, so the two never disagree.
+ */
+export const EMBED_SNIPPET = `<script
+  src="${site.appUrl}/radioso-embed.js"
+  data-radioso-token="YOUR_EMBED_TOKEN"
+></script>`

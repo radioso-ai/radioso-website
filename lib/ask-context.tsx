@@ -33,6 +33,12 @@ type AskState = {
   inputRef: RefObject<HTMLInputElement | null>
 }
 
+/**
+ * The hero chip that trips the live agent's `talk-to-the-team` routine. Shared so
+ * the leads demo's "Talk to the team" button asks the exact same thing.
+ */
+export const TALK_TO_THE_TEAM = 'Shut up and take my money! 💸'
+
 const SEED: Asked = { question: 'What is Radioso?', answer: PRERENDERED.whatIsRadioso }
 
 const Ctx = createContext<AskState | null>(null)

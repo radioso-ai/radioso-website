@@ -10,7 +10,8 @@ import {
   Headset,
 } from 'lucide-react'
 
-import { planChat, type SceneScript, type Turn } from '@/components/scene-engine'
+import { planChat, type ChatScript, type Turn } from '@/components/scene-engine'
+import { EMBED_SNIPPET } from '@/lib/site'
 
 /* The three demo transcripts. Voice rules for every line of dialogue: no em
    dashes, no semicolons, no value-by-negation, no cutesy slang. The support
@@ -97,7 +98,7 @@ const DOCS_CHAT: Turn[] = [
     who: 'radioso',
     think: 800,
     text: "You're already talking to one. This chat is the website embed, running on radioso.ai. Installing yours is one tag:",
-    code: '<script src="https://cdn.radioso.ai/embed.js"\n        data-token="wksp_your_token" async></script>',
+    code: EMBED_SNIPPET,
     pause: 700,
   },
   {
@@ -128,7 +129,7 @@ const DOCS_CHAT: Turn[] = [
  * The talk-to-the-team routine, played out. Qualification happens inside a
  * genuinely useful answer, the routine collects what it needs, and the team
  * gets the whole conversation. The same routine runs live behind the hero's
- * 💸 chip — the note under the scene points there.
+ * 💸 chip, and the tab's "Talk to the team" exit asks it for real.
  */
 const LEADS_CHAT: Turn[] = [
   {
@@ -171,6 +172,6 @@ const LEADS_CHAT: Turn[] = [
   },
 ]
 
-export const SUPPORT_SCENE: SceneScript = { chat: SUPPORT_CHAT, plan: planChat(SUPPORT_CHAT) }
-export const DOCS_SCENE: SceneScript = { chat: DOCS_CHAT, plan: planChat(DOCS_CHAT) }
-export const LEADS_SCENE: SceneScript = { chat: LEADS_CHAT, plan: planChat(LEADS_CHAT) }
+export const SUPPORT_SCENE: ChatScript = { kind: 'chat', chat: SUPPORT_CHAT, plan: planChat(SUPPORT_CHAT) }
+export const DOCS_SCENE: ChatScript = { kind: 'chat', chat: DOCS_CHAT, plan: planChat(DOCS_CHAT) }
+export const LEADS_SCENE: ChatScript = { kind: 'chat', chat: LEADS_CHAT, plan: planChat(LEADS_CHAT) }
