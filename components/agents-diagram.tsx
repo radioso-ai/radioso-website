@@ -115,22 +115,42 @@ const cue = (at: number, dur?: number, extra?: Record<string, string>) =>
 /**
  * A hairline in the resting skeleton, with its lit copy drawn over it. `origin` is
  * the end the light starts from, which is the direction the signal travels.
+ * `dashed` is for a link that is ownership rather than traffic.
  */
 function Wire({
   at,
   axis,
   origin,
   style,
+  className = '',
+  dashed = false,
 }: {
   at: number
   axis: 'x' | 'y'
   origin: 'origin-left' | 'origin-right' | 'origin-top' | 'origin-bottom'
   style: CSSProperties
+  className?: string
+  dashed?: boolean
 }) {
+  const base = dashed
+    ? axis === 'x'
+      ? 'h-0 border-t border-dashed'
+      : 'w-0 border-l border-dashed'
+    : axis === 'x'
+      ? 'h-px'
+      : 'w-px'
   return (
-    <span aria-hidden className={`absolute bg-border ${axis === 'x' ? 'h-px' : 'w-px'}`} style={style}>
+    <span
+      aria-hidden
+      className={`absolute ${base} ${dashed ? 'border-border' : 'bg-border'} ${className}`}
+      style={style}
+    >
       <span
-        className={`scene-draw scene-draw-${axis} absolute inset-0 bg-primary/50 ${origin}`}
+        className={`scene-draw scene-draw-${axis} absolute ${origin} ${
+          dashed
+            ? `${axis === 'x' ? '-top-px left-0 right-0 border-t' : '-left-px top-0 bottom-0 border-l'} border-dashed border-primary/50`
+            : 'inset-0 bg-primary/50'
+        }`}
         style={cue(at, DRAW)}
       />
     </span>
@@ -241,23 +261,110 @@ export function AgentsDiagramScene({ label }: { label: string }) {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col justify-center px-4 py-2 sm:px-7 sm:py-4">
-        <div className="mx-auto grid h-[7.25rem] w-full grid-cols-[minmax(0,auto)_0.75rem_5.5rem_0.75rem_minmax(0,auto)] justify-center sm:h-48 sm:grid-cols-[minmax(0,auto)_2.5rem_8.5rem_2.5rem_minmax(0,10rem)]">
+        {/* Left to right, the way the request travels: the assistants, how the
+            conversation reaches you, your agent. The answer comes back right to left. */}
+        <div className="mx-auto grid h-[7.25rem] w-full grid-cols-[minmax(0,auto)_0.75rem_5.5rem_0.75rem_minmax(0,auto)] justify-center sm:h-44 sm:grid-cols-[minmax(0,10rem)_2.5rem_8.5rem_2.5rem_minmax(0,auto)]">
+          <ul className="grid grid-rows-4" aria-label="Assistants that can ask it">
+            {CLIENTS.map((c) => (
+              <li key={c.label} className="self-center">
+                <Tile icon={c.icon} label={c.label} at={c.at} />
+              </li>
+            ))}
+          </ul>
+
+          {/* The clients' side: a stub per client into one bus. */}
+          <div aria-hidden className="relative">
+            <Wire at={B.rightBus} axis="y" origin="origin-top" style={{ right: 0, top: row(0, 4), bottom: '50%' }} />
+            <Wire at={B.rightBus} axis="y" origin="origin-top" style={{ right: 0, top: '50%', bottom: row(0, 4) }} />
+            {CLIENTS.map((c, i) => (
+              <Wire
+                key={c.label}
+                at={i === 0 ? B.ask : B.clients[i - 1]}
+                axis="x"
+                // Claude's wire lights from Claude's end: it is the one asking.
+                origin={i === 0 ? 'origin-left' : 'origin-right'}
+                style={{ left: 0, right: 0, top: row(i, 4) }}
+              />
+            ))}
+            {/* Discovery, then the question in and the answer back, along Claude's route. */}
+            <Dot at={B.dStub} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
+            <Dot at={B.qStub} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
+            <Dot at={B.qBus} from="0 0" to="0 100%" style={{ right: 0, width: 1, top: row(0, 4), bottom: '50%' }} />
+            <Dot at={B.aBus} from="0 100%" to="0 0" style={{ right: 0, width: 1, top: row(0, 4), bottom: '50%' }} />
+            <Dot at={B.aStub} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
+          </div>
+
+          {/* How the conversation arrives: the agent card on Claude's row, the MCP
+              server on the channel, and a drop from the channel into the exchange. */}
+          <div className="relative">
+            <Wire at={B.dReach} axis="x" origin="origin-left" style={{ left: 0, right: '50%', top: row(0, 4) }} />
+            <Dot at={B.dReach} from="0 0" to="100% 0" style={{ left: 0, right: '50%', top: row(0, 4), height: 1 }} />
+            {/* The card is yours: a dashed link back to your agent, lit as it is read. */}
+            <Wire
+              dashed
+              at={B.card - 200}
+              axis="x"
+              origin="origin-right"
+              style={{ left: '50%', right: 0, top: row(0, 4) }}
+            />
+            <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2" style={{ top: row(0, 4) }}>
+              <Caption label="agent card" at={B.card} mono pings={[B.card]} />
+            </div>
+            {/* Where the card lives. Desktop only: on a phone the rail step beside
+                this beat says it, and the card has no room for a second line. */}
+            <span
+              className="scene-step absolute left-1/2 z-10 hidden w-full -translate-x-1/2 text-balance text-center text-2xs leading-tight text-muted-foreground sm:block"
+              style={{ ...delay(B.card + 100), top: `calc(${row(0, 4)} + 0.875rem)` }}
+            >
+              <span className="font-mono">/.well-known</span>, on your domain
+            </span>
+
+            <Wire at={B.midTrunk} axis="x" origin="origin-left" style={{ left: 0, right: 0, top: '50%' }} />
+            <Dot at={B.qMid} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
+            <Dot at={B.aMid} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
+            {/* The channel carries the exchange below: one trace down into its frame. */}
+            <Wire
+              at={B.question}
+              axis="y"
+              origin="origin-top"
+              className="-bottom-3 sm:-bottom-3.5"
+              style={{ left: '50%', top: '50%' }}
+            />
+            <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+              <Caption label="MCP server" at={B.mcp} mono pings={[B.qMid + 150]} />
+            </div>
+          </div>
+
+          {/* Channel to agent. */}
+          <div aria-hidden className="relative">
+            <Wire at={B.leftTrunk} axis="x" origin="origin-left" style={{ left: 0, right: 0, top: '50%' }} />
+            <Wire
+              dashed
+              at={B.card - 200}
+              axis="x"
+              origin="origin-right"
+              style={{ left: 0, right: 0, top: row(0, 4) }}
+            />
+            <Dot at={B.qLeft} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
+            <Dot at={B.aLeft} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
+          </div>
+
           {/* Your agent: the Radioso mark and its loop. */}
           <div className="relative self-center">
             <div
-              className="scene-light relative flex items-center gap-2.5 rounded-xl border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_5%,var(--card))] px-1.5 py-3 sm:gap-3 sm:px-3 sm:py-4"
+              className="scene-light relative flex items-center gap-2.5 rounded-xl border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_5%,var(--card))] px-1.5 py-3 sm:gap-3 sm:px-3 sm:py-3.5"
               style={cue(B.agent, LIGHT)}
             >
+              <ul className="flex flex-col gap-0.5 sm:gap-1" aria-label="What your agent does">
+                {LANES.map((lane) => (
+                  <Lane key={lane.title} {...lane} />
+                ))}
+              </ul>
               <div className="relative hidden size-10 shrink-0 items-center justify-center rounded-xl border border-primary/35 bg-[color-mix(in_oklab,var(--primary)_10%,var(--card))] sm:flex">
                 <Image src="/radioso-icon.svg" alt="" width={24} height={24} className="size-6" />
                 {/* The question arriving. */}
                 <span aria-hidden className="scene-ping rounded-[inherit]" style={cue(B.arrive)} />
               </div>
-              <ul className="flex flex-col gap-0.5 sm:gap-1.5" aria-label="What your agent does">
-                {LANES.map((lane) => (
-                  <Lane key={lane.title} {...lane} />
-                ))}
-              </ul>
             </div>
             {/* Labels set into the panel's border, so they cost no height. */}
             <span className="absolute left-1/2 top-0 z-10 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-card px-1.5 text-2xs font-semibold text-foreground">
@@ -270,73 +377,12 @@ export function AgentsDiagramScene({ label }: { label: string }) {
               <Caption icon={ShieldCheck} label="Your rules" at={B.rules} />
             </span>
           </div>
-
-          {/* Agent to channel. */}
-          <div aria-hidden className="relative">
-            <Wire at={B.leftTrunk} axis="x" origin="origin-right" style={{ left: 0, right: 0, top: '50%' }} />
-            <Dot at={B.qLeft} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
-            <Dot at={B.aLeft} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
-          </div>
-
-          {/* How the conversation arrives: the agent card on Claude's row, the MCP
-              server on the channel. */}
-          <div className="relative">
-            <Wire at={B.dReach} axis="x" origin="origin-right" style={{ left: '50%', right: 0, top: row(0, 4) }} />
-            <Dot at={B.dReach} from="100% 0" to="0 0" style={{ left: '50%', right: 0, top: row(0, 4), height: 1 }} />
-            <div className="absolute left-1/2 z-10 -translate-x-1/2 -translate-y-1/2" style={{ top: row(0, 4) }}>
-              <Caption label="agent card" at={B.card} mono pings={[B.card]} />
-            </div>
-            {/* Where the card lives. Desktop only: on a phone the rail step beside
-                this beat says it, and the card has no room for a second line. */}
-            <span
-              className="scene-step absolute left-1/2 z-10 hidden w-full -translate-x-1/2 text-balance text-center text-2xs leading-tight text-muted-foreground sm:block"
-              style={{ ...delay(B.card + 100), top: `calc(${row(0, 4)} + 1rem)` }}
-            >
-              <span className="font-mono">/.well-known</span>, on your domain
-            </span>
-
-            <Wire at={B.midTrunk} axis="x" origin="origin-right" style={{ left: 0, right: 0, top: '50%' }} />
-            <Dot at={B.qMid} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
-            <Dot at={B.aMid} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: '50%', height: 1 }} />
-            <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-              <Caption label="MCP server" at={B.mcp} mono pings={[B.qMid + 150]} />
-            </div>
-          </div>
-
-          {/* The clients' side: one bus, a stub per client. */}
-          <div aria-hidden className="relative">
-            <Wire at={B.rightBus} axis="y" origin="origin-top" style={{ left: 0, top: row(0, 4), bottom: '50%' }} />
-            <Wire at={B.rightBus} axis="y" origin="origin-top" style={{ left: 0, top: '50%', bottom: row(0, 4) }} />
-            {CLIENTS.map((c, i) => (
-              <Wire
-                key={c.label}
-                at={i === 0 ? B.ask : B.clients[i - 1]}
-                axis="x"
-                // Claude's wire lights from Claude's end: it is the one asking.
-                origin={i === 0 ? 'origin-right' : 'origin-left'}
-                style={{ left: 0, right: 0, top: row(i, 4) }}
-              />
-            ))}
-            {/* Discovery, then the question in and the answer back, along Claude's route. */}
-            <Dot at={B.dStub} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
-            <Dot at={B.qStub} from="100% 0" to="0 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
-            <Dot at={B.qBus} from="0 0" to="0 100%" style={{ left: 0, width: 1, top: row(0, 4), bottom: '50%' }} />
-            <Dot at={B.aBus} from="0 100%" to="0 0" style={{ left: 0, width: 1, top: row(0, 4), bottom: '50%' }} />
-            <Dot at={B.aStub} from="0 0" to="100% 0" style={{ left: 0, right: 0, top: row(0, 4), height: 1 }} />
-          </div>
-
-          <ul className="grid grid-rows-4" aria-label="Assistants that can ask it">
-            {CLIENTS.map((c) => (
-              <li key={c.label} className="self-center">
-                <Tile icon={c.icon} label={c.label} at={c.at} />
-              </li>
-            ))}
-          </ul>
         </div>
 
-        {/* The exchange itself, in the same bubbles as the chat scenes: the asking
-            assistant on the right, the agent on the left. */}
-        <div className="mt-2.5 flex flex-col gap-1 sm:mt-5 sm:gap-2">
+        {/* The exchange, framed and hung off the channel above it. The bubbles keep
+            the chat convention of the other tabs: the asker on the right, Radioso on
+            the left. The agent's action rows sit right, under your agent. */}
+        <div className="mt-3 rounded-xl border border-border/70 bg-background/50 px-2 py-1 sm:mt-3.5 sm:px-3 sm:py-2.5">
           <div className="flex flex-col items-end gap-1">
             <span
               className="scene-step hidden items-center gap-1 px-1 text-2xs font-medium text-muted-foreground sm:inline-flex"
@@ -351,14 +397,8 @@ export function AgentsDiagramScene({ label }: { label: string }) {
               Can I pause my subscription?
             </p>
           </div>
-          <div className="flex flex-col items-start gap-1 sm:gap-1.5">
-            <span
-              className="scene-step hidden px-1 text-2xs font-medium text-muted-foreground sm:inline"
-              style={delay(B.checked)}
-            >
-              Radioso
-            </span>
-            <div className="hidden flex-wrap gap-1.5 sm:flex">
+          <div className="mt-1 grid gap-2 sm:mt-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-3">
+            <div className="hidden flex-col items-end gap-1.5 sm:col-start-2 sm:row-start-1 sm:flex">
               {ACTIONS.map(({ icon: Icon, label, at }) => (
                 <div
                   key={label}
@@ -371,16 +411,24 @@ export function AgentsDiagramScene({ label }: { label: string }) {
                 </div>
               ))}
             </div>
-            <p
-              className="scene-step max-w-[85%] rounded-2xl rounded-bl-md border border-primary/20 bg-primary/10 px-3 py-1.5 text-[13px] leading-relaxed text-foreground sm:px-4 sm:py-2 sm:text-[15px]"
-              style={delay(B.answer)}
-            >
-              Yes, for up to three months. Want me to start the pause? I’ll need the account email.{' '}
-              <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-card px-2 py-px align-[1px] font-mono text-2xs text-muted-foreground">
-                <span className="font-medium text-primary">1</span>
-                billing-faq
+            <div className="flex flex-col items-start gap-1 sm:col-start-1 sm:row-start-1">
+              <span
+                className="scene-step hidden px-1 text-2xs font-medium text-muted-foreground sm:inline"
+                style={delay(B.answer)}
+              >
+                Radioso
               </span>
-            </p>
+              <p
+                className="scene-step rounded-2xl rounded-bl-md border border-primary/20 bg-primary/10 px-3 py-1.5 text-[13px] leading-relaxed text-foreground sm:px-4 sm:py-2 sm:text-[15px]"
+                style={delay(B.answer)}
+              >
+                Yes, for up to three months. Want me to start the pause? I’ll need the account email.{' '}
+                <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-card px-2 py-px align-[1px] font-mono text-2xs text-muted-foreground">
+                  <span className="font-medium text-primary">1</span>
+                  billing-faq
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
