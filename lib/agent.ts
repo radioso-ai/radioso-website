@@ -11,8 +11,8 @@
  * or the message CORS not yet deployed — it falls back to the canned `PRERENDERED` answers so
  * the page never shows a broken state.
  *
- * The pre-rendered seed answer (hero "How does Radioso hand off to a person?") stays canned
- * because the page is a static export; live answers happen client-side once a visitor asks.
+ * Nothing on the page is fetched at build time: the site is a static export, so the chat
+ * launcher opens on a canned greeting and live answers happen client-side once a visitor asks.
  */
 
 import { site } from '@/lib/site'
@@ -78,8 +78,8 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.architecture },
     ],
   },
-  // The hero's seed exchange. Word for word what the production agent answered on
-  // 2026-10-01, with its two sources: the routine ending in a handoff is guided autonomy,
+  // Word for word what the production agent answered on 2026-10-01 to "How does Radioso
+  // hand off to a person?", with its two sources: the routine ending in a handoff is guided autonomy,
   // the operator owning the conversation until hand-back is human takeover.
   handoff: {
     body:
@@ -89,7 +89,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.humanTakeover },
     ],
   },
-  // Verbatim production answer (2026-10-01) to the hero's "can't answer" chip.
+  // Verbatim production answer (2026-10-01) to the launcher's "can't answer" chip.
   cantAnswer: {
     body:
       "Radioso optimizes for defensibility rather than fluency, so it fails honestly when support is missing[1]. An agent can also hand off to a person when it should, inside the rules you set[1][2].",

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans, JetBrains_Mono, Fraunces } from 'next/font/google'
 
+import { ChatLauncher } from '@/components/chat-launcher'
 import { CookieBanner } from '@/components/cookie-banner'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { ThemeProvider } from '@/components/theme-provider'
+import { AskProvider } from '@/lib/ask-context'
 import { site } from '@/lib/site'
 import './globals.css'
 
@@ -79,7 +81,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${plexSans.variable} ${jetbrainsMono.variable} ${fraunces.variable} font-sans antialiased`}>
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            {/* The provider sits above every page so the chat launcher, and anything on a
+                page that asks it a question, share one conversation for the visit. */}
+            <AskProvider>
+              {children}
+              <ChatLauncher />
+            </AskProvider>
             <CookieBanner />
           </ThemeProvider>
         </PostHogProvider>

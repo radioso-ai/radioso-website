@@ -322,9 +322,9 @@
    SaaS mockups and none said anything about this product.
 
    The band is scoped with plain custom properties rather than by
-   re-declaring the theme tokens the way `.machine-band` does: the Ask
-   Radioso card lives inside the hero, and re-pointing `--foreground`
-   here would repaint the card's text along with the headline.
+   re-declaring the theme tokens the way `.machine-band` does: the
+   customer-site frame lives inside the hero, and re-pointing `--foreground`
+   here would repaint its page and widget along with the headline.
 
    Offsets centre the origin on the nav pill's sun mark at rest (sticky
    top-4 + pill padding put its centre at y=43px; x = container padding +
@@ -702,6 +702,24 @@
   [data-armed].scene-card {
     height: min(56vh, 500px);
   }
+}
+
+/* The hero's widget (`variant="widget"`) is a fixed-size picture of the embed. It
+   never hands its transcript to the visitor, so its viewport stays clipped in
+   every state. Unarmed, which is the served HTML, no JS and reduced motion, the
+   conversation sits on the bottom edge, so the frame a visitor gets is the close:
+   the handoff and the $312. Overflow then spills off the top, faded, the way
+   history does in a real widget. Armed, it reads top down and the clock scrolls it. */
+.scene-widget .scene-viewport {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent 0, black 3rem);
+}
+
+[data-armed].scene-widget .scene-viewport {
+  justify-content: flex-start;
 }
 
 /* The transcript is clipped by the window it is read through, not just by the
@@ -1452,6 +1470,11 @@
     overflow: visible !important;
     mask-image: none !important;
   }
+  /* Except the hero's widget, which keeps its fixed size and shows the close. */
+  .scene-widget .scene-viewport {
+    overflow: hidden !important;
+    mask-image: linear-gradient(to bottom, transparent 0, black 3rem) !important;
+  }
   .scene-stage[data-scrub='on'] {
     position: static !important;
   }
@@ -1490,6 +1513,75 @@
     animation: none !important;
     color: var(--muted-foreground);
     text-decoration-color: color-mix(in oklab, var(--muted-foreground) 80%, transparent);
+  }
+}
+
+/* ── The chat launcher ─────────────────────────────────────────────────
+   The live agent, in the corner of every page. The button is the hero navy
+   with the logo yellow on it, the same sun over the same lake, so the one
+   persistent object on the site is unmistakably Radioso's. */
+.chat-launcher-button {
+  background: oklch(33% 0.093 253);
+  color: oklch(97.5% 0.006 253);
+  box-shadow:
+    0 12px 28px -12px color-mix(in oklab, var(--signal) 70%, transparent),
+    0 2px 6px 0 color-mix(in oklab, var(--foreground) 20%, transparent);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.chat-launcher-button:hover {
+  transform: scale(1.05);
+}
+
+/* On the dark page the navy needs an edge to stand off the ground. */
+.dark .chat-launcher-button {
+  background: oklch(23% 0.072 253);
+  border: 1px solid color-mix(in oklab, var(--signal) 35%, transparent);
+}
+
+/* "Chat with us": quiet, beside the button, on hover or focus, and once per
+   visit on its own for a few seconds. */
+.chat-launcher-label {
+  opacity: 0;
+  transform: translateX(6px);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.peer:hover ~ .chat-launcher-label,
+.peer:focus-visible ~ .chat-launcher-label,
+.chat-launcher-label[data-show='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes chat-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.chat-panel:not([hidden]) {
+  transform-origin: bottom right;
+  animation: chat-panel-in var(--dur-base) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel:not([hidden]) {
+    animation: none;
+  }
+  .chat-launcher-button,
+  .chat-launcher-label {
+    transition: none;
+  }
+  .chat-launcher-button:hover {
+    transform: none;
   }
 }
 

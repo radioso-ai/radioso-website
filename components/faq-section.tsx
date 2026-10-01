@@ -24,9 +24,9 @@ export function FaqSection() {
           Questions? Ask the product.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-          Short answers below &mdash; or press{' '}
-          <span className="font-medium text-primary">Ask the agent</span> and watch the live agent
-          up top answer it for real, grounded in the docs, citations included.
+          Short answers below. Press{' '}
+          <span className="font-medium text-primary">Ask the agent</span> on any of them and the
+          live agent answers it in the chat, grounded in the docs, citations included.
         </p>
       </div>
 

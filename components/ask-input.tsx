@@ -45,7 +45,7 @@ export function AskInput({
     event.preventDefault()
     // Same guards as ask() itself, so the event counts questions that were sent. The
     // text stays out of analytics: visitors type emails and order numbers in here.
-    if (question.trim() && !pending) track('hero_free_text_submit')
+    if (question.trim() && !pending) track('launcher_free_text_submit')
     void ask(question)
   }
 

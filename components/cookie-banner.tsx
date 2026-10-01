@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import posthog from 'posthog-js'
 
@@ -12,6 +12,9 @@ import {
   setCookieConsent,
 } from '@/lib/consent'
 
+/** Set on `<html>` while the strip is showing, so the chat launcher can sit above it. */
+const STRIP_HEIGHT_VAR = '--cookie-strip-h'
+
 /**
  * Minimal GDPR consent banner for the one non-essential thing this site does:
  * PostHog analytics. A slim strip pinned to the bottom edge, so it never covers
@@ -22,6 +25,23 @@ import {
  */
 export function CookieBanner() {
   const [open, setOpen] = useState(false)
+  const stripRef = useRef<HTMLDivElement | null>(null)
+
+  // Publish the strip's real height (it wraps differently on a phone) for as long as it
+  // is open, and take it back the moment it closes.
+  useEffect(() => {
+    const strip = stripRef.current
+    if (!open || !strip) return
+    const root = document.documentElement
+    const publish = () => root.style.setProperty(STRIP_HEIGHT_VAR, `${strip.offsetHeight}px`)
+    publish()
+    const observer = new ResizeObserver(publish)
+    observer.observe(strip)
+    return () => {
+      observer.disconnect()
+      root.style.removeProperty(STRIP_HEIGHT_VAR)
+    }
+  }, [open])
 
   useEffect(() => {
     // The choice lives in localStorage, which the server render can't see — the
@@ -50,6 +70,7 @@ export function CookieBanner() {
 
   return (
     <div
+      ref={stripRef}
       role="dialog"
       aria-label="Cookie consent"
       className="fixed inset-x-0 bottom-0 z-[60] border-t border-border bg-card/95 backdrop-blur-md"

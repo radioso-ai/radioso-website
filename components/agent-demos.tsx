@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowRight,
-  ArrowUp,
   Check,
   Code2,
   Copy,
@@ -51,7 +50,7 @@ type Step = {
 /** Where the visitor goes once the job is shown. Buttons name the action. */
 type Exit =
   | { kind: 'link'; label: string; href: string }
-  /** The same question the hero chip asks, sent to the live agent at the top of the page. */
+  /** The same question the launcher's chip asks, sent to the live agent in the chat launcher. */
   | { kind: 'ask'; label: string; question: string; hint: string }
   | { kind: 'snippet'; label: string; code: string }
 
@@ -160,7 +159,7 @@ const TABS: Tab[] = [
       kind: 'ask',
       label: 'Talk to the team',
       question: TALK_TO_THE_TEAM,
-      hint: 'Runs this routine live in the chat at the top of the page.',
+      hint: 'Runs this routine live in the chat.',
     },
   },
   {
@@ -495,14 +494,14 @@ function RailExit({ exit }: { exit: Exit }) {
   )
 }
 
-/** Sends the hero chip's question to the live agent; the hero scrolls itself into view. */
+/** Sends the launcher chip's question to the live agent; asking opens the launcher. */
 function AskExit({ label, question, hint }: { label: string; question: string; hint: string }) {
-  const { ask, pending } = useAsk()
+  const { ask, pending, openLauncher } = useAsk()
 
   const onClick = () => {
-    // Mid-answer the hero won't take another question, so just go to it.
+    // Mid-answer the agent won't take another question, so just open the chat.
     if (pending) {
-      document.getElementById('ask-radioso')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      openLauncher('ask')
       return
     }
     void ask(question)
@@ -511,7 +510,7 @@ function AskExit({ label, question, hint }: { label: string; question: string; h
   return (
     <div className="flex flex-col items-center gap-2 lg:items-start">
       <Button variant="outline" onClick={onClick}>
-        {label} <ArrowUp className="size-4" />
+        {label} <MessageCircle className="size-4" />
       </Button>
       <p className="text-center text-sm text-muted-foreground lg:text-left">{hint}</p>
     </div>
