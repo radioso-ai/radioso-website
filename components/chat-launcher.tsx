@@ -7,7 +7,7 @@ import { X } from 'lucide-react'
 import { AgentAnswer } from '@/components/agent-answer'
 import { AskInput } from '@/components/ask-input'
 import { track } from '@/lib/analytics'
-import { TALK_TO_THE_TEAM, useAsk, type AnswerSource } from '@/lib/ask-context'
+import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
 import type { AgentAnswerData } from '@/lib/agent'
 
 // useLayoutEffect warns during SSR; fall back to useEffect on the server.
@@ -38,22 +38,6 @@ const QUICK_REPLIES = [
   'Can I self-host it?',
   TALK_TO_THE_TEAM,
 ]
-
-/**
- * The header badge only claims what is true of the newest answer. The opener is canned,
- * so it gets a muted label and no dot until a visitor's own question has come back.
- */
-const BADGE: Record<AnswerSource, { label: string; title: string }> = {
-  seed: {
-    label: 'from the docs',
-    title: 'A prepared greeting. Ask something to reach the live agent.',
-  },
-  live: { label: 'live', title: 'Answered just now by the Radioso agent in production.' },
-  demo: {
-    label: 'demo',
-    title: 'The live agent was unreachable, so this is a prepared answer.',
-  },
-}
 
 /** Shown once per visit, on desktop, so the launcher says what it is without a hover. */
 const HINT_KEY = 'radioso_launcher_hint'
@@ -87,7 +71,6 @@ export function ChatLauncher() {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const columnRef = useRef<HTMLDivElement | null>(null)
   const lastRef = useRef<HTMLDivElement | null>(null)
-  const badge = BADGE[answerSource]
   // Quick replies are how the conversation starts; once it has, it's an ordinary chat.
   const showReplies = transcript.length === 0 && !pending
 
@@ -197,19 +180,9 @@ export function ChatLauncher() {
         <div className="flex shrink-0 items-center gap-2 border-b border-border/70 py-2 pl-4 pr-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:pt-2">
           <Image src="/radioso-icon.svg" alt="" width={20} height={20} className="size-5" />
           <span className="text-sm font-semibold">Radioso</span>
-          {/* "live" only once the API has answered a visitor; "demo" when the canned
-              stub served instead (dev, blocked origin, API down). */}
-          {/* No badge on the greeting: it is neither live nor from the docs. */}
-          {answerSource !== 'seed' && (
-            <span
-              title={badge.title}
-              className="ml-1 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
-            >
-              {answerSource === 'live' && <span className="pulse-dot" />}
-              {answerSource === 'demo' && <span className="size-2 rounded-full bg-muted-foreground/50" />}
-              {badge.label}
-            </span>
-          )}
+          {/* A quiet pulse once the production agent has answered; nothing otherwise.
+              The visitor is talking to support, not reading a status panel. */}
+          {answerSource === 'live' && <span className="pulse-dot ml-1" aria-hidden />}
           <button
             type="button"
             onClick={() => closeLauncher('header')}
