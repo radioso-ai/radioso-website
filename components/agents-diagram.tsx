@@ -27,9 +27,9 @@ const LIGHT = 600
  * picks the frame; these only set the order and spacing of what lights.
  *
  *   sources light → their wires converge on Radioso → Radioso pulses → Claude
- *   lights → its wire runs past the channel to `llms.txt`, which says what you
- *   offer and where to ask → the MCP channel opens → the question travels right
- *   to left → Radioso pulses, checks the help center and policies → the cited
+ *   lights → its wire runs past the channel to the agent card your domain serves
+ *   at /.well-known → the MCP channel opens, walk-in, with nothing to sign up
+ *   for → the question travels right to left → Radioso pulses, checks the help center and policies → the cited
  *   answer travels back → the other clients connect → your rules light.
  */
 export const AGENTS_BEATS = {
@@ -39,11 +39,11 @@ export const AGENTS_BEATS = {
   hub: 1680,
   /** Claude comes online and its wire opens toward you. */
   ask: 2200,
-  /** Discovery: a signal runs from Claude to `llms.txt`, which lights with its caption. */
+  /** Discovery: a signal runs from Claude to the agent card, which lights with its caption. */
   dStub: 2300,
   dReach: 2600,
-  llms: 2900,
-  /** Then the MCP channel opens: trunk out of Radioso, bus, the label. */
+  card: 2900,
+  /** Then the walk-in MCP channel opens: trunk out of Radioso, bus, the label. */
   rightTrunk: 3500,
   rightBus: 3740,
   mcp: 3920,
@@ -237,7 +237,7 @@ export function AgentsDiagramScene({ label }: { label: string }) {
           </div>
 
           {/* Radioso, with the trunks running in under its tile from either side, and
-              `llms.txt` above it on Claude's row: the first thing an assistant reads. */}
+              the agent card above it on Claude's row: the first thing an assistant reads. */}
           <div className="relative">
             <Wire at={B.dReach} axis="x" origin="origin-right" style={{ left: '50%', right: 0, top: row(0, 4) }} />
             <Dot at={B.dReach} from="100% 0" to="0 0" style={{ left: '50%', right: 0, top: row(0, 4), height: 1 }} />
@@ -245,15 +245,15 @@ export function AgentsDiagramScene({ label }: { label: string }) {
               className="absolute left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1"
               style={{ top: row(0, 4) }}
             >
-              <Caption label="llms.txt" at={B.llms} mono pings={[B.llms]} />
+              <Caption label="agent card" at={B.card} mono pings={[B.card]} />
             </div>
-            {/* What the file is for. Desktop only: on a phone the rail step beside
+            {/* Where the card lives. Desktop only: on a phone the rail step beside
                 this beat says it, and the card has no room for a second line. */}
             <span
               className="scene-step absolute left-1/2 z-10 hidden w-full -translate-x-1/2 text-balance text-center text-2xs leading-tight text-muted-foreground sm:block"
-              style={{ ...delay(B.llms + 100), top: `calc(${row(0, 4)} + 1rem)` }}
+              style={{ ...delay(B.card + 100), top: `calc(${row(0, 4)} + 1rem)` }}
             >
-              what you offer, where to ask
+              <span className="font-mono">/.well-known</span>, on your domain
             </span>
 
             <Wire at={B.leftTrunk} axis="x" origin="origin-left" style={{ left: 0, right: '50%', top: '50%' }} />

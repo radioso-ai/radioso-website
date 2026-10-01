@@ -166,13 +166,13 @@ const TABS: Tab[] = [
     id: 'agents',
     label: 'Serve your customers’ agents',
     railTitle: 'When the customer sends an agent.',
-    railIntro: 'Your customer’s AI assistant finds you through your llms.txt, then asks Radioso about your product over MCP.',
+    railIntro: 'Your customer’s AI assistant finds the agent card on your domain, then asks Radioso about your product over MCP.',
     steps: [
       {
         marker: { icon: Plug },
         title: 'Connect once',
-        body: 'An llms.txt on your site tells assistants what you offer and where to ask. The MCP server is where they ask, one credential per client.',
-        at: AGENTS_BEATS.llms,
+        body: 'Publish the agent and your domain serves an agent card at /.well-known. Any MCP client reads it and connects, with no account to create.',
+        at: AGENTS_BEATS.card,
       },
       {
         marker: { icon: Repeat },
@@ -183,13 +183,13 @@ const TABS: Tab[] = [
       {
         marker: { icon: ShieldCheck },
         title: 'Your terms',
-        body: 'Your rules decide what an agent is told, and what it is not.',
+        body: 'Walk-in access is yours to switch on, rate limit, or revoke. Your rules decide what an agent is told, and what it is not.',
         at: AGENTS_BEATS.rules,
       },
     ],
     scene: AGENTS_SCENE,
     sceneLabel: 'over MCP',
-    exit: { kind: 'link', label: 'Read the MCP docs', href: `${site.docsUrl}/guides/mcp-server` },
+    exit: { kind: 'link', label: 'Read the publishing guide', href: `${site.docsUrl}/guides/publish-an-agent` },
   },
 ]
 
