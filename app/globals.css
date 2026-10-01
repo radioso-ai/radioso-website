@@ -392,15 +392,33 @@
     );
 }
 
+/* The demo card straddles the band. The navy does not stop at the hero: it
+   runs on through the demo section's lead-in (`--demo-lead`, which is that
+   section's top padding) and `--demo-straddle` further, so it ends partway
+   down the card. The demo section comes later in the tree, so the card
+   paints over the overhang, and once the stage pins the band scrolls away
+   behind it. Nothing in the pin maths depends on these: the track starts
+   after the lead-in and measures itself. */
+:root {
+  --demo-lead: 0.75rem;
+  --demo-straddle: 5.5rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --demo-lead: 1rem;
+    --demo-straddle: 10rem;
+  }
+}
+
 /* Reaches back up over the sticky nav's flow height — a constant 54px at
-   every breakpoint (measured 390 through 1440) — so the layer spans exactly
-   main-top to hero-bottom and the band ends on the trust strip's own top
-   border without a magic height that only holds at one width. */
+   every breakpoint (measured 390 through 1440) — and down past the hero by
+   the straddle, without a magic height that only holds at one width. */
 .hero-backdrop {
   position: absolute;
   top: -54px;
   right: 0;
-  bottom: 0;
+  bottom: calc(-1 * (var(--demo-lead) + var(--demo-straddle)));
   left: 0;
   z-index: -1;
   overflow: hidden;
@@ -559,6 +577,14 @@
   text-decoration-color: var(--hero-ink);
 }
 
+/* The line over the headline: a hairline pill in the logo yellow's edge
+   strength, with the yellow dot as the mark. Text stays in the band's muted
+   ink; yellow is never the text colour. */
+.hero-eyebrow {
+  border: 1px solid color-mix(in oklab, var(--secondary) 35%, transparent);
+  background: color-mix(in oklab, var(--secondary) 5%, transparent);
+}
+
 /* Scroll-reveal: sections rise and fade as they enter the viewport. */
 .reveal {
   opacity: 0;
@@ -682,25 +708,36 @@
   height: 140vh;
 }
 
-/* The card is a chat window once armed: a fixed height with the transcript
-   sliding underneath the header strip. Tuned to leave room for the heading, the
-   tab bar and the rail — which on a phone carries the active step's sentence as
-   well as its title — inside a 900px-tall viewport, and inside an 812px phone.
-   300px is the floor: below that the transcript stops reading as a conversation,
-   so anything that still does not fit gives way before the card does. */
+/* The scene is a chat window once armed: a fixed height with the transcript
+   sliding underneath the header strip.
+
+   Below `lg` the demo card stacks: tab bar, the rail's active step, then the
+   scene, and the scene alone takes the fixed height. Tuned so all three fit an
+   812px phone under the pinned nav. 300px is the floor: below that the
+   transcript stops reading as a conversation, so anything that still does not
+   fit gives way before the scene does.
+
+   From `lg` the whole demo card is the fixed object, tabs and rail on the left
+   and the scene filling the right column, so the scene's own height defers to
+   the card. The card is sized to the viewport under the pinned nav (96px) with
+   a 32px margin below, capped where the transcript stops gaining anything. */
 [data-armed].scene-card {
-  height: min(38vh, 300px);
+  height: min(42vh, 360px);
 }
 
 @media (min-width: 640px) {
   [data-armed].scene-card {
-    height: min(56vh, 480px);
+    height: min(50vh, 440px);
   }
 }
 
 @media (min-width: 1024px) {
   [data-armed].scene-card {
-    height: min(56vh, 500px);
+    height: auto;
+  }
+
+  [data-scrub='on'] .demo-card {
+    height: min(calc(100svh - 128px), 680px);
   }
 }
 
@@ -1031,6 +1068,15 @@
 
 @media (max-width: 1023px) {
   [data-scrub='on'] .scene-rail-step:not([data-state='active']) {
+    display: none;
+  }
+}
+
+/* From `lg` all three steps stay listed down the card's left column, but only
+   the one being played carries its sentence: three full bodies do not fit the
+   pinned card at 900px. Unarmed (no JS, reduced motion) every body shows. */
+@media (min-width: 1024px) {
+  [data-scrub='on'] .scene-rail-step:not([data-state='active']) .scene-rail-body {
     display: none;
   }
 }
@@ -1516,7 +1562,7 @@
   border: 1px solid color-mix(in oklab, var(--signal) 35%, transparent);
 }
 
-/* "Chat with us": quiet, beside the button, on hover or focus, and once per
+/* "This chat is a Radioso agent. Ask it anything.": quiet, beside the button, on hover or focus, and once per
    visit on its own for a few seconds. */
 .chat-launcher-label {
   opacity: 0;

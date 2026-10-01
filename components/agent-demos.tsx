@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
-import { Reveal } from '@/components/reveal'
 import { AGENTS_BEATS, AGENTS_SCENE, AgentsDiagramScene } from '@/components/agents-diagram'
 import {
   MOTION_QUERY,
@@ -96,7 +95,7 @@ const TABS: Tab[] = [
       },
     ],
     scene: SUPPORT_SCENE,
-    sceneLabel: 'a support ticket',
+    sceneLabel: 'A support ticket',
     exit: { kind: 'link', label: 'Start in the cloud', href: site.appUrl },
   },
   {
@@ -125,7 +124,7 @@ const TABS: Tab[] = [
       },
     ],
     scene: DOCS_SCENE,
-    sceneLabel: 'on your docs site',
+    sceneLabel: 'On your docs site',
     exit: { kind: 'snippet', label: 'Add it to your site', code: EMBED_SNIPPET },
   },
   {
@@ -154,7 +153,7 @@ const TABS: Tab[] = [
       },
     ],
     scene: LEADS_SCENE,
-    sceneLabel: 'on your marketing site',
+    sceneLabel: 'On your marketing site',
     exit: {
       kind: 'ask',
       label: 'Talk to the team',
@@ -188,7 +187,7 @@ const TABS: Tab[] = [
       },
     ],
     scene: AGENTS_SCENE,
-    sceneLabel: 'over MCP',
+    sceneLabel: 'Over MCP',
     exit: { kind: 'link', label: 'Read the publishing guide', href: `${site.docsUrl}/guides/publish-an-agent` },
   },
 ]
@@ -338,127 +337,140 @@ export function AgentDemos() {
     // A tab switch replaces one tall scene subtree with another. Opting the
     // section out of scroll anchoring means the browser can never "correct"
     // the viewport off the tab bar mid-swap, whatever the height delta.
+    //
+    // The top padding is `--demo-lead`: the hero's navy backdrop runs on through
+    // it and `--demo-straddle` further, so the card's top sits on the band.
     <section
       id="people"
-      className="relative w-full scroll-mt-24 pb-24 pt-10 [overflow-anchor:none] sm:pb-28 sm:pt-12"
+      className="relative w-full scroll-mt-24 pb-24 pt-[var(--demo-lead)] [overflow-anchor:none] sm:pb-28"
     >
-      {/* Native anchor targets for the hero's deep links: the browser scrolls
-          here even before (or without) JS, and the hashchange listener above
-          picks the tab. */}
-      {TABS.map((t) => (
-        <span key={t.id} id={`demo-${t.id}`} className="absolute -top-24" aria-hidden />
-      ))}
-
       {/* The track is the scroll distance; the stage is what the visitor watches
           while they cover it. Unarmed, the track is just a section and the stage
           just its contents. */}
       <div ref={trackRef} className="scene-track relative w-full">
+        {/* Native anchor targets for the hero's deep links, 96px above the track
+            so the browser lands with the stage already pinned at the top of its
+            run, even before (or without) JS. The hashchange listener above picks
+            the tab. */}
+        {TABS.map((t) => (
+          <span key={t.id} id={`demo-${t.id}`} className="absolute -top-24" aria-hidden />
+        ))}
+
         <div
           ref={stageRef}
-          className="scene-stage mx-auto w-full max-w-6xl px-6 data-[scrub=on]:sticky data-[scrub=on]:top-24 xl:max-w-7xl"
+          className="scene-stage mx-auto w-full max-w-6xl px-4 data-[scrub=on]:sticky data-[scrub=on]:top-24 sm:px-6 xl:max-w-7xl"
         >
-          <Reveal className="mx-auto max-w-4xl text-center">
-            <h2 className="display-serif font-serif text-2xl font-bold tracking-tight sm:text-3xl">
-              What your agents handle.
-            </h2>
+          {/* One card, two columns from `lg`: the tabs and the rail on a muted
+              ground at the left, the scene filling the right. Opaque, because
+              its top half sits on the navy band.
 
-            <div
-              role="tablist"
-              aria-label="Agent demos"
-              // The radius is the pills' own plus the padding, so a bar that wraps
-              // to two rows on a phone stays concentric with the pills inside it.
-              className="mx-auto mt-6 inline-flex flex-wrap items-center justify-center gap-1 rounded-[1.375rem] border border-border/70 bg-card/90 p-1.5"
-            >
-              {TABS.map((t) => (
-                <button
-                  key={t.id}
-                  role="tab"
-                  id={`demo-tab-${t.id}`}
-                  aria-selected={t.id === active}
-                  aria-controls="demo-panel"
-                  onClick={() => {
-                    trackEvent('demo_tab_select', { tab: t.id })
-                    setActive(t.id)
-                  }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
-                    t.id === active
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </Reveal>
-
-          <div
-            id="demo-panel"
-            role="tabpanel"
-            aria-labelledby={`demo-tab-${tab.id}`}
-            className="mt-6 grid items-start gap-5 lg:mt-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-14"
-          >
-            <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
-              <h3 className="display-serif text-balance font-serif text-xl font-bold tracking-tight sm:text-2xl">
-                {tab.railTitle}
-              </h3>
-              {/* The one-line setup is desktop-only: on a phone the rail is down
-                  to a single step already and the card needs the room. */}
-              <p className="hidden text-base leading-relaxed text-muted-foreground lg:mt-3 lg:block">
-                {tab.railIntro}
-              </p>
-
-              {/* Below `lg` the rail collapses to whichever step the scene is on
-                  — its title and its sentence — because the full three-step rail
-                  plus the card does not fit a phone. */}
-              <ol className="mx-auto mt-3 max-w-md space-y-5 text-left lg:mx-0 lg:mt-8 lg:max-w-none">
-                {tab.steps.map((s, i) => (
-                  <li
-                    key={s.title}
-                    data-state={i === step ? 'active' : i < step ? 'done' : 'upcoming'}
-                    className="scene-rail-step flex items-start gap-3"
+              The tabpanel holds both the rail copy and the scene, which live in
+              different columns, so from `lg` it spans the card as a subgrid and
+              places its two children itself: the rail under the tab list, the
+              scene down the full right column. The tab list sits above it in
+              z-order so the panel's box never takes its clicks. */}
+          <div className="demo-card mx-auto grid max-w-6xl overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_-28px_color-mix(in_oklab,var(--foreground)_35%,transparent)] lg:grid-cols-[minmax(0,1fr)_minmax(0,2.3fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
+            <div className="relative z-10 bg-muted/40 px-4 pb-3 pt-4 text-center sm:px-6 lg:col-start-1 lg:row-start-1 lg:border-r lg:border-border/70 lg:px-5 lg:pb-0 lg:pt-5 lg:text-left">
+              <p className="text-xs font-medium text-muted-foreground">See it work</p>
+              <div
+                role="tablist"
+                aria-label="Agent demos"
+                className="mt-3 flex flex-wrap justify-center gap-1 lg:flex-col lg:flex-nowrap lg:justify-start"
+              >
+                {TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    role="tab"
+                    id={`demo-tab-${t.id}`}
+                    aria-selected={t.id === active}
+                    aria-controls="demo-panel"
+                    onClick={() => {
+                      trackEvent('demo_tab_select', { tab: t.id })
+                      setActive(t.id)
+                    }}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm lg:rounded-lg lg:px-3 lg:py-2 lg:text-left ${
+                      t.id === active
+                        ? 'border-human/35 bg-human/10 text-foreground lg:font-semibold'
+                        : 'border-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
                   >
-                    {'icon' in s.marker ? (
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <s.marker.icon className="size-4" />
-                      </div>
-                    ) : (
-                      <div className="flex size-9 shrink-0 items-end justify-center overflow-hidden rounded-xl border border-human/35 bg-human/10">
-                        <PixelSprite
-                          grid={s.marker.avatar.grid}
-                          palette={s.marker.avatar.palette}
-                          className="size-8"
-                          title={s.marker.title}
-                        />
-                      </div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-lg font-semibold tracking-tight">{s.title}</p>
-                      <p className="scene-rail-body mt-1 text-[15px] leading-relaxed text-foreground/70">
-                        {s.body}
-                      </p>
-                    </div>
-                  </li>
+                    {t.label}
+                  </button>
                 ))}
-              </ol>
-
-              {/* The way out of the story. Beside the card on desktop; on a phone it
-                  waits under the section (below), where it lands as the stage lets go. */}
-              <div className="mt-8 hidden lg:block">
-                <RailExit exit={tab.exit} />
               </div>
             </div>
 
-            <div className="min-w-0">
-              <SceneClockProvider value={clock}>
-                {/* Keyed by tab: a fresh mount re-measures the new transcript and
-                    picks up the scroll position the visitor is already at. */}
-                {tab.scene.kind === 'diagram' ? (
-                  <AgentsDiagramScene key={tab.id} label={tab.sceneLabel} />
-                ) : (
-                  <ScriptedScene key={tab.id} script={tab.scene} label={tab.sceneLabel} />
-                )}
-              </SceneClockProvider>
+            <div
+              id="demo-panel"
+              role="tabpanel"
+              aria-labelledby={`demo-tab-${tab.id}`}
+              className="flex min-w-0 flex-col lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:grid-rows-subgrid"
+            >
+              <div className="flex min-h-0 flex-col overflow-hidden border-b border-border/70 bg-muted/40 px-4 pb-4 text-center sm:px-6 lg:col-start-1 lg:row-start-2 lg:border-b-0 lg:border-r lg:px-5 lg:pb-5 lg:pt-6 lg:text-left">
+                <h3 className="display-serif text-balance font-serif text-lg font-bold tracking-tight sm:text-xl lg:text-lg">
+                  {tab.railTitle}
+                </h3>
+                {/* The one-line setup is desktop-only: on a phone the rail is down
+                    to a single step already and the scene needs the room. */}
+                <p className="hidden text-sm leading-relaxed text-muted-foreground lg:mt-1.5 lg:block">
+                  {tab.railIntro}
+                </p>
+
+                {/* Below `lg` the rail collapses to whichever step the scene is on,
+                    title and sentence. From `lg` all three titles stay listed and
+                    only the active one carries its sentence (globals.css). */}
+                <ol className="mx-auto mt-2 max-w-md space-y-3 text-left lg:mx-0 lg:mt-5 lg:max-w-none">
+                  {tab.steps.map((s, i) => (
+                    <li
+                      key={s.title}
+                      data-state={i === step ? 'active' : i < step ? 'done' : 'upcoming'}
+                      className="scene-rail-step flex items-start gap-3 lg:gap-2.5"
+                    >
+                      {'icon' in s.marker ? (
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary lg:size-7">
+                          <s.marker.icon className="size-4 lg:size-3.5" />
+                        </div>
+                      ) : (
+                        <div className="flex size-8 shrink-0 items-end justify-center overflow-hidden rounded-lg border border-human/35 bg-human/10 lg:size-7">
+                          <PixelSprite
+                            grid={s.marker.avatar.grid}
+                            palette={s.marker.avatar.palette}
+                            className="size-7 lg:size-6"
+                            title={s.marker.title}
+                          />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold leading-8 tracking-tight lg:text-sm lg:leading-7">
+                          {s.title}
+                        </p>
+                        <p className="scene-rail-body text-sm leading-relaxed text-foreground/70 lg:text-[13px] lg:leading-snug">
+                          {s.body}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+
+                {/* The way out of the story, at the foot of the column on desktop;
+                    on a phone it waits under the section (below), where it lands
+                    as the stage lets go. */}
+                <div className="mt-auto hidden pt-5 lg:block">
+                  <RailExit exit={tab.exit} />
+                </div>
+              </div>
+
+              <div className="flex min-h-0 min-w-0 flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1">
+                <SceneClockProvider value={clock}>
+                  {/* Keyed by tab: a fresh mount re-measures the new transcript and
+                      picks up the scroll position the visitor is already at. */}
+                  {tab.scene.kind === 'diagram' ? (
+                    <AgentsDiagramScene key={tab.id} label={tab.sceneLabel} />
+                  ) : (
+                    <ScriptedScene key={tab.id} script={tab.scene} label={tab.sceneLabel} />
+                  )}
+                </SceneClockProvider>
+              </div>
             </div>
           </div>
         </div>

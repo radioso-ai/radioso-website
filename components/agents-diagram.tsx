@@ -253,11 +253,13 @@ export function AgentsDiagramScene({ label }: { label: string }) {
   return (
     <div
       ref={cardRef}
-      className="scene-card surface relative mx-auto flex max-w-2xl flex-col overflow-hidden rounded-2xl"
+      // Frameless: it is the right-hand column of the demo card, which draws
+      // the border and the radius around both columns.
+      className="scene-card relative flex min-h-0 flex-col overflow-hidden bg-card lg:flex-1"
     >
-      <div className="flex shrink-0 items-center gap-2 border-b border-border/60 px-5 py-3.5 sm:px-7">
+      <div className="flex shrink-0 items-center gap-2 border-b border-border/60 px-5 py-3 sm:px-7">
         <SignalMark className="h-2.5 w-[1.125rem]" color="var(--primary)" />
-        <span className="text-2xs font-medium text-muted-foreground">{label}</span>
+        <span className="text-xs font-medium text-muted-foreground">{label}</span>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col justify-center px-4 py-2 sm:px-7 sm:py-4">

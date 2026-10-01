@@ -259,9 +259,9 @@ export function ChatLauncher() {
           <span
             aria-hidden
             data-show={hint}
-            className="chat-launcher-label pointer-events-none hidden rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-md sm:block"
+            className="chat-launcher-label pointer-events-none hidden whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-md sm:block"
           >
-            Chat with us
+            This chat is a Radioso agent. Ask it anything.
           </span>
         )}
       </div>
