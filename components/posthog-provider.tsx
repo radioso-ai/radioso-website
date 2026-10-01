@@ -23,6 +23,10 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       // capture entirely. The cookie banner flips both at runtime on accept.
       persistence: consent === 'yes' ? 'localStorage+cookie' : 'memory',
       opt_out_capturing_by_default: consent === 'no',
+      // Session replay and autocaptured clicks are the most invasive thing we
+      // collect, so they wait for an explicit yes. The banner starts them.
+      disable_session_recording: consent !== 'yes',
+      autocapture: consent === 'yes',
     })
   }, [])
 

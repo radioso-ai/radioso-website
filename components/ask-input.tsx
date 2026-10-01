@@ -5,6 +5,7 @@ import { Send } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { useAsk } from '@/lib/ask-context'
+import { track } from '@/lib/analytics'
 
 /**
  * Render the typed question with any case-insensitive occurrence of `radioso`
@@ -42,6 +43,9 @@ export function AskInput({
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    // Same guards as ask() itself, so the event counts questions that were sent. The
+    // text stays out of analytics: visitors type emails and order numbers in here.
+    if (question.trim() && !pending) track('hero_free_text_submit')
     void ask(question)
   }
 

@@ -39,7 +39,8 @@ export function CookieBanner() {
     setCookieConsent(consent)
     if (consent === 'yes') {
       posthog.opt_in_capturing()
-      posthog.set_config({ persistence: 'localStorage+cookie' })
+      posthog.set_config({ persistence: 'localStorage+cookie', autocapture: true })
+      posthog.startSessionRecording()
     } else {
       posthog.opt_out_capturing()
       posthog.set_config({ persistence: 'memory' })

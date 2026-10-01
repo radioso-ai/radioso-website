@@ -11,9 +11,17 @@ import {
 } from 'react'
 
 import { fetchAnswer, PRERENDERED, type AgentAnswerData } from './agent'
+import { track } from './analytics'
 
 /** One question and its (eventual) answer. `answer` is null while the ask is in flight. */
 export type Asked = { question: string; answer: AgentAnswerData | null }
+
+/**
+ * Where the newest answer came from, for the header badge. `seed` until a visitor's own
+ * question has been answered: the opening exchange is canned, so nothing claims "live"
+ * yet. Then `live` for an answer from the API, `demo` for one served by the stub.
+ */
+export type AnswerSource = 'seed' | 'live' | 'demo'
 
 type AskState = {
   question: string
@@ -23,8 +31,7 @@ type AskState = {
   pending: boolean
   /** Partial answer rendered live while the stream is in flight; null otherwise. */
   streaming: AgentAnswerData | null
-  /** False once an ask was served by the canned stub — the header badge drops its "live" claim. */
-  live: boolean
+  answerSource: AnswerSource
   error: string | null
   ask: (q: string) => Promise<void>
   /** Populate the input box with text and move focus to it. */
@@ -39,7 +46,9 @@ type AskState = {
  */
 export const TALK_TO_THE_TEAM = 'Shut up and take my money! 💸'
 
-const SEED: Asked = { question: 'What is Radioso?', answer: PRERENDERED.whatIsRadioso }
+// The opening exchange shows the product doing the thing buyers most need to trust it
+// with, rather than describing itself.
+const SEED: Asked = { question: 'How does Radioso hand off to a person?', answer: PRERENDERED.handoff }
 
 const Ctx = createContext<AskState | null>(null)
 
@@ -48,7 +57,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
   const [transcript, setTranscript] = useState<Asked[]>([SEED])
   const [pending, setPending] = useState(false)
   const [streaming, setStreaming] = useState<AgentAnswerData | null>(null)
-  const [live, setLive] = useState(true)
+  const [answerSource, setAnswerSource] = useState<AnswerSource>('seed')
   const [error, setError] = useState<string | null>(null)
   const answerRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -57,6 +66,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
     async (q: string) => {
       const trimmed = q.trim()
       if (!trimmed || pending) return
+      if (trimmed === TALK_TO_THE_TEAM) track('hero_talk_to_team')
       setPending(true)
       setError(null)
       setStreaming(null)
@@ -69,7 +79,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
         const data = await fetchAnswer(trimmed, {
           onChunk: (partialBody) => setStreaming({ body: partialBody, sources: [] }),
         })
-        setLive(data.fallback !== true)
+        setAnswerSource(data.fallback === true ? 'demo' : 'live')
         setTranscript((prev) =>
           prev.map((item, i) =>
             i === prev.length - 1 ? { question: trimmed, answer: data } : item,
@@ -110,7 +120,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
         transcript,
         pending,
         streaming,
-        live,
+        answerSource,
         error,
         ask,
         populateInput,

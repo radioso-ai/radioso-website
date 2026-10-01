@@ -11,8 +11,8 @@
  * or the message CORS not yet deployed — it falls back to the canned `PRERENDERED` answers so
  * the page never shows a broken state.
  *
- * The pre-rendered seed answer (hero "What is Radioso?") stays canned because the page is a
- * static export; live answers happen client-side once a visitor asks.
+ * The pre-rendered seed answer (hero "How does Radioso hand off to a person?") stays canned
+ * because the page is a static export; live answers happen client-side once a visitor asks.
  */
 
 import { site } from '@/lib/site'
@@ -40,8 +40,11 @@ export type AgentAnswerData = {
  * the one error worth being paranoid about — verify the page before adding it here.
  */
 const RADIOSO_SOURCES = {
+  docs: { title: 'Radioso Docs', url: site.docsUrl },
   why: { title: 'Why Radioso', url: `${site.docsUrl}/why-radioso` },
   grounded: { title: 'Grounded answers', url: `${site.docsUrl}/why-radioso/grounded-answers` },
+  guidedAutonomy: { title: 'Guided autonomy', url: `${site.docsUrl}/why-radioso/guided-autonomy` },
+  humanTakeover: { title: 'Human takeover', url: `${site.docsUrl}/operators/human-takeover` },
   architecture: { title: 'Architecture', url: `${site.docsUrl}/architecture` },
   retrieval: { title: 'Retrieval pipeline', url: `${site.docsUrl}/architecture/retrieval-pipeline` },
   deployment: { title: 'Deployment', url: `${site.docsUrl}/operators/deployment` },
@@ -75,12 +78,24 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.architecture },
     ],
   },
+  // The hero's seed exchange. Word for word what the production agent answered on
+  // 2026-10-01, with its two sources: the routine ending in a handoff is guided autonomy,
+  // the operator owning the conversation until hand-back is human takeover.
   handoff: {
     body:
-      "Yes. When your rules say a person decides — or the agent hits something it shouldn't settle alone — it stops and hands the conversation to a real person, with the full transcript and every action it already took attached[1]. The built-in contact-a-human flow is itself just a routine — collect an email, collect a message, submit, confirm — so you can edit it like any other one[1]. It also won't paper over a gap to avoid the handoff: with no supporting evidence it says so rather than sounding confident[2].",
+      "Radioso hands off to a person by ending the routine and transferring the conversation to a human[1]. In a human takeover, the operator owns the conversation, the AI stays silent, and new visitor messages do not run routines or other assistant actions until the hand-back happens[2]. After hand-back, the next visitor message follows the normal assistant path again[2].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.why },
-      { n: 2, ...RADIOSO_SOURCES.grounded },
+      { n: 1, ...RADIOSO_SOURCES.guidedAutonomy },
+      { n: 2, ...RADIOSO_SOURCES.humanTakeover },
+    ],
+  },
+  // Verbatim production answer (2026-10-01) to the hero's "can't answer" chip.
+  cantAnswer: {
+    body:
+      "Radioso optimizes for defensibility rather than fluency, so it fails honestly when support is missing[1]. An agent can also hand off to a person when it should, inside the rules you set[1][2].",
+    sources: [
+      { n: 1, ...RADIOSO_SOURCES.grounded },
+      { n: 2, ...RADIOSO_SOURCES.docs },
     ],
   },
   selfHosting: {
@@ -152,6 +167,12 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
     [/\bprice|pricing|cost|free|paid|licen[cs]|open[- ]?source|enterprise\b/, 'licensing'],
     [/\blangchain|framework|low[- ]?code|compare|vs\b/, 'whyNotLangchain'],
     [/\bwhat( is|'s) radioso|what does radioso|tldr\b/, 'whatIsRadioso'],
+    // Ahead of the broad intents below: "what happens when it doesn't know a person's
+    // order number" is about the gap, not about handing off.
+    [
+      /\bcan(['’]?t| ?not) answer|\b(doesn|don)['’]?t know|\bdoes not know|\bunsure\b|\bnot sure\b/,
+      'cantAnswer',
+    ],
     // Last on purpose. Both patterns below are deliberately broad, so they sit behind the
     // surface, licensing, and comparison intents: "call a tool over MCP", "what do actions
     // cost", and "how do routines compare to LangChain" keep their existing routes, and
@@ -161,7 +182,7 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
       'actions',
     ],
     [
-      /hand[- ]?off|hand(s|ed)? (it |the conversation )?(off|over)|handover|escalat|\bhumans?\b|\breal person\b|\bperson\b|talk to (a |an )?(agent|rep)/,
+      /hand[- ]?off|hand(s|ed)? (it |the conversation )?(off|over)|handover|take[- ]?over|escalat|\bhumans?\b|\breal person\b|\bperson\b|talk to (a |an )?(agent|rep)/,
       'handoff',
     ],
   ]

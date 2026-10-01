@@ -32,6 +32,7 @@ import {
 import { SUPPORT_SCENE, DOCS_SCENE, LEADS_SCENE } from '@/components/scenes'
 import { PixelSprite, SignalMark, AVATAR_CUSTOMER, AVATAR_TEAMMATE } from '@/components/pixel-sprite'
 import { Button } from '@/components/ui/button'
+import { track as trackEvent } from '@/lib/analytics'
 import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
 import { EMBED_SNIPPET, site } from '@/lib/site'
 import type { SceneScript } from '@/components/scene-engine'
@@ -379,7 +380,10 @@ export function AgentDemos() {
                   id={`demo-tab-${t.id}`}
                   aria-selected={t.id === active}
                   aria-controls="demo-panel"
-                  onClick={() => setActive(t.id)}
+                  onClick={() => {
+                    trackEvent('demo_tab_select', { tab: t.id })
+                    setActive(t.id)
+                  }}
                   className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
                     t.id === active
                       ? 'bg-primary text-primary-foreground'

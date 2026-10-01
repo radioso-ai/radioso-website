@@ -2,12 +2,13 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { AgentAnswer } from '@/components/agent-answer'
 import { AskInput } from '@/components/ask-input'
 import { Button } from '@/components/ui/button'
-import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
+import { track } from '@/lib/analytics'
+import { TALK_TO_THE_TEAM, useAsk, type AnswerSource } from '@/lib/ask-context'
 import { site } from '@/lib/site'
 
 // useLayoutEffect warns during SSR; fall back to useEffect on the server.
@@ -18,15 +19,35 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 // actions on your behalf", contradicting the product's whole pitch. "Can I self-host it?"
 // is safe because it asks about the visitor's action, not the assistant's capability.
 //
+// The chips are the card's main interface; free text sits behind a link because almost
+// nobody types into a blank box. Each one asks what a buyer needs settled after the seeded
+// handoff answer: does it act, what happens at the edge of its knowledge, can I own it.
+//
 // The last chip is deliberately not a question: it trips the `talk-to-the-team` routine on
 // the live agent, so the visitor watches it run a real multi-step flow (qualify → collect
 // email → hand to a human) instead of being told that routines exist.
 const SUGGESTIONS = [
   'How does Radioso take actions?',
+  "What happens when Radioso can't answer?",
   'Can I self-host it?',
-  'How is Radioso different from LangChain?',
   TALK_TO_THE_TEAM,
 ]
+
+/**
+ * The header badge only claims what is true of the newest answer. The seeded exchange is
+ * canned, so it gets a muted label and no dot until a visitor's own question has come back.
+ */
+const BADGE: Record<AnswerSource, { label: string; title: string }> = {
+  seed: {
+    label: 'from the docs',
+    title: 'A prepared answer from the Radioso docs. Ask something to reach the live agent.',
+  },
+  live: { label: 'live', title: 'Answered just now by the Radioso agent in production.' },
+  demo: {
+    label: 'demo',
+    title: 'The live agent was unreachable, so this is a prepared answer.',
+  },
+}
 
 /** Tailwind's `lg` — where the hero splits into headline | conversation columns. */
 const TWO_COLUMN_PX = 1024
@@ -45,9 +66,30 @@ function maxWindowPx() {
 }
 
 export function AskHero() {
-  const { transcript, pending, streaming, live, error, ask, answerRef } = useAsk()
+  const { transcript, pending, streaming, answerSource, error, ask, answerRef, inputRef } = useAsk()
   const frameRef = useRef<HTMLDivElement | null>(null)
   const lastRef = useRef<HTMLDivElement | null>(null)
+  const badge = BADGE[answerSource]
+
+  // Free text stays behind "Ask your own question" until the visitor opens it. Once
+  // anything has been asked — a chip, a typed question, or an ask from further down the
+  // page — the input stays out for good.
+  const [expanded, setExpanded] = useState(false)
+  const inputOpen = expanded || transcript.length > 1 || error !== null
+  // Focus only when the visitor opened the input themselves; an input revealed by a
+  // chip must not pop the keyboard on a phone.
+  const focusOnOpen = useRef(false)
+  useEffect(() => {
+    if (!expanded || !focusOnOpen.current) return
+    focusOnOpen.current = false
+    inputRef.current?.focus({ preventScroll: true })
+  }, [expanded, inputRef])
+
+  function openInput() {
+    track('hero_input_expand')
+    focusOnOpen.current = true
+    setExpanded(true)
+  }
   // The seeded answer reads from its question down; once a visitor asks, the window
   // follows the newest message instead.
   const seededOnly = transcript.length === 1 && !error
@@ -240,15 +282,17 @@ export function AskHero() {
               <div className="flex items-center gap-2 border-b border-border/70 px-4 py-2.5">
                 <Image src="/radioso-icon.svg" alt="" width={16} height={16} className="size-4" />
                 <span className="text-[13px] font-medium text-foreground/90">Ask Radioso</span>
-                {/* The badge only claims "live" while it's true: once an ask is served by
-                    the canned stub (dev, blocked origin, API down) it downgrades to "demo". */}
-                <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  {live ? (
-                    <span className="pulse-dot" />
-                  ) : (
+                {/* "live" only once the API has answered a visitor; "demo" when the canned
+                    stub served instead (dev, blocked origin, API down). */}
+                <span
+                  title={badge.title}
+                  className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground"
+                >
+                  {answerSource === 'live' && <span className="pulse-dot" />}
+                  {answerSource === 'demo' && (
                     <span className="size-2 rounded-full bg-muted-foreground/50" />
                   )}
-                  {live ? 'live' : 'demo'}
+                  {badge.label}
                 </span>
               </div>
 
@@ -266,29 +310,47 @@ export function AskHero() {
                 </div>
               </div>
 
-              <div className="border-t border-border/70 bg-background/40 p-3">
-                <div className="rise-in" style={{ '--rise-delay': '460ms' } as React.CSSProperties}>
-                  <AskInput
-                    autoFocus
-                    className="rounded-full border border-border bg-background/70 p-1.5 pl-4 transition-colors focus-within:border-primary/40 focus-within:bg-background"
-                  />
-                </div>
-
+              <div className="border-t border-border/70 bg-background/40 p-3 sm:p-4">
+                {/* Two content-sized columns rather than equal halves: at desktop widths the
+                    longest chip fits on one line only if its column can take the slack the
+                    shorter ones leave. Both columns still stretch to fill the row. */}
                 <div
-                  className="rise-in mt-2.5 flex flex-wrap justify-center gap-2 sm:grid sm:grid-cols-2"
-                  style={{ '--rise-delay': '560ms' } as React.CSSProperties}
+                  className="rise-in grid grid-cols-1 gap-2 sm:grid-cols-[auto_auto]"
+                  style={{ '--rise-delay': '460ms' } as React.CSSProperties}
                 >
                   {SUGGESTIONS.map((s) => (
                     <button
                       key={s}
                       type="button"
-                      onClick={() => void ask(s)}
+                      onClick={() => {
+                        track('hero_chip_click', { question: s })
+                        void ask(s)
+                      }}
                       disabled={pending}
-                      className="rounded-full border border-border bg-card/70 px-3 py-2 text-[11px] font-medium text-foreground/80 transition-colors hover:border-primary/40 hover:bg-card hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-11 rounded-full border border-border bg-card px-4 py-2 text-left text-sm font-medium leading-snug text-foreground/85 transition-[border-color,background-color,color] hover:border-primary/35 hover:bg-primary/5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {s}
                     </button>
                   ))}
+                </div>
+
+                <div className="rise-in mt-3" style={{ '--rise-delay': '560ms' } as React.CSSProperties}>
+                  {!inputOpen && (
+                    <div className="flex justify-center">
+                      <button
+                        type="button"
+                        onClick={openInput}
+                        aria-expanded={false}
+                        aria-controls="ask-radioso-input"
+                        className="rounded-md px-2 py-1.5 text-sm font-medium text-primary underline-offset-4 transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                      >
+                        Ask your own question
+                      </button>
+                    </div>
+                  )}
+                  <div id="ask-radioso-input" hidden={!inputOpen}>
+                    <AskInput className="rounded-full border border-border bg-background/70 p-1.5 pl-4 transition-colors focus-within:border-primary/35 focus-within:bg-background" />
+                  </div>
                 </div>
               </div>
             </div>
