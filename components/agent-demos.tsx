@@ -2,23 +2,9 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  ArrowRight,
-  Check,
-  Code2,
-  Copy,
-  Quote,
-  MessageCircle,
-  Plug,
-  Repeat,
-  ShieldCheck,
-  Store,
-  UserSearch,
-  Wrench,
-} from 'lucide-react'
-import type { ComponentType, SVGProps } from 'react'
+import { ArrowRight, Check, Copy, MessageCircle } from 'lucide-react'
 
-import { AGENTS_BEATS, AGENTS_SCENE, AgentsDiagramScene } from '@/components/agents-diagram'
+import { AGENTS_SCENE, AgentsDiagramScene } from '@/components/agents-diagram'
 import {
   MOTION_QUERY,
   ScriptedScene,
@@ -28,41 +14,25 @@ import {
   useIsomorphicLayoutEffect,
 } from '@/components/scene-engine'
 import { SUPPORT_SCENE, DOCS_SCENE, LEADS_SCENE } from '@/components/scenes'
-import { PixelSprite, AVATAR_CUSTOMER, AVATAR_TEAMMATE } from '@/components/pixel-sprite'
 import { Button } from '@/components/ui/button'
 import { track as trackEvent } from '@/lib/analytics'
 import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
 import { EMBED_SNIPPET, site } from '@/lib/site'
 import type { SceneScript } from '@/components/scene-engine'
 
-type Icon = ComponentType<SVGProps<SVGSVGElement>>
-
-type Step = {
-  /** Blue icon tile = the machine acting; a pixel avatar in the yellow tile = a person in the loop. */
-  marker: { icon: Icon } | { avatar: typeof AVATAR_CUSTOMER; title: string }
-  title: string
-  body: string
-  /** The point on the scene's timeline this step describes, so the rail can follow along. */
-  at: number
-}
-
 /** Where the visitor goes once the job is shown. Buttons name the action. */
 type Exit =
   | { kind: 'link'; label: string; href: string }
   /** The same question the launcher's chip asks, sent to the live agent in the chat launcher. */
-  | { kind: 'ask'; label: string; question: string; hint: string }
+  | { kind: 'ask'; label: string; question: string }
   | { kind: 'snippet'; label: string; code: string }
 
+/* No rail copy: the scene beside the tabs is the explanation. A tab is the job,
+   the setting the scene plays in, and the way out. */
 type Tab = {
   id: string
   /** A job the agent does, not a kind of agent. */
   label: string
-  railTitle: string
-  railIntro: string
-  /* Every step is a beat the transcript beside it actually shows — the rail is
-     a summary of the scene, and must never claim a beat the scene doesn't. Its
-     `at` points at the turn it summarises, taken from that scene's own plan. */
-  steps: Step[]
   scene: SceneScript
   sceneLabel: string
   exit: Exit
@@ -72,28 +42,6 @@ const TABS: Tab[] = [
   {
     id: 'support',
     label: 'Resolve tickets',
-    railTitle: 'Knows when to act, and when to ask.',
-    railIntro: 'One billing ticket, start to finish.',
-    steps: [
-      {
-        marker: { icon: Wrench },
-        title: 'Does the work',
-        body: 'Pulls the account, checks who is actually active, reads your billing policy — every action listed as it takes it.',
-        at: SUPPORT_SCENE.plan[2].textAt,
-      },
-      {
-        marker: { avatar: AVATAR_CUSTOMER, title: 'The customer' },
-        title: 'Asks the customer',
-        body: 'The fix changes billing, so nothing happens without Maria’s yes.',
-        at: SUPPORT_SCENE.plan[3].textAt,
-      },
-      {
-        marker: { avatar: AVATAR_TEAMMATE, title: 'A teammate' },
-        title: 'Hands off for sign-off',
-        body: 'The credit is above its limit. Jonas gets the full conversation, approves, and the agent finishes the job.',
-        at: SUPPORT_SCENE.plan[5].textAt,
-      },
-    ],
     scene: SUPPORT_SCENE,
     sceneLabel: 'A support ticket',
     exit: { kind: 'link', label: 'Start in the cloud', href: site.appUrl },
@@ -101,28 +49,6 @@ const TABS: Tab[] = [
   {
     id: 'docs',
     label: 'Answer from your help center',
-    railTitle: 'Your docs, answering for themselves.',
-    railIntro: 'Asked about Radioso, answered from the Radioso docs.',
-    steps: [
-      {
-        marker: { icon: Code2 },
-        title: 'Answers with the install itself',
-        body: 'The copy-paste tag, in the first reply — cited to the doc it came from.',
-        at: DOCS_SCENE.plan[2].textAt,
-      },
-      {
-        marker: { icon: MessageCircle },
-        title: 'Knows where it is standing',
-        body: 'It is the embed it is explaining, and it says so.',
-        at: DOCS_SCENE.plan[3].textAt,
-      },
-      {
-        marker: { icon: Quote },
-        title: 'Grounded by construction',
-        body: 'Citations on every claim. When the docs leave a question open, it says so out loud.',
-        at: DOCS_SCENE.plan[7].textAt,
-      },
-    ],
     scene: DOCS_SCENE,
     sceneLabel: 'On your docs site',
     exit: { kind: 'snippet', label: 'Add it to your site', code: EMBED_SNIPPET },
@@ -130,62 +56,13 @@ const TABS: Tab[] = [
   {
     id: 'leads',
     label: 'Qualify leads',
-    railTitle: 'From visitor to warm lead.',
-    railIntro: 'A routine qualifies, collects, and hands off.',
-    steps: [
-      {
-        marker: { icon: Store },
-        title: 'Sells with real answers',
-        body: 'Vertical advice before any ask — which agents fit the store, and what to stand up first.',
-        at: LEADS_SCENE.plan[2].textAt,
-      },
-      {
-        marker: { icon: UserSearch },
-        title: 'Qualifies in conversation',
-        body: 'The questions come up while it helps — platform, volume, timing.',
-        at: LEADS_SCENE.plan[4].textAt,
-      },
-      {
-        marker: { avatar: AVATAR_TEAMMATE, title: 'A teammate' },
-        title: 'Hands the team a warm lead',
-        body: 'Email collected, context attached, follow-up the same day.',
-        at: LEADS_SCENE.plan[6].textAt,
-      },
-    ],
     scene: LEADS_SCENE,
     sceneLabel: 'On your marketing site',
-    exit: {
-      kind: 'ask',
-      label: 'Talk to the team',
-      question: TALK_TO_THE_TEAM,
-      hint: 'Runs this routine live in the chat.',
-    },
+    exit: { kind: 'ask', label: 'Talk to the team', question: TALK_TO_THE_TEAM },
   },
   {
     id: 'agents',
     label: 'Serve your customers’ agents',
-    railTitle: 'When the customer sends an agent.',
-    railIntro: 'Your customer’s AI assistant finds the agent card on your domain, then asks Radioso about your product over MCP.',
-    steps: [
-      {
-        marker: { icon: Plug },
-        title: 'Connect once',
-        body: 'Publish the agent and your domain serves an agent card at /.well-known. Any MCP client reads it and connects, with no account to create.',
-        at: AGENTS_BEATS.card,
-      },
-      {
-        marker: { icon: Repeat },
-        title: 'The same agent',
-        body: 'The directives, routines, and actions behind your chat handle the assistant’s request too. It answers, acts, and hands off exactly as it does on your site.',
-        at: AGENTS_BEATS.directives,
-      },
-      {
-        marker: { icon: ShieldCheck },
-        title: 'Your terms',
-        body: 'Walk-in access is yours to switch on, rate limit, or revoke. Your rules decide what an agent is told, and what it is not.',
-        at: AGENTS_BEATS.handoff,
-      },
-    ],
     scene: AGENTS_SCENE,
     sceneLabel: 'Over MCP',
     exit: { kind: 'link', label: 'Read the publishing guide', href: `${site.docsUrl}/guides/publish-an-agent` },
@@ -223,7 +100,6 @@ const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n)
 
 export function AgentDemos() {
   const [active, setActive] = useState(TABS[0].id)
-  const [step, setStep] = useState(0)
 
   const trackRef = useRef<HTMLDivElement | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
@@ -236,15 +112,14 @@ export function AgentDemos() {
 
   // The scroll loop reads the live scene through refs, so switching tabs never
   // tears the listener down and the visitor keeps their place in the track.
-  const sceneRef = useRef({ id: tab.id, end, start: opening(tab.scene), steps: tab.steps.map((s) => s.at) })
-  const stepRef = useRef(0)
+  const sceneRef = useRef({ id: tab.id, end, start: opening(tab.scene) })
   // Scenes that have played through once. A finished conversation stays finished:
   // scrolling back up over the section must not un-say what the agent said.
   const doneRef = useRef(new Set<string>())
   const applyRef = useRef<() => void>(() => {})
 
   useIsomorphicLayoutEffect(() => {
-    sceneRef.current = { id: tab.id, end, start: opening(tab.scene), steps: tab.steps.map((s) => s.at) }
+    sceneRef.current = { id: tab.id, end, start: opening(tab.scene) }
   }, [end, tab])
 
   useEffect(() => {
@@ -295,14 +170,6 @@ export function AgentDemos() {
       // scroll container the visitor owns (see the scene block in globals.css).
       stage.dataset.scene = done ? 'done' : 'playing'
       clock.emit(t, done)
-
-      const ats = sceneRef.current.steps
-      let next = 0
-      for (let i = 0; i < ats.length; i += 1) if (t >= ats[i]) next = i
-      if (next !== stepRef.current) {
-        stepRef.current = next
-        setStep(next)
-      }
     }
     applyRef.current = apply
 
@@ -360,22 +227,22 @@ export function AgentDemos() {
           ref={stageRef}
           className="scene-stage mx-auto w-full max-w-6xl px-4 data-[scrub=on]:sticky data-[scrub=on]:top-24 sm:px-6 xl:max-w-7xl"
         >
-          {/* One card, two columns from `lg`: the tabs and the rail on a muted
-              ground at the left, the scene filling the right. Opaque, because
-              its top half sits on the navy band.
+          {/* One card, two columns from `lg`: the tabs and the tab's exit on a
+              muted ground at the left, the scene filling the right. Opaque,
+              because its top half sits on the navy band.
 
-              The tabpanel holds both the rail copy and the scene, which live in
+              The tabpanel holds both the exit and the scene, which live in
               different columns, so from `lg` it spans the card as a subgrid and
-              places its two children itself: the rail under the tab list, the
+              places its two children itself: the exit under the tab list, the
               scene down the full right column. The tab list sits above it in
               z-order so the panel's box never takes its clicks. */}
           <div className="demo-card mx-auto grid max-w-6xl overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_-28px_color-mix(in_oklab,var(--foreground)_35%,transparent)] lg:grid-cols-[minmax(0,1fr)_minmax(0,2.3fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
-            <div className="relative z-10 bg-muted/40 px-4 pb-3 pt-4 text-center sm:px-6 lg:col-start-1 lg:row-start-1 lg:border-r lg:border-border/70 lg:px-5 lg:pb-0 lg:pt-5 lg:text-left">
-              <p className="text-xs font-medium text-muted-foreground">See it work</p>
+            <div className="relative z-10 border-b border-border/70 bg-muted/40 px-4 py-3 sm:px-6 lg:col-start-1 lg:row-start-1 lg:border-b-0 lg:border-r lg:px-5 lg:pb-0 lg:pt-5">
+              <p className="hidden text-xs font-medium text-muted-foreground lg:block">See it work</p>
               <div
                 role="tablist"
                 aria-label="Agent demos"
-                className="mt-3 flex flex-wrap justify-center gap-1 lg:flex-col lg:flex-nowrap lg:justify-start"
+                className="flex flex-wrap justify-center gap-1 lg:mt-3 lg:flex-col lg:flex-nowrap lg:justify-start"
               >
                 {TABS.map((t) => (
                   <button
@@ -406,58 +273,11 @@ export function AgentDemos() {
               aria-labelledby={`demo-tab-${tab.id}`}
               className="flex min-w-0 flex-col lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:grid-rows-subgrid"
             >
-              <div className="flex min-h-0 flex-col overflow-hidden border-b border-border/70 bg-muted/40 px-4 pb-4 text-center sm:px-6 lg:col-start-1 lg:row-start-2 lg:border-b-0 lg:border-r lg:px-5 lg:pb-5 lg:pt-6 lg:text-left">
-                <h3 className="display-serif text-balance font-serif text-lg font-bold tracking-tight sm:text-xl lg:text-lg">
-                  {tab.railTitle}
-                </h3>
-                {/* The one-line setup is desktop-only: on a phone the rail is down
-                    to a single step already and the scene needs the room. */}
-                <p className="hidden text-sm leading-relaxed text-muted-foreground lg:mt-1.5 lg:block">
-                  {tab.railIntro}
-                </p>
-
-                {/* Below `lg` the rail collapses to whichever step the scene is on,
-                    title and sentence. From `lg` all three titles stay listed and
-                    only the active one carries its sentence (globals.css). */}
-                <ol className="mx-auto mt-2 max-w-md space-y-3 text-left lg:mx-0 lg:mt-5 lg:max-w-none">
-                  {tab.steps.map((s, i) => (
-                    <li
-                      key={s.title}
-                      data-state={i === step ? 'active' : i < step ? 'done' : 'upcoming'}
-                      className="scene-rail-step flex items-start gap-3 lg:gap-2.5"
-                    >
-                      {'icon' in s.marker ? (
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary lg:size-7">
-                          <s.marker.icon className="size-4 lg:size-3.5" />
-                        </div>
-                      ) : (
-                        <div className="flex size-8 shrink-0 items-end justify-center overflow-hidden rounded-lg border border-human/35 bg-human/10 lg:size-7">
-                          <PixelSprite
-                            grid={s.marker.avatar.grid}
-                            palette={s.marker.avatar.palette}
-                            className="size-7 lg:size-6"
-                            title={s.marker.title}
-                          />
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <p className="text-base font-semibold leading-8 tracking-tight lg:text-sm lg:leading-7">
-                          {s.title}
-                        </p>
-                        <p className="scene-rail-body text-sm leading-relaxed text-foreground/70 lg:text-[13px] lg:leading-snug">
-                          {s.body}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-
-                {/* The way out of the story, at the foot of the column on desktop;
-                    on a phone it waits under the section (below), where it lands
-                    as the stage lets go. */}
-                <div className="mt-auto hidden pt-5 lg:block">
-                  <RailExit exit={tab.exit} />
-                </div>
+              {/* The way out of the story, at the foot of the left column with the
+                  gap above it left empty. On a phone it waits under the section
+                  (below), where it lands as the stage lets go. */}
+              <div className="hidden min-h-0 flex-col items-start justify-end overflow-hidden bg-muted/40 px-5 pb-5 pt-5 lg:col-start-1 lg:row-start-2 lg:flex lg:border-r lg:border-border/70">
+                <RailExit exit={tab.exit} />
               </div>
 
               <div className="flex min-h-0 min-w-0 flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1">
@@ -493,7 +313,7 @@ export function AgentDemos() {
 
 function RailExit({ exit }: { exit: Exit }) {
   if (exit.kind === 'snippet') return <SnippetExit label={exit.label} code={exit.code} />
-  if (exit.kind === 'ask') return <AskExit label={exit.label} question={exit.question} hint={exit.hint} />
+  if (exit.kind === 'ask') return <AskExit label={exit.label} question={exit.question} />
   return (
     <Button asChild variant="outline">
       <Link href={exit.href}>
@@ -504,7 +324,7 @@ function RailExit({ exit }: { exit: Exit }) {
 }
 
 /** Sends the launcher chip's question to the live agent; asking opens the launcher. */
-function AskExit({ label, question, hint }: { label: string; question: string; hint: string }) {
+function AskExit({ label, question }: { label: string; question: string }) {
   const { ask, pending, openLauncher } = useAsk()
 
   const onClick = () => {
@@ -517,12 +337,9 @@ function AskExit({ label, question, hint }: { label: string; question: string; h
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 lg:items-start">
-      <Button variant="outline" onClick={onClick}>
-        {label} <MessageCircle className="size-4" />
-      </Button>
-      <p className="text-center text-sm text-muted-foreground lg:text-left">{hint}</p>
-    </div>
+    <Button variant="outline" onClick={onClick}>
+      {label} <MessageCircle className="size-4" />
+    </Button>
   )
 }
 

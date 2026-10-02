@@ -12,7 +12,6 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const NAV = [
   { href: '/developers', label: 'Developers' },
   { href: site.docsUrl, label: 'Docs' },
-  { href: '/blog', label: 'Blog' },
 ]
 
 function isNavItemActive(pathname: string, href: string) {

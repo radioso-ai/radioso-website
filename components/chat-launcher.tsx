@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 
 import { AgentAnswer } from '@/components/agent-answer'
@@ -39,11 +39,6 @@ const QUICK_REPLIES = [
   TALK_TO_THE_TEAM,
 ]
 
-/** Shown once per visit, on desktop, so the launcher says what it is without a hover. */
-const HINT_KEY = 'radioso_launcher_hint'
-const HINT_DELAY_MS = 1500
-const HINT_FOR_MS = 5000
-
 /**
  * The live Radioso agent, as a support widget in the corner of every page.
  *
@@ -73,23 +68,6 @@ export function ChatLauncher() {
   const lastRef = useRef<HTMLDivElement | null>(null)
   // Quick replies are how the conversation starts; once it has, it's an ordinary chat.
   const showReplies = transcript.length === 0 && !pending
-
-  const [hint, setHint] = useState(false)
-  useEffect(() => {
-    if (!window.matchMedia('(min-width: 640px) and (pointer: fine)').matches) return
-    try {
-      if (window.sessionStorage.getItem(HINT_KEY)) return
-      window.sessionStorage.setItem(HINT_KEY, '1')
-    } catch {
-      return
-    }
-    const show = window.setTimeout(() => setHint(true), HINT_DELAY_MS)
-    const hide = window.setTimeout(() => setHint(false), HINT_DELAY_MS + HINT_FOR_MS)
-    return () => {
-      window.clearTimeout(show)
-      window.clearTimeout(hide)
-    }
-  }, [])
 
   // Focus follows the panel: into it when the visitor opens it, back to the launcher when
   // they close it. A launcher restored open by the session leaves focus alone. On touch
@@ -258,10 +236,9 @@ export function ChatLauncher() {
         {!open && (
           <span
             aria-hidden
-            data-show={hint}
-            className="chat-launcher-label pointer-events-none hidden whitespace-nowrap rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-md sm:block"
+            className="chat-launcher-label pointer-events-none hidden rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-md sm:block"
           >
-            This chat is a Radioso agent. Ask it anything.
+            Chat with us
           </span>
         )}
       </div>

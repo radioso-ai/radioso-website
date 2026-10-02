@@ -577,14 +577,6 @@
   text-decoration-color: var(--hero-ink);
 }
 
-/* The line over the headline: a hairline pill in the logo yellow's edge
-   strength, with the yellow dot as the mark. Text stays in the band's muted
-   ink; yellow is never the text colour. */
-.hero-eyebrow {
-  border: 1px solid color-mix(in oklab, var(--secondary) 35%, transparent);
-  background: color-mix(in oklab, var(--secondary) 5%, transparent);
-}
-
 /* Scroll-reveal: sections rise and fade as they enter the viewport. */
 .reveal {
   opacity: 0;
@@ -711,23 +703,23 @@
 /* The scene is a chat window once armed: a fixed height with the transcript
    sliding underneath the header strip.
 
-   Below `lg` the demo card stacks: tab bar, the rail's active step, then the
-   scene, and the scene alone takes the fixed height. Tuned so all three fit an
-   812px phone under the pinned nav. 300px is the floor: below that the
+   Below `lg` the demo card stacks: the tab bar, then the scene, and the scene
+   alone takes the fixed height. Tuned so both fit an 812px phone under the
+   pinned nav. 300px is the floor: below that the
    transcript stops reading as a conversation, so anything that still does not
    fit gives way before the scene does.
 
-   From `lg` the whole demo card is the fixed object, tabs and rail on the left
-   and the scene filling the right column, so the scene's own height defers to
+   From `lg` the whole demo card is the fixed object, tabs and the exit on the
+   left and the scene filling the right column, so the scene's own height defers to
    the card. The card is sized to the viewport under the pinned nav (96px) with
    a 32px margin below, capped where the transcript stops gaining anything. */
 [data-armed].scene-card {
-  height: min(42vh, 360px);
+  height: min(52vh, 440px);
 }
 
 @media (min-width: 640px) {
   [data-armed].scene-card {
-    height: min(50vh, 440px);
+    height: min(56vh, 480px);
   }
 }
 
@@ -737,7 +729,7 @@
   }
 
   [data-scrub='on'] .demo-card {
-    height: min(calc(100svh - 128px), 680px);
+    height: min(calc(100svh - 128px), 600px);
   }
 }
 
@@ -1046,39 +1038,6 @@
   animation-name: trace-ping;
   animation-duration: var(--scene-dur, 900ms);
   animation-fill-mode: both;
-}
-
-/* The rail follows the scene: the step being played reads at full strength and
-   the others step back. Below `lg` there is no room for the rail beside the
-   card, so one step is shown at a time — title and sentence both — and it swaps
-   as the scene moves. */
-.scene-rail-step {
-  transition: opacity var(--dur-base) var(--ease-out);
-}
-
-/* Three states, because two read as on/off: the step being played, the ones the
-   scene has already been through, and the ones still to come. */
-[data-scrub='on'] .scene-rail-step[data-state='done'] {
-  opacity: 0.7;
-}
-
-[data-scrub='on'] .scene-rail-step[data-state='upcoming'] {
-  opacity: 0.45;
-}
-
-@media (max-width: 1023px) {
-  [data-scrub='on'] .scene-rail-step:not([data-state='active']) {
-    display: none;
-  }
-}
-
-/* From `lg` all three steps stay listed down the card's left column, but only
-   the one being played carries its sentence: three full bodies do not fit the
-   pinned card at 900px. Unarmed (no JS, reduced motion) every body shows. */
-@media (min-width: 1024px) {
-  [data-scrub='on'] .scene-rail-step:not([data-state='active']) .scene-rail-body {
-    display: none;
-  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -1504,11 +1463,6 @@
   [data-scrub='on'] > .scene-runway {
     display: none !important;
   }
-  .scene-rail-step,
-  [data-scrub='on'] .scene-rail-step:not([data-state='active']) {
-    display: flex !important;
-    opacity: 1 !important;
-  }
   /* The agents diagram rests lit; its travelling signals and rings are motion
      devices with nothing to show at rest. */
   .scene-draw,
@@ -1562,8 +1516,7 @@
   border: 1px solid color-mix(in oklab, var(--signal) 35%, transparent);
 }
 
-/* "This chat is a Radioso agent. Ask it anything.": quiet, beside the button, on hover or focus, and once per
-   visit on its own for a few seconds. */
+/* "Chat with us": quiet, beside the button, on hover or focus only. */
 .chat-launcher-label {
   opacity: 0;
   transform: translateX(6px);
@@ -1573,8 +1526,7 @@
 }
 
 .peer:hover ~ .chat-launcher-label,
-.peer:focus-visible ~ .chat-launcher-label,
-.chat-launcher-label[data-show='true'] {
+.peer:focus-visible ~ .chat-launcher-label {
   opacity: 1;
   transform: none;
 }

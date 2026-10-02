@@ -15,7 +15,7 @@ export function Hero() {
   // Short at the bottom on purpose: the demo card starts a breath under the
   // footnote, so the claim reads straight into the product.
   return (
-    <section className="hero-band relative isolate pb-6 pt-10 sm:pb-8 sm:pt-14 lg:pt-16">
+    <section className="hero-band relative isolate pb-6 pt-12 sm:pb-8 sm:pt-16 lg:pt-20">
       {/* Everything in here emanates from the sun mark in the nav: the source
           glow and the three broadcast waves leaving it. */}
       <div aria-hidden className="hero-backdrop">
@@ -29,16 +29,8 @@ export function Hero() {
         </div>
       </div>
       <div className="mx-auto w-full max-w-6xl px-4 text-center sm:px-6 xl:max-w-7xl">
-        <p
-          className="rise-in hero-eyebrow inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium text-[color:var(--hero-ink-muted)]"
-          style={{ '--rise-delay': '0ms' } as React.CSSProperties}
-        >
-          <span aria-hidden className="size-1.5 rounded-full bg-secondary" />
-          Open source &middot; priced per conversation
-        </p>
-
         <h1
-          className="rise-in mt-5 font-serif text-balance text-[color:var(--hero-ink)] text-4xl font-semibold leading-[1.06] tracking-tight sm:mt-6 sm:text-5xl lg:text-[3.5rem]"
+          className="rise-in font-serif text-balance text-[color:var(--hero-ink)] text-4xl font-semibold leading-[1.06] tracking-tight sm:mt-6 sm:text-5xl lg:text-[3.5rem]"
           style={{ '--rise-delay': '60ms' } as React.CSSProperties}
         >
           {/* From `lg` the break is forced where the mock puts it; below that the
@@ -71,9 +63,9 @@ export function Hero() {
               decision log): `bg-primary` is the site's blue and disappears on
               the band.
 
-              "Run it locally", not "self-host": five minutes is the
+              "Run it locally", not "self-host": the quickstart is the
               docker-compose bootstrap on your own machine. Real self-hosting
-              is a deployment project, so the time sits on the local run only. */}
+              is a deployment project. */}
           <Button
             asChild
             className="h-12 px-6 text-base font-semibold bg-secondary text-secondary-foreground shadow-none hover:bg-secondary/90"
@@ -87,12 +79,7 @@ export function Hero() {
             variant="outline"
             className="h-12 px-6 text-base font-medium border-[color:var(--hero-ink)]/35 bg-transparent text-[color:var(--hero-ink)] shadow-none hover:bg-[color:var(--hero-ink)]/10 hover:text-[color:var(--hero-ink)] dark:border-[color:var(--hero-ink)]/35 dark:bg-transparent dark:hover:bg-[color:var(--hero-ink)]/10 dark:hover:text-[color:var(--hero-ink)]"
           >
-            <Link href="/developers#quickstart">
-              Run it locally
-              <span className="rounded bg-[color:var(--hero-ink)]/10 px-1.5 py-0.5 font-mono text-xs font-normal text-[color:var(--hero-ink-muted)]">
-                5 min
-              </span>
-            </Link>
+            <Link href="/developers#quickstart">Run it locally</Link>
           </Button>
         </div>
 
@@ -100,7 +87,7 @@ export function Hero() {
           className="rise-in mt-4 text-balance text-sm text-[color:var(--hero-ink-muted)]"
           style={{ '--rise-delay': '300ms' } as React.CSSProperties}
         >
-          No credit card. Or ask the agent in the corner. It runs on Radioso.
+          No credit card.
         </p>
       </div>
     </section>
