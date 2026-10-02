@@ -12,7 +12,6 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const NAV = [
   { href: '/developers', label: 'Developers' },
   { href: site.docsUrl, label: 'Docs' },
-  { href: '/blog', label: 'Blog' },
 ]
 
 function isNavItemActive(pathname: string, href: string) {
@@ -86,11 +85,19 @@ export function PillNav() {
 
                 <div aria-hidden className="mx-1 hidden h-6 w-px bg-border md:block" />
 
+                {/* The app serves log in and sign up from one entry point, so both
+                    go to `appUrl`: two labels for the two intents, one door. */}
+                <Link
+                  href={site.appUrl}
+                  className="hidden h-9 shrink-0 items-center rounded-full px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:inline-flex"
+                >
+                  Log in
+                </Link>
                 <Link
                   href={site.appUrl}
                   className="hidden h-9 shrink-0 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
                 >
-                  Log in / Sign up
+                  Sign up
                 </Link>
 
                 <button
@@ -142,10 +149,17 @@ export function PillNav() {
                   <Link
                     href={site.appUrl}
                     onClick={() => setMenuOpen(false)}
-                    className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <LogIn className="size-4" />
-                    Log in / Sign up
+                    Log in
+                  </Link>
+                  <Link
+                    href={site.appUrl}
+                    onClick={() => setMenuOpen(false)}
+                    className="mt-1 inline-flex items-center justify-center rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  >
+                    Sign up
                   </Link>
                 </div>
               </div>

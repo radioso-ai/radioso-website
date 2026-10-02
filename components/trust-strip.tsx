@@ -1,4 +1,4 @@
-import { Github, KeyRound, Database, Server } from 'lucide-react'
+import { Github, KeyRound, Database, MessagesSquare } from 'lucide-react'
 import type { ComponentType, SVGProps } from 'react'
 
 import { Reveal } from '@/components/reveal'
@@ -16,7 +16,7 @@ const points: Point[] = [
   { icon: Github, title: 'Every feature open source', note: 'Nothing gated behind a paid tier' },
   { icon: KeyRound, title: 'Bring your own LLM', note: 'Your keys, no inference markup' },
   { icon: Database, title: 'Your data stays yours', note: 'Postgres you can export — or host' },
-  { icon: Server, title: 'Cloud or self-hosted', note: 'Same platform, your call' },
+  { icon: MessagesSquare, title: 'Priced per conversation', note: 'Never per seat, never per resolution' },
 ]
 
 export function TrustStrip() {

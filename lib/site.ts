@@ -4,9 +4,9 @@ export const site = {
   // Kept separate from the tagline. The tagline is the brand line under the logo;
   // a <title> only renders ~60 characters in results, so it front-loads the terms
   // people actually search rather than the evocative line.
-  metaTitle: 'Radioso — open source platform for conversational AI agents',
+  metaTitle: 'Radioso — customer service platform for AI agents',
   description:
-    'Radioso is an open-source platform for building all your conversational agents in one place — support, sales, docs, internal help. Each one grounded in your documents with citations, steered by your rules, running multi-step routines, taking real action, and handing off to a person when it should. Run it in Radioso Cloud or self-host it — across web, API, SDK, and MCP.',
+    'Radioso is the customer service platform for AI agents. Customers get grounded answers with citations, steered by your directives, running routines, taking real action, and handing off to a person when it should. Run it in Radioso Cloud or self-host it, across web, Slack, API, SDK, and MCP.',
   url: process.env.SITE_URL ?? 'https://radioso.ai',
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.ai',
   appUrl: process.env.APP_URL ?? 'https://app.radioso.ai',
@@ -20,3 +20,14 @@ export const site = {
   // into the app to run the install. Override with SLACK_INSTALL_URL if needed.
   slackInstallUrl: process.env.SLACK_INSTALL_URL ?? (process.env.APP_URL ?? 'https://app.radioso.ai'),
 }
+
+/**
+ * The website-embed install tag, as the docs give it (quickstarts/website-embed):
+ * the launcher is served by the app at /radioso-embed.js and the token comes from
+ * the agent's Channels → Web chat → Website widget settings. Shared by the docs
+ * demo transcript and the copyable snippet under it, so the two never disagree.
+ */
+export const EMBED_SNIPPET = `<script
+  src="${site.appUrl}/radioso-embed.js"
+  data-radioso-token="YOUR_EMBED_TOKEN"
+></script>`

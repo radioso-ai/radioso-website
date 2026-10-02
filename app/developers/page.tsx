@@ -25,8 +25,16 @@ import { site } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Developers',
   description:
-    'Build on Radioso with the REST API, TypeScript SDK, website embed, and MCP server. Run in Radioso Cloud or self-host the open-source platform.',
+    'Build the customer service agent your product needs with the REST API, TypeScript SDK, website embed, and MCP server. Run in Radioso Cloud or self-host the open-source platform.',
   alternates: { canonical: `${site.url}/developers` },
+  openGraph: {
+    title: 'Developers',
+    description:
+      'Build the customer service agent your product needs with the REST API, TypeScript SDK, website embed, and MCP server. Run in Radioso Cloud or self-host the open-source platform.',
+    url: `${site.url}/developers`,
+    siteName: site.name,
+    images: ['/og.png'],
+  },
 }
 
 type Interface = {
@@ -85,9 +93,9 @@ export default function DevelopersPage() {
               The full agent stack, already assembled.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Grounding, rules, tools, routines, actions, and every conversation surface run on
-              one open-source platform. Build the agent your product needs instead of rebuilding
-              its infrastructure.
+              Grounding, rules, tools, routines, actions, and every conversation channel run on
+              one open-source platform. Build the customer service agent your product needs
+              instead of rebuilding its infrastructure.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -136,7 +144,7 @@ function RuntimeMap() {
           <p className="font-mono text-xs text-muted-foreground">
             one deployment
           </p>
-          <p className="mt-1 text-sm font-semibold text-foreground">Same agent, every surface</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">Same agent, every channel</p>
         </div>
         <Workflow className="size-5 text-primary" />
       </div>
@@ -174,7 +182,7 @@ function InterfacesSection() {
             One agent. Use it anywhere.
           </h2>
           <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-            Every interface reaches the same runtime and knowledge. Add a ready-made surface or
+            Every interface reaches the same runtime and knowledge. Add a ready-made channel or
             build your own without creating another copy of the agent behind it.
           </p>
           <Link

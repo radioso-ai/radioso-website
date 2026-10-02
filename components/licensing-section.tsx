@@ -21,7 +21,7 @@ const PLANS: Plan[] = [
     icon: Github,
     label: 'self-hosted',
     title: 'Open source',
-    body: 'Every product feature ships in the open release — grounded answers, directives, routines, actions, every surface. Read the source, run the whole platform on your own infrastructure, and change what you need to.',
+    body: 'Every product feature ships in the open release: grounded answers, directives, routines, actions, every channel. Read the source, run the whole platform on your own infrastructure, and change what you need to.',
     cta: 'Get the source',
     href: site.githubUrl,
   },
@@ -29,7 +29,7 @@ const PLANS: Plan[] = [
     icon: Building2,
     label: 'at scale',
     title: 'Enterprise Edition',
-    body: 'For running Radioso across many workspaces and tenants at scale — multi-tenant, scaled deployments where one install serves a lot of people. Tell us what your deployment needs and we will figure out the shape of it together.',
+    body: 'For running Radioso across many workspaces and tenants at scale: multi-tenant, scaled deployments where one install serves a lot of people. Tell us what your deployment needs and we will figure out the shape of it together.',
     cta: 'Contact us',
     href: `mailto:${site.contactEmail}`,
   },
@@ -46,8 +46,8 @@ export function LicensingSection() {
           Every feature, open source.
         </h2>
         <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-          Every product feature is open source, and you can run the whole platform yourself.
-          Enterprise Edition is only for multi-tenant deployments running Radioso at scale.
+          You can run the whole platform yourself, every product feature included. Enterprise
+          Edition is only for multi-tenant deployments running Radioso at scale.
         </p>
       </div>
 

@@ -15,7 +15,7 @@ type Props = {
   placeholder?: boolean
 }
 
-/** Message bubbles for the hero chat window, which supplies its own frame. */
+/** Message bubbles for the chat launcher, which supplies its own frame. */
 export function AgentAnswer({ data, question, streaming, placeholder }: Props) {
   const body = renderBody(data.body, data.sources, streaming)
 
@@ -40,8 +40,8 @@ export function AgentAnswer({ data, question, streaming, placeholder }: Props) {
           <div
             className={
               placeholder
-                ? 'thinking-shimmer text-base leading-relaxed'
-                : 'text-base leading-relaxed text-foreground'
+                ? 'thinking-shimmer text-[15px] leading-relaxed'
+                : 'text-[15px] leading-relaxed text-foreground'
             }
           >
             {body}

@@ -11,8 +11,8 @@
  * or the message CORS not yet deployed — it falls back to the canned `PRERENDERED` answers so
  * the page never shows a broken state.
  *
- * The pre-rendered seed answer (hero "What is Radioso?") stays canned because the page is a
- * static export; live answers happen client-side once a visitor asks.
+ * Nothing on the page is fetched at build time: the site is a static export, so the chat
+ * launcher opens on a canned greeting and live answers happen client-side once a visitor asks.
  */
 
 import { site } from '@/lib/site'
@@ -40,8 +40,11 @@ export type AgentAnswerData = {
  * the one error worth being paranoid about — verify the page before adding it here.
  */
 const RADIOSO_SOURCES = {
+  docs: { title: 'Radioso Docs', url: site.docsUrl },
   why: { title: 'Why Radioso', url: `${site.docsUrl}/why-radioso` },
   grounded: { title: 'Grounded answers', url: `${site.docsUrl}/why-radioso/grounded-answers` },
+  guidedAutonomy: { title: 'Guided autonomy', url: `${site.docsUrl}/why-radioso/guided-autonomy` },
+  humanTakeover: { title: 'Human takeover', url: `${site.docsUrl}/operators/human-takeover` },
   architecture: { title: 'Architecture', url: `${site.docsUrl}/architecture` },
   retrieval: { title: 'Retrieval pipeline', url: `${site.docsUrl}/architecture/retrieval-pipeline` },
   deployment: { title: 'Deployment', url: `${site.docsUrl}/operators/deployment` },
@@ -53,7 +56,7 @@ const RADIOSO_SOURCES = {
 export const PRERENDERED: Record<string, AgentAnswerData> = {
   whatIsRadioso: {
     body:
-      "Radioso is an open-source platform for conversational agents — grounded in your data and following your rules[1]. Run it in Radioso Cloud, or self-host it on your own infrastructure. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every surface: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
+      "Radioso is the customer service platform for AI agents. It is open source end to end — grounded in your data and following your rules[1]. Run it in Radioso Cloud, or self-host it on your own infrastructure. An agent talks to your users, follows the procedures you author, and takes real action rather than just describing it[1]. One deployment serves every channel: the web app, a REST API, a TypeScript SDK, a website embed, Slack, and MCP clients[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.why },
       { n: 2, ...RADIOSO_SOURCES.architecture },
@@ -75,12 +78,24 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
       { n: 2, ...RADIOSO_SOURCES.architecture },
     ],
   },
+  // Word for word what the production agent answered on 2026-10-01 to "How does Radioso
+  // hand off to a person?", with its two sources: the routine ending in a handoff is guided autonomy,
+  // the operator owning the conversation until hand-back is human takeover.
   handoff: {
     body:
-      "Yes. When your rules say a person decides — or the agent hits something it shouldn't settle alone — it stops and hands the conversation to a real person, with the full transcript and every action it already took attached[1]. The built-in contact-a-human flow is itself just a routine — collect an email, collect a message, submit, confirm — so you can edit it like any other one[1]. It also won't paper over a gap to avoid the handoff: with no supporting evidence it says so rather than sounding confident[2].",
+      "Radioso hands off to a person by ending the routine and transferring the conversation to a human[1]. In a human takeover, the operator owns the conversation, the AI stays silent, and new visitor messages do not run routines or other assistant actions until the hand-back happens[2]. After hand-back, the next visitor message follows the normal assistant path again[2].",
     sources: [
-      { n: 1, ...RADIOSO_SOURCES.why },
-      { n: 2, ...RADIOSO_SOURCES.grounded },
+      { n: 1, ...RADIOSO_SOURCES.guidedAutonomy },
+      { n: 2, ...RADIOSO_SOURCES.humanTakeover },
+    ],
+  },
+  // Verbatim production answer (2026-10-01) to the launcher's "can't answer" chip.
+  cantAnswer: {
+    body:
+      "Radioso optimizes for defensibility rather than fluency, so it fails honestly when support is missing[1]. An agent can also hand off to a person when it should, inside the rules you set[1][2].",
+    sources: [
+      { n: 1, ...RADIOSO_SOURCES.grounded },
+      { n: 2, ...RADIOSO_SOURCES.docs },
     ],
   },
   selfHosting: {
@@ -93,7 +108,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   mcp: {
     body:
-      "Radioso speaks MCP. Self-hosted, the backend can serve an MCP endpoint directly; there's also a standalone `@radioso/mcp-server` package when you want MCP as its own connector surface[1]. Clients get both shapes: tools to converse with an agent, and tools to search, read, and write workspace documents — with citations attached[1]. It runs the same retrieval and the same rules as every other surface, so answers stay consistent[2].",
+      "Radioso speaks MCP. Self-hosted, the backend can serve an MCP endpoint directly; there's also a standalone `@radioso/mcp-server` package when you want MCP as its own connector channel[1]. Clients get both shapes: tools to converse with an agent, and tools to search, read, and write workspace documents — with citations attached[1]. It runs the same retrieval and the same rules as every other channel, so answers stay consistent[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.why },
       { n: 2, ...RADIOSO_SOURCES.architecture },
@@ -101,7 +116,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   embed: {
     body:
-      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one surface among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
+      "The website embed is one script tag on an approved origin — it opens a Radioso-hosted chat with no backend work on the host site, and origin policy stays with you[1]. It's one channel among several on the same deployment, alongside the web app, REST API, TypeScript SDK, Slack, and MCP[2].",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.embed },
       { n: 2, ...RADIOSO_SOURCES.why },
@@ -109,7 +124,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   licensing: {
     body:
-      "Every product feature is open source — grounded answers, directives, routines, actions, every surface. Nothing is feature-gated and nothing is held back for a paid tier[1]. You bring your own model keys — in Radioso Cloud or self-hosted — so there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
+      "Every product feature is open source — grounded answers, directives, routines, actions, every channel. Nothing is feature-gated and nothing is held back for a paid tier[1]. You bring your own model keys — in Radioso Cloud or self-hosted — so there's no markup on inference[2]. Enterprise Edition exists only for multi-tenant deployments running Radioso at scale — tell us what yours needs and we'll work out the shape of it together.",
     sources: [
       { n: 1, ...RADIOSO_SOURCES.source },
       { n: 2, ...RADIOSO_SOURCES.deployment },
@@ -125,7 +140,7 @@ export const PRERENDERED: Record<string, AgentAnswerData> = {
   },
   refuse: {
     body:
-      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, handing off to a person, the surfaces it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
+      "I can't find that in the sources I'm grounded on. Try asking about Radioso's agents, grounded answers and citations, routines and actions, handing off to a person, the channels it runs on, self-hosting, or licensing — or check the docs for anything outside that.",
     sources: [],
   },
 }
@@ -152,6 +167,12 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
     [/\bprice|pricing|cost|free|paid|licen[cs]|open[- ]?source|enterprise\b/, 'licensing'],
     [/\blangchain|framework|low[- ]?code|compare|vs\b/, 'whyNotLangchain'],
     [/\bwhat( is|'s) radioso|what does radioso|tldr\b/, 'whatIsRadioso'],
+    // Ahead of the broad intents below: "what happens when it doesn't know a person's
+    // order number" is about the gap, not about handing off.
+    [
+      /\bcan(['’]?t| ?not) answer|\b(doesn|don)['’]?t know|\bdoes not know|\bunsure\b|\bnot sure\b/,
+      'cantAnswer',
+    ],
     // Last on purpose. Both patterns below are deliberately broad, so they sit behind the
     // surface, licensing, and comparison intents: "call a tool over MCP", "what do actions
     // cost", and "how do routines compare to LangChain" keep their existing routes, and
@@ -161,7 +182,7 @@ async function stubAnswer(question: string): Promise<AgentAnswerData> {
       'actions',
     ],
     [
-      /hand[- ]?off|hand(s|ed)? (it |the conversation )?(off|over)|handover|escalat|\bhumans?\b|\breal person\b|\bperson\b|talk to (a |an )?(agent|rep)/,
+      /hand[- ]?off|hand(s|ed)? (it |the conversation )?(off|over)|handover|take[- ]?over|escalat|\bhumans?\b|\breal person\b|\bperson\b|talk to (a |an )?(agent|rep)/,
       'handoff',
     ],
   ]

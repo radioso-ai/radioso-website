@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans, JetBrains_Mono, Fraunces } from 'next/font/google'
 
+import { ChatLauncher } from '@/components/chat-launcher'
 import { CookieBanner } from '@/components/cookie-banner'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { ThemeProvider } from '@/components/theme-provider'
+import { AskProvider } from '@/lib/ask-context'
 import { site } from '@/lib/site'
 import './globals.css'
 
@@ -42,15 +44,21 @@ export const metadata: Metadata = {
   applicationName: site.name,
   alternates: { canonical: site.url },
   openGraph: {
-    title: site.name,
+    title: {
+      default: site.metaTitle,
+      template: `%s | ${site.name}`,
+    },
     description: site.description,
     url: site.url,
     siteName: site.name,
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — all your conversational agents on one platform you own' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Radioso — the customer service platform for AI agents' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: site.name,
+    title: {
+      default: site.metaTitle,
+      template: `%s | ${site.name}`,
+    },
     description: site.description,
     images: ['/og.png'],
   },
@@ -73,7 +81,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${plexSans.variable} ${jetbrainsMono.variable} ${fraunces.variable} font-sans antialiased`}>
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            {/* The provider sits above every page so the chat launcher, and anything on a
+                page that asks it a question, share one conversation for the visit. */}
+            <AskProvider>
+              {children}
+              <ChatLauncher />
+            </AskProvider>
             <CookieBanner />
           </ThemeProvider>
         </PostHogProvider>
