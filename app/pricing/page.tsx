@@ -9,6 +9,7 @@ import {
   COUNTS_AS,
   MANAGED,
   MANAGED_ANSWER_MODEL,
+  PAGES_PER_EXTRACTION,
   PLANET_MANAGED,
   REPLIES_PER_CONVERSATION,
   TOP_UP,
@@ -48,7 +49,11 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
             ))}
           </tbody>
         </table>
-        <p className="mt-3">Every line shows up in your usage view.</p>
+        <p className="mt-3">
+          Metadata extraction runs once per document version, so re-crawling content that has not
+          changed costs nothing. A typical page is about 3 KB, so {PAGES_PER_EXTRACTION} pages is
+          roughly 75 KB. Every line shows up in your usage view.
+        </p>
       </>
     ),
   },
@@ -68,7 +73,7 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   {
     question: 'What counts toward content storage?',
     answer:
-      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
+      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 5 MB is roughly 1,500 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
   },
   {
     question: 'Why do you not charge per seat?',
@@ -116,13 +121,7 @@ export default function PricingPage() {
             No per-seat. No per-resolution.
           </h1>
           <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Most agent platforms bill for every conversation they resolve, so the better the agent
-            works, the more you owe. Radioso prices on conversations, in plans you can read in
-            one line.
-          </p>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Every feature is on every plan. The plans differ in how many conversations a month, and
-            in who pays for the models.
+            No per-feature fee. No per-agent fee. Shall we go on?
           </p>
         </div>
 

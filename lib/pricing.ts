@@ -31,11 +31,20 @@ export const REPLIES_PER_CONVERSATION = 10
  */
 export const MANAGED_ANSWER_MODEL = 'Claude Sonnet 5'
 
+/**
+ * Metadata extraction is an LLM pass over each document, so it counts like
+ * the other LLM work. One conversation of inference buys roughly this many
+ * pages of it; the rate runs once per document version, so a re-crawl that
+ * finds nothing changed costs nothing.
+ */
+export const PAGES_PER_EXTRACTION = 25
+
 export const COUNTS_AS: { what: string; counts: number }[] = [
   { what: `A customer conversation, up to ${REPLIES_PER_CONVERSATION} replies`, counts: 1 },
   { what: 'A message to Ray, the operator copilot', counts: 0.5 },
   { what: 'A test run in Workbench or evals', counts: 0.5 },
   { what: 'An on-demand Audience Pulse report', counts: 10 },
+  { what: `Metadata extraction, per ${PAGES_PER_EXTRACTION} pages of content`, counts: 1 },
   { what: 'Publishing routines, crawling, indexing', counts: 0 },
 ]
 
@@ -98,6 +107,10 @@ export const PLANET_MANAGED = {
   total: '€749',
 }
 
+/** The comparison rows, in the order they render on every card. */
+export const FEATURE_ROWS = ['content', 'models', 'seats', 'channels', 'support', 'over'] as const
+export type FeatureRow = (typeof FEATURE_ROWS)[number]
+
 export type CloudPlan = {
   /** Product name. Always rendered next to `label` — the name alone makes a
    *  stranger learn our vocabulary before they can compare tiers. */
@@ -113,10 +126,10 @@ export type CloudPlan = {
   conversations: string
   /** Shown under the price on the featured card only: what the year costs. */
   annualNote?: string
-  /** A second way to buy the same card, e.g. Planet with the models on us. */
-  priceAlt?: string
   pitch: string
-  features: string[]
+  /** One value per row of FEATURE_ROWS, so the three cards line up and a
+   *  reader can compare across a row rather than hunt down each list. */
+  rows: Record<FeatureRow, string>
   cta: { text: string; href: string }
   /** Exactly one plan is featured; it gets `.panel` instead of `.surface`. */
   featured?: boolean
@@ -131,13 +144,14 @@ export const CLOUD_PLANS: CloudPlan[] = [
     priceNote: 'no card required',
     conversations: '50 conversations a month',
     pitch: 'The whole platform, with the models on us.',
-    features: [
-      '10 MB of content, about 3,000 pages',
-      'Every product feature',
-      'Unlimited agents and seats',
-      'Every channel: embed, API, SDK, Slack, MCP',
-      'Community support',
-    ],
+    rows: {
+      content: '5 MB of content, about 1,500 pages',
+      models: 'Models on us',
+      seats: 'Unlimited agents and seats',
+      channels: 'Embed, API, SDK, Slack, MCP',
+      support: 'Community support',
+      over: 'Run over? Move up to Satellite',
+    },
     cta: { text: 'Start free', href: site.appUrl },
   },
   {
@@ -149,14 +163,14 @@ export const CLOUD_PLANS: CloudPlan[] = [
     conversations: '1,000 conversations a month',
     annualNote: '€1,490 a year, two months free',
     pitch: 'You pay for conversations, and nothing else.',
-    features: [
-      '20 MB of content, about 6,000 pages',
-      'Models included, no keys to set up',
-      'Unlimited agents and seats',
-      'Every channel: embed, API, SDK, Slack, MCP',
-      'Email support',
-      `Top up any time: ${TOP_UP.price} for ${TOP_UP.conversations} more`,
-    ],
+    rows: {
+      content: '20 MB of content, about 6,000 pages',
+      models: 'Models included, no keys to set up',
+      seats: 'Unlimited agents and seats',
+      channels: 'Embed, API, SDK, Slack, MCP',
+      support: 'Email support',
+      over: `Run over? ${TOP_UP.price} for ${TOP_UP.conversations} more`,
+    },
     cta: { text: 'Start free, upgrade in-app', href: site.appUrl },
     featured: true,
   },
@@ -165,20 +179,18 @@ export const CLOUD_PLANS: CloudPlan[] = [
     label: 'monthly',
     sprite: 'planet',
     price: '€499',
-    priceNote: 'per month · excl. VAT',
+    priceNote: 'per month · your model keys · excl. VAT',
     conversations: '5,000 conversations a month',
     annualNote: '€4,990 a year, two months free',
-    priceAlt: `with your own model keys, or ${PLANET_MANAGED.total} with the models on us`,
     pitch: 'Five times the volume. Bring your own model keys and rates, or leave the models to us.',
-    features: [
-      '100 MB of content, about 30,000 pages',
-      `Your own model keys, or ours for ${PLANET_MANAGED.uplift} a month`,
-      'Unlimited agents and seats',
-      'Every channel: embed, API, SDK, Slack, MCP',
-      'Priority support',
-      'A quarterly review of what your visitors ask',
-      `Top up any time: ${TOP_UP.price} for ${TOP_UP.conversations} more`,
-    ],
+    rows: {
+      content: '100 MB of content, about 30,000 pages',
+      models: `Your own keys, or ours for ${PLANET_MANAGED.uplift} more`,
+      seats: 'Unlimited agents and seats',
+      channels: 'Embed, API, SDK, Slack, MCP',
+      support: 'Priority support and a quarterly review',
+      over: `Run over? ${TOP_UP.price} for ${TOP_UP.conversations} more`,
+    },
     cta: { text: 'Start free, upgrade in-app', href: site.appUrl },
   },
 ]

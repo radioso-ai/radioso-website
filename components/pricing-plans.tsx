@@ -4,13 +4,19 @@ import { Check, ArrowRight, Github, Info } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { PixelSprite, PLAN_SPRITES } from '@/components/pixel-sprite'
 import { Button } from '@/components/ui/button'
-import { CLOUD_PLANS, SELF_HOSTED, STAR } from '@/lib/pricing'
+import { CLOUD_PLANS, FEATURE_ROWS, SELF_HOSTED, STAR } from '@/lib/pricing'
 import { cn } from '@/lib/utils'
 
 /**
  * The three cloud plans in a row, with the self-hosted tier as a full-width band
  * beneath them. The layout is the argument: cloud is the decision being made,
  * self-host is present and honoured without competing for it.
+ *
+ * From `lg` up each card is a subgrid of the same rows (header, pitch, one per
+ * FEATURE_ROWS entry, button), so a row is the same height in all three cards
+ * and the reader compares across, not down. Below `lg` the cards stack and the
+ * subgrid is dropped. `lg:row-span-10` is header + pitch + FEATURE_ROWS (6) +
+ * button; change it if FEATURE_ROWS changes.
  */
 export function PricingPlans() {
   return (
@@ -21,13 +27,13 @@ export function PricingPlans() {
             key={plan.name}
             delay={i * 120}
             className={cn(
-              'flex flex-col gap-5 rounded-2xl p-6 sm:p-7',
+              'flex flex-col gap-5 rounded-2xl p-6 sm:p-7 lg:grid lg:grid-rows-subgrid lg:row-span-10 lg:gap-y-3',
               // `.panel` is the design system's "the one thing that matters"
               // accent card — exactly one plan may use it.
               plan.featured ? 'panel' : 'surface',
             )}
           >
-            <div>
+            <div className="lg:pb-2">
               <PixelSprite
                 {...PLAN_SPRITES[plan.sprite]}
                 className="mb-4 size-16"
@@ -46,15 +52,15 @@ export function PricingPlans() {
               {plan.annualNote && (
                 <p className="mt-1 text-2xs text-muted-foreground/80">{plan.annualNote}</p>
               )}
-              {plan.priceAlt && (
-                <p className="mt-1 text-2xs text-muted-foreground/80">{plan.priceAlt}</p>
-              )}
             </div>
 
-            <p className="text-sm leading-relaxed text-muted-foreground">{plan.pitch}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground lg:pb-2">{plan.pitch}</p>
 
-            <ul className="flex flex-1 flex-col gap-2.5">
-              <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+            {/* `contents` on lg lets each row become a grid row of the card
+                while the list keeps its semantics below lg; the roles keep them
+                for screen readers where `display: contents` drops them. */}
+            <ul role="list" className="flex flex-1 flex-col gap-2.5 lg:contents">
+              <li role="listitem" className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
                 <span>
                   {plan.conversations}
@@ -71,15 +77,15 @@ export function PricingPlans() {
                   </a>
                 </span>
               </li>
-              {plan.features.map((feature) => (
-                <li key={feature} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+              {FEATURE_ROWS.map((row) => (
+                <li key={row} role="listitem" className="flex items-start gap-2.5 text-sm text-muted-foreground">
                   <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <span>{feature}</span>
+                  <span>{plan.rows[row]}</span>
                 </li>
               ))}
             </ul>
 
-            <Button asChild variant={plan.featured ? 'default' : 'outline'} className="w-full">
+            <Button asChild variant={plan.featured ? 'default' : 'outline'} className="w-full lg:mt-3">
               <Link href={plan.cta.href}>
                 {plan.cta.text} <ArrowRight className="size-4" />
               </Link>
