@@ -7,17 +7,17 @@ import { site } from '@/lib/site'
  *
  * The unit is a conversation, and the ladder is graded by two things: how many
  * conversations a month, and who pays for the models. Comet: the models are on
- * us, hence the ceiling. Satellite: metered through us. Planet: volume, with
- * the models as a choice: your own keys and rates, or ours for a flat uplift
- * that passes inference through at the same rate Satellite implies. Say that
- * wherever the plans appear, or Planet reads as the expensive tier that takes
- * something away.
+ * us, hence the ceiling. Satellite: metered through us. Planet: volume, on your
+ * own keys and rates. Say that wherever the plans appear, or Planet reads as the
+ * expensive tier that takes something away.
  *
  * Numbers approved 2026-09-07, refined 2026-09-14 (conversation definition,
  * top-up packs, Satellite raised from €99 to €149, storage limits) and
  * 2026-09-15 after the CFO review (packs off Comet, 12-month pack expiry,
- * opt-in auto top-up, Ray and test runs at half a conversation, Planet with
- * managed models as an option). Change them here and nowhere else.
+ * Ray and test runs at half a conversation). Reconciled 2026-10-05 against
+ * ee/packages/plan-catalog/src/plans.json, which is what billing enforces:
+ * unbuilt promises removed, Comet storage and the managed model corrected.
+ * Change them here and nowhere else, and keep them equal to the catalog.
  */
 
 /** A conversation is up to this many agent replies. Longer ones count again. */
@@ -29,22 +29,13 @@ export const REPLIES_PER_CONVERSATION = 10
  * no model multipliers: managed plans run one model, and on Planet the
  * customer's own provider bill is the multiplier.
  */
-export const MANAGED_ANSWER_MODEL = 'Claude Sonnet 5'
-
-/**
- * Metadata extraction is an LLM pass over each document, so it counts like
- * the other LLM work. One conversation of inference buys roughly this many
- * pages of it; the rate runs once per document version, so a re-crawl that
- * finds nothing changed costs nothing.
- */
-export const PAGES_PER_EXTRACTION = 25
+export const MANAGED_ANSWER_MODEL = 'OpenAI GPT-5.4 mini'
 
 export const COUNTS_AS: { what: string; counts: number }[] = [
   { what: `A customer conversation, up to ${REPLIES_PER_CONVERSATION} replies`, counts: 1 },
   { what: 'A message to Ray, the operator copilot', counts: 0.5 },
   { what: 'A test run in Workbench or evals', counts: 0.5 },
   { what: 'An on-demand Audience Pulse report', counts: 10 },
-  { what: `Metadata extraction, per ${PAGES_PER_EXTRACTION} pages of content`, counts: 1 },
   { what: 'Publishing routines, crawling, indexing', counts: 0 },
 ]
 
@@ -83,28 +74,14 @@ export const STAR = {
  * Prepaid top-up, on the paid plans only. Not on Comet: with packs, Comet plus
  * three of them undercuts Satellite for anyone under ~950 conversations a
  * month, which is most of the customers Satellite exists for. Packs last a
- * year rather than forever so they stay a bridge and not a plan. Auto top-up
- * is opt-in: the customer chooses it, so the promise that nothing is charged
- * without asking still holds. A bullet on both paid cards; expiry and auto
- * top-up are explained once in the details below.
+ * year rather than forever so they stay a bridge and not a plan. The 12-month term is the term of
+ * sale; enforcement lands in radioso#1419 before the first pack can expire.
+ * A bullet on both paid cards; expiry is explained once in the details below.
  */
 export const TOP_UP = {
   price: '€50',
   conversations: 300,
   note: 'One-off, no subscription. Lasts 12 months.',
-  auto: 'Turn on auto top-up and the next pack buys itself at the limit.',
-}
-
-/**
- * Managed models on Planet, as a flat uplift rather than a second card. €250 on
- * 5,000 conversations is €0.05 a conversation, the same inference rate
- * Satellite implies (€0.149 less Planet's €0.10 platform rate), so inference is
- * passed through at one rate everywhere and the volume discount lives in the
- * platform price alone.
- */
-export const PLANET_MANAGED = {
-  uplift: '€250',
-  total: '€749',
 }
 
 /** The comparison rows, in the order they render on every card. */
@@ -145,7 +122,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     conversations: '50 conversations a month',
     pitch: 'The whole platform, with the models on us.',
     rows: {
-      content: '5 MB of content, about 1,500 pages',
+      content: '10 MB of content, about 3,000 pages',
       models: 'Models on us',
       seats: 'Unlimited agents and seats',
       channels: 'Embed, API, SDK, Slack, MCP',
@@ -182,10 +159,10 @@ export const CLOUD_PLANS: CloudPlan[] = [
     priceNote: 'per month · your model keys · excl. VAT',
     conversations: '5,000 conversations a month',
     annualNote: '€4,990 a year, two months free',
-    pitch: 'Five times the volume. Bring your own model keys and rates, or leave the models to us.',
+    pitch: 'Five times the volume, on your own model keys and rates.',
     rows: {
       content: '100 MB of content, about 30,000 pages',
-      models: `Your own keys, or ours for ${PLANET_MANAGED.uplift} more`,
+      models: 'Bring your own model keys',
       seats: 'Unlimited agents and seats',
       channels: 'Embed, API, SDK, Slack, MCP',
       support: 'Priority support and a quarterly review',

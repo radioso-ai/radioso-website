@@ -9,8 +9,6 @@ import {
   COUNTS_AS,
   MANAGED,
   MANAGED_ANSWER_MODEL,
-  PAGES_PER_EXTRACTION,
-  PLANET_MANAGED,
   REPLIES_PER_CONVERSATION,
   TOP_UP,
 } from '@/lib/pricing'
@@ -49,21 +47,17 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
             ))}
           </tbody>
         </table>
-        <p className="mt-3">
-          Metadata extraction runs once per document version, so re-crawling content that has not
-          changed costs nothing. A typical page is about 3 KB, so {PAGES_PER_EXTRACTION} pages is
-          roughly 75 KB. Every line shows up in your usage view.
-        </p>
+        <p className="mt-3">Every line shows up in your usage view.</p>
       </>
     ),
   },
   {
     question: 'Which model answers my customers?',
-    answer: `Comet, Satellite, and Planet with the models on us run on ${MANAGED_ANSWER_MODEL}, with smaller models for the steps around it. There are no model multipliers and no credit tables. If you want a different model, bring your own keys on Planet: any model you choose, and the platform price is the same.`,
+    answer: `Comet and Satellite run on ${MANAGED_ANSWER_MODEL}, with smaller models for the steps around it. There are no model multipliers and no credit tables. If you want a different model, Planet runs on your own keys: any model you choose, at your own rates.`,
   },
   {
     question: 'What happens when I reach the limit?',
-    answer: `The agent tells you before you get there, at 80 percent. At the limit you can move up a plan. On Satellite and Planet you can also buy a top-up: ${TOP_UP.price} for ${TOP_UP.conversations} more conversations, one-off, good for 12 months. ${TOP_UP.auto} Otherwise nothing is charged without you asking, and there is no overage bill at the end of the month. On Comet the next step is Satellite.`,
+    answer: `The agent tells you before you get there, at 80 percent. At the limit you can move up a plan. On Satellite and Planet you can also buy a top-up: ${TOP_UP.price} for ${TOP_UP.conversations} more conversations, one-off, good for 12 months. Nothing is charged without you asking, and there is no overage bill at the end of the month. On Comet the next step is Satellite.`,
   },
   {
     question: 'Do unused conversations roll over?',
@@ -73,7 +67,7 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   {
     question: 'What counts toward content storage?',
     answer:
-      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 5 MB is roughly 1,500 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
+      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
   },
   {
     question: 'Why do you not charge per seat?',
@@ -82,7 +76,7 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   },
   {
     question: 'Why would I bring my own model keys?',
-    answer: `At volume, teams often have negotiated model contracts, their own rate limits, and their own data-processing agreements with providers. On Planet you can keep all of that and pay ${PLANET_MANAGED.uplift} a month less, because the inference is yours. With your own keys Planet costs a third less per conversation than Satellite. If you would rather have nothing to set up, leave the models to us for ${PLANET_MANAGED.total}: the same rate per conversation as Satellite, with five times the room, more storage, priority support, and the quarterly review.`,
+    answer: 'At volume, teams often have negotiated model contracts, their own rate limits, and their own data-processing agreements with providers. Planet lets you keep all of that: you pay your providers directly at your own rates, and Radioso runs the platform. That is why Planet costs a third less per conversation than Satellite even before your own model rates come in.',
   },
   {
     question: 'Is anything gated behind a paid plan?',
