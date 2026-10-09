@@ -20,6 +20,7 @@ export async function GET() {
     '## Pages',
     '',
     `- [Home](${site.url}/): what Radioso does, with a live agent grounded in the docs`,
+    `- [Pricing](${site.url}/pricing.md): Radioso Cloud plans, conversation limits, top-ups, and self-hosting`,
     `- [Developers](${site.url}/developers): REST API, TypeScript SDK, website embed, MCP server, and local quickstart`,
     `- [Radioso for Slack](${site.url}/slack): ask grounded questions, run routines, and take action from Slack`,
     `- [Blog](${site.url}/blog)`,

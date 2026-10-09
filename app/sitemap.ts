@@ -16,6 +16,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
+      url: `${site.url}/pricing`,
+      lastModified,
+    },
+    {
       url: `${site.url}/slack`,
       lastModified,
     },
