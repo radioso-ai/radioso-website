@@ -85,7 +85,7 @@ const AUDIENCES: Audience[] = [
       'Runs routines like returns and escalations',
       'Human handoff with the full transcript',
     ],
-    link: { href: '#people', label: 'See a ticket resolved' },
+    link: { href: '#people', label: 'See a course booked' },
   },
   {
     icon: Code2,

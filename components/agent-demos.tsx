@@ -13,7 +13,7 @@ import {
   sceneEnd,
   useIsomorphicLayoutEffect,
 } from '@/components/scene-engine'
-import { SUPPORT_SCENE, DOCS_SCENE, LEADS_SCENE } from '@/components/scenes'
+import { BOOKING_SCENE, DOCS_SCENE, LEADS_SCENE } from '@/components/scenes'
 import { Button } from '@/components/ui/button'
 import { track as trackEvent } from '@/lib/analytics'
 import { TALK_TO_THE_TEAM, useAsk } from '@/lib/ask-context'
@@ -40,10 +40,10 @@ type Tab = {
 
 const TABS: Tab[] = [
   {
-    id: 'support',
-    label: 'Resolve tickets',
-    scene: SUPPORT_SCENE,
-    sceneLabel: 'A support ticket',
+    id: 'actions',
+    label: 'Do things for customers',
+    scene: BOOKING_SCENE,
+    sceneLabel: 'A course booking',
     exit: { kind: 'link', label: 'Start in the cloud', href: site.appUrl },
   },
   {
