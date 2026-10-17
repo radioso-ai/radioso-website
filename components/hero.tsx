@@ -46,7 +46,7 @@ export function Hero() {
           {/* Each named job deep-links to its tab below; the tab section listens
               for these #demo-* hashes. */}
           Open-source AI agents that{' '}
-          <a href="#demo-support" className="hero-link">resolve tickets</a>,{' '}
+          <a href="#demo-actions" className="hero-link">do things for your customers</a>,{' '}
           <a href="#demo-docs" className="hero-link">answer from your help center</a> and{' '}
           <a href="#demo-leads" className="hero-link">qualify leads</a>. Pay per conversation. Run them in
           our cloud or yours.

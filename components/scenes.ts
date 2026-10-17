@@ -1,9 +1,9 @@
 import {
-  Building2,
+  BedDouble,
+  CalendarCheck,
+  CalendarDays,
   FileText,
-  Users,
   UserCheck,
-  Coins,
   Workflow,
   UserSearch,
   Mail,
@@ -14,68 +14,63 @@ import { planChat, type ChatScript, type Turn } from '@/components/scene-engine'
 import { EMBED_SNIPPET } from '@/lib/site'
 
 /* The three demo transcripts. Voice rules for every line of dialogue: no em
-   dashes, no semicolons, no value-by-negation, no cutesy slang. The support
-   scene is fiction (a company using Radioso); the docs and leads scenes are
+   dashes, no semicolons, no value-by-negation, no cutesy slang. The booking
+   scene follows a real customer's flow; the docs and leads scenes are
    Radioso answering about itself, written as the target the live agent's
    knowledge base is being amended toward. */
 
 /**
- * One ticket, one problem: the invoice does not match the seat count. The agent
- * diagnoses it, asks the customer before touching billing, and hands the credit
- * to a teammate for sign-off before finishing. That's the whole pitch in one
- * scene — it acts, it asks the person a rule names, and a human stays in the
- * loop exactly where the rules put one.
+ * One booking, start to finish: a visitor asks whether a course still has room
+ * and leaves with a confirmed stay. The agent checks the calendar, rooms and
+ * rates, takes the booking, and hands it to reception, who confirm every stay
+ * before it is final. A real customer's flow (a retreat center taking course
+ * bookings), with the names and details changed.
  */
-const SUPPORT_CHAT: Turn[] = [
+const BOOKING_CHAT: Turn[] = [
   {
-    // The agent opens, and it knows who it's talking to: this is a logged-in
-    // customer, and the greeting is the first hint of identity-aware context.
     who: 'radioso',
     think: 420,
-    text: 'Hello Maria, how can I help?',
+    text: 'Hi, I can help you find a course and book your stay. What are you looking for?',
     pause: 640,
   },
   {
     who: 'customer',
-    text: "Our invoice doesn't match our seat count. Can you sort it out?",
+    text: 'Is there still a place on the five-day mindfulness course in November?',
   },
   {
     who: 'radioso',
-    text: 'On it. Let me dig into the account.',
+    text: 'Let me check the calendar.',
     think: 620,
     // The lookups are quick, overlapping housekeeping — they should feel brisk.
     actionGap: 280,
     actions: [
-      { icon: Building2, label: 'Pulled account · Acme Inc, Pro, 24 seats' },
-      { icon: Users, label: 'Checked active users · 18 of 24' },
-      { icon: FileText, label: 'Checked billing policy · billing.md' },
+      { icon: CalendarDays, label: 'Checked course calendar · Mindfulness, Nov 11–15' },
+      { icon: BedDouble, label: 'Checked rooms · 3 singles, 6 doubles free' },
+      { icon: FileText, label: 'Checked room rates · prices.md' },
     ],
     pause: 520,
   },
   {
     who: 'radioso',
-    // The reasoning beat gets the longest think of the scene.
+    // The answer that does the work gets the longest think of the scene.
     think: 800,
-    text: "Found it. You're paying for 24 seats but only 18 are active. I can right-size the plan and credit the unused seats, $312 this cycle. Want me to go ahead?",
+    text: 'Yes, there are places for November 11 to 15. A single room with its own bathroom is $80 a day and a double is $60, all meals included. The course fee is separate. Which room would you like, and what name and email should I book it under?',
     pause: 760,
   },
-  { who: 'customer', text: 'Yes please, go ahead 🙏', pause: 520 },
+  { who: 'customer', text: 'A single please. Anna Lee, anna@annalee.co', pause: 520 },
   {
     who: 'radioso',
-    text: 'A credit that size needs a sign-off from the team. One moment.',
+    text: 'Booking it now. Reception confirms every stay, so one moment.',
     think: 620,
-    // The heart of the scene: handoff, approval, execution, one row at a time.
+    // The heart of the scene: the booking, reception's sign-off, the confirmation.
     actionGap: 720,
     actions: [
-      { icon: Headset, label: 'Handed to Jonas · full conversation attached' },
-      { icon: UserCheck, label: 'Jonas approved · credit unused seats' },
-      { icon: Users, label: 'Right-sized plan · 24 → 18 seats' },
-      { icon: Coins, label: 'Credited unused seats · ', amount: 312 },
+      { icon: CalendarCheck, label: 'Held a place · single room, Nov 11–15' },
+      { icon: Headset, label: 'Sent to reception · booking details attached' },
+      { icon: UserCheck, label: 'Reception confirmed · Anna Lee' },
+      { icon: Mail, label: 'Sent confirmation · anna@annalee.co' },
     ],
-    note: [
-      { amount: 312 },
-      " back, and next month's invoice drops to $1,440. The updated copy is on its way to your finance contact.",
-    ],
+    note: ["You're booked for November 11 to 15 in a single room. The confirmation is in your inbox."],
     pause: 820,
   },
 ]
@@ -172,6 +167,6 @@ const LEADS_CHAT: Turn[] = [
   },
 ]
 
-export const SUPPORT_SCENE: ChatScript = { kind: 'chat', chat: SUPPORT_CHAT, plan: planChat(SUPPORT_CHAT) }
+export const BOOKING_SCENE: ChatScript = { kind: 'chat', chat: BOOKING_CHAT, plan: planChat(BOOKING_CHAT) }
 export const DOCS_SCENE: ChatScript = { kind: 'chat', chat: DOCS_CHAT, plan: planChat(DOCS_CHAT) }
 export const LEADS_SCENE: ChatScript = { kind: 'chat', chat: LEADS_CHAT, plan: planChat(LEADS_CHAT) }
