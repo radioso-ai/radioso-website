@@ -12,7 +12,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'Can I self-host it?',
     answer:
-      'Yes, run the whole platform on your own infrastructure, or use Radioso Cloud with the same product and your own model keys.',
+      'Yes, run the whole platform on your own infrastructure, or use Radioso Cloud with the same product, on your own model keys or ours.',
   },
   {
     question: 'Can it take actions, or is it just a chatbot?',

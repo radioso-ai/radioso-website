@@ -17,7 +17,7 @@ import { site } from '@/lib/site'
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Radioso pricing: free for 50 conversations a month, €149 for 1,000, €499 for 5,000 with your own model keys or €749 with ours. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
+    'Radioso pricing: free for 50 conversations a month, €149 for 1,000, €579 for 5,000 on your model keys or ours. No per-seat fees and no per-resolution billing, and every product feature stays open source if you self-host.',
   alternates: { canonical: `${site.url}/pricing` },
 }
 
@@ -53,7 +53,7 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   },
   {
     question: 'Which model answers my customers?',
-    answer: `Comet and Satellite run on ${MANAGED_ANSWER_MODEL}, with smaller models for the steps around it. There are no model multipliers and no credit tables. If you want a different model, Planet runs on your own keys: any model you choose, at your own rates.`,
+    answer: `Every plan runs on ${MANAGED_ANSWER_MODEL} on our keys, with smaller models for the steps around it. There are no model multipliers and no credit tables. If you want a different model, add your own keys on Planet: any model you choose, at your own rates.`,
   },
   {
     question: 'What happens when I reach the limit?',
@@ -67,7 +67,7 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   {
     question: 'What counts toward content storage?',
     answer:
-      'The text of the documents and pages you give the agent. A typical product page or help article is around 3 KB, so 10 MB is roughly 3,000 pages and 100 MB roughly 30,000. Embeddings and the index we build from your content do not count against you. At the limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
+      'Two things: the text of the documents and pages you give the agent, and how many of them there are. Comet holds 10 MB in up to 300 documents, Satellite 20 MB in up to 5,000, and Planet 100 MB in up to 20,000. Each page of a crawled site is one document. Embeddings and the index we build from your content do not count against you. At either limit, new uploads pause until you remove something or move up a plan. Nothing already indexed is deleted.',
   },
   {
     question: 'Why do you not charge per seat?',
@@ -76,7 +76,7 @@ const NOTES: { question: string; answer: ReactNode; id?: string }[] = [
   },
   {
     question: 'Why would I bring my own model keys?',
-    answer: 'At volume, teams often have negotiated model contracts, their own rate limits, and their own data-processing agreements with providers. Planet lets you keep all of that: you pay your providers directly at your own rates, and Radioso runs the platform. That is why Planet costs a third less per conversation than Satellite even before your own model rates come in.',
+    answer: 'At volume, teams often have negotiated model contracts, their own rate limits, and their own data-processing agreements with providers. On Planet you can keep all of that: add your keys, pay your providers directly at your own rates, and Radioso runs the platform. Without keys, Planet runs on ours at the same price.',
   },
   {
     question: 'Is anything gated behind a paid plan?',
