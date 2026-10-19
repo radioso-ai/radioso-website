@@ -8,8 +8,7 @@ import { site } from '@/lib/site'
  * The unit is a conversation, and the ladder is graded by two things: how many
  * conversations a month, and who pays for the models. Comet: the models are on
  * us, hence the ceiling. Satellite: metered through us. Planet: volume, on your
- * own keys and rates. Say that wherever the plans appear, or Planet reads as the
- * expensive tier that takes something away.
+ * keys or ours. Say that wherever the plans appear.
  *
  * Numbers approved 2026-09-07, refined 2026-09-14 (conversation definition,
  * top-up packs, Satellite raised from €99 to €149, storage limits) and
@@ -17,6 +16,9 @@ import { site } from '@/lib/site'
  * Ray and test runs at half a conversation). Reconciled 2026-10-05 against
  * ee/packages/plan-catalog/src/plans.json, which is what billing enforces:
  * unbuilt promises removed, Comet storage and the managed model corrected.
+ * 2026-10-19: Planet at €579 on your keys or ours (no separate managed
+ * variant), and a document count per plan (300 / 5,000 / 20,000) next to the
+ * byte limit.
  * Change them here and nowhere else, and keep them equal to the catalog.
  */
 
@@ -26,8 +28,8 @@ export const REPLIES_PER_CONVERSATION = 10
 /**
  * What counts against the monthly allowance, in conversations. One unit,
  * everything counts, most things count for very little. There are deliberately
- * no model multipliers: managed plans run one model, and on Planet the
- * customer's own provider bill is the multiplier.
+ * no model multipliers: our keys run one model, and when a customer brings
+ * their own keys their provider bill is the multiplier.
  */
 export const MANAGED_ANSWER_MODEL = 'OpenAI GPT-5.4 mini'
 
@@ -122,7 +124,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     conversations: '50 conversations a month',
     pitch: 'The whole platform, with the models on us.',
     rows: {
-      content: '10 MB of content, about 3,000 pages',
+      content: '10 MB of content, up to 300 documents',
       models: 'Models on us',
       seats: 'Unlimited agents and seats',
       channels: 'Embed, API, SDK, Slack, MCP',
@@ -141,7 +143,7 @@ export const CLOUD_PLANS: CloudPlan[] = [
     annualNote: '€1,490 a year, two months free',
     pitch: 'You pay for conversations, and nothing else.',
     rows: {
-      content: '20 MB of content, about 6,000 pages',
+      content: '20 MB of content, up to 5,000 documents',
       models: 'Models included, no keys to set up',
       seats: 'Unlimited agents and seats',
       channels: 'Embed, API, SDK, Slack, MCP',
@@ -155,14 +157,14 @@ export const CLOUD_PLANS: CloudPlan[] = [
     name: 'Planet',
     label: 'monthly',
     sprite: 'planet',
-    price: '€499',
-    priceNote: 'per month · your model keys · excl. VAT',
+    price: '€579',
+    priceNote: 'per month · excl. VAT',
     conversations: '5,000 conversations a month',
-    annualNote: '€4,990 a year, two months free',
-    pitch: 'Five times the volume, on your own model keys and rates.',
+    annualNote: '€5,790 a year, two months free',
+    pitch: 'Five times the volume, on your model keys or ours.',
     rows: {
-      content: '100 MB of content, about 30,000 pages',
-      models: 'Bring your own model keys',
+      content: '100 MB of content, up to 20,000 documents',
+      models: 'Your model keys or ours',
       seats: 'Unlimited agents and seats',
       channels: 'Embed, API, SDK, Slack, MCP',
       support: 'Priority support and a quarterly review',

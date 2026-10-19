@@ -79,11 +79,11 @@ Every line appears in the workspace usage view.
 
 ## Which model answers
 
-The plans where the models run on Radioso's keys use ${MANAGED_ANSWER_MODEL} for answers, with smaller models for the steps around it (query rewriting, reranking, classification). There are no model multipliers and no credit tables. ${CLOUD_PLANS[CLOUD_PLANS.length - 1].name} runs on the customer's own model keys with any model they choose; the platform price is the same and the customer pays their model provider directly.
+On Radioso's keys, every plan uses ${MANAGED_ANSWER_MODEL} for answers, with smaller models for the steps around it (query rewriting, reranking, classification). There are no model multipliers and no credit tables. On ${CLOUD_PLANS[CLOUD_PLANS.length - 1].name} the customer can add their own model keys and choose any model; the platform price is the same either way, and with their own keys the customer pays their model provider directly.
 
 ## Content storage
 
-Storage counts the text of the documents and pages given to the agent. A typical product page or help article is around 3 KB. Embeddings and the search index do not count. At the storage limit, new uploads pause until content is removed or the workspace moves up a plan, and nothing already indexed is deleted.
+Storage counts the text of the documents and pages given to the agent and how many there are; each plan above lists both limits, and each page of a crawled site is one document. Embeddings and the search index do not count. At either limit, new uploads pause until content is removed or the workspace moves up a plan, and nothing already indexed is deleted.
 
 ## What happens at the limit
 
