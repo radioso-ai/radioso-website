@@ -6,6 +6,7 @@ import { CookieBanner } from '@/components/cookie-banner'
 import { PostHogProvider } from '@/components/posthog-provider'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AskProvider } from '@/lib/ask-context'
+import { announcementScript } from '@/lib/announcement'
 import { site } from '@/lib/site'
 import './globals.css'
 
@@ -78,6 +79,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="bg-background">
+      <head>
+        {/* Hides the announcement strip before first paint for a visitor who closed
+            it or arrives after the event (see lib/announcement.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: announcementScript }} />
+      </head>
       <body className={`${plexSans.variable} ${jetbrainsMono.variable} ${fraunces.variable} font-sans antialiased`}>
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
