@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X, Github, LogIn } from 'lucide-react'
 
 import { site } from '@/lib/site'
+import { AnnouncementStrip } from '@/components/announcement-strip'
 import { Logo } from '@/components/logo'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -25,15 +26,27 @@ export function PillNav() {
 
   return (
     <>
+      <AnnouncementStrip />
       {/* Blur-and-fade rather than a painted gradient: the scrim has to pass over
           the dark machine band as well as the cream page, and a `from-background`
           gradient would drag a cream slab across it. A masked backdrop-blur takes
-          its color from whatever is actually behind it. */}
+          its color from whatever is actually behind it.
+
+          Sticky at the top rather than fixed there, taking no room in the flow
+          (`-mb-20`). With nothing above the nav the two are the same. Under the
+          announcement strip, a fixed scrim would blur the light strip's edge into
+          the navy band as a pale smear; sticky, it starts at the strip's bottom
+          edge and rides up with it. */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_30%,transparent)]"
+        className="pointer-events-none sticky top-0 z-40 -mb-20 h-20 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_30%,transparent)]"
       />
-      <div className="sticky top-4 z-50">
+      {/* `mt-4 -mb-4` keep the pill's resting place 16px under whatever sits above
+          it. With nothing above, sticky `top-4` already put it there, so this
+          changes nothing; under the announcement strip it would otherwise sit flush
+          against it. The negative bottom margin hands the page the same 54px of flow
+          as before, which the hero's backdrop and signal origin are measured from. */}
+      <div className="sticky top-4 z-50 mt-4 -mb-4">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 xl:max-w-7xl">
           {/*
             The pill is sized by its contents, not stretched to a width. On phones

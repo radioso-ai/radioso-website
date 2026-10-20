@@ -577,6 +577,13 @@
   text-decoration-color: var(--hero-ink);
 }
 
+/* The announcement strip above the nav is in the static HTML for every visitor.
+   The inline script in app/layout.tsx marks <html> before first paint when this
+   visitor has closed it or the event is over, so it never paints then vanishes. */
+[data-announcement-hidden] .announcement-strip {
+  display: none;
+}
+
 /* Scroll-reveal: sections rise and fade as they enter the viewport. */
 .reveal {
   opacity: 0;
