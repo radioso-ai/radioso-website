@@ -42,3 +42,6 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: radioso-live
           channelId: ${{ github.ref == 'refs/heads/main' && 'live' || '' }}
+          # 15.34.1 checks serviceusage.services.get on radioso-live, which the
+          # deploy service account doesn't hold; every deploy 403s with it.
+          firebaseToolsVersion: 15.34.0
