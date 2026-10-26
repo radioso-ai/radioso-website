@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-10-26
 
 This Privacy Policy explains how **Ljuv OÜ** ("Radioso", "we", "us")
 collects, uses, and protects personal data in connection with the Radioso context
@@ -97,9 +97,12 @@ process whatever you choose to share with us for that purpose.
 ## 3. AI providers and how content reaches them
 
 To produce grounded answers, the Service sends prompts and retrieved context to
-the AI provider configured for your workspace or deployment. Radioso Cloud uses
-more than one provider (for example, OpenAI and Anthropic), depending on
-configuration.
+the AI provider configured for your workspace or deployment. On Radioso Cloud,
+workspaces in europe-west1 use OpenAI's models through Microsoft Azure OpenAI in
+the EU, and workspaces in us-central1 use OpenAI directly. A workspace can
+connect its own account with another provider, such as Anthropic or Gemini; that
+provider is then the workspace's own processor, under the workspace's agreement
+with it.
 
 - For **Radioso Cloud**, the active providers are listed in the sub-processor
   table in Section 6.1.
@@ -149,7 +152,7 @@ law, analytics run only after you give consent.
 We share personal data only as needed to run the Service:
 
 - **Sub-processors and service providers** — hosting, database, AI provider,
-  and analytics. The current list is in Section 6.1 below.
+  email, payments, and analytics. The current list is in Section 6.1 below.
 - **Within your organization** — workspace members and operators can see data
   according to the access controls you configure.
 - **Legal and safety** — where required by law, to enforce our terms, or to
@@ -167,22 +170,30 @@ Self-hosted deployments do not use these unless the operator chooses to.
 
 | Sub-processor | Role | Data processed | Location |
 |---|---|---|---|
-| Google Cloud EMEA Ltd. (Google Cloud Platform) | Cloud hosting, compute, and managed PostgreSQL database | All Service data stored and processed in the platform | EU (europe-west, EEA) |
-| PostHog Inc. | Product and website analytics | Usage events, device/browser data, approximate location | EU Cloud (eu.posthog.com), EEA |
-| Configured AI providers (including OpenAI and Anthropic) | Generating grounded answers | Prompts and retrieved context sent at answer time | Primarily United States |
+| Google Cloud EMEA Ltd. (Google Cloud Platform) | Hosting, compute, database and file storage | All Service data | The workspace's region: europe-west1 (Belgium) or us-central1 (United States) |
+| Microsoft Ireland Operations Ltd. (Azure OpenAI) | Language model and embeddings, for workspaces in europe-west1 | Messages, retrieved document passages and instructions sent at answer time | EU (Azure EU Data Zone) |
+| OpenAI Ireland Ltd. | Language model and embeddings, for workspaces in us-central1 | Messages, retrieved document passages and instructions sent at answer time | United States |
+| Lettermint B.V. | Account and notification email, for workspaces in europe-west1; the email channel, when enabled | Recipient address and email content | EU (Netherlands) |
+| Resend | Account and notification email, for workspaces in us-central1; the email channel, when enabled | Recipient address and email content | United States |
+| PostHog Inc. | Product and website analytics | Usage events, device/browser data, approximate location; no conversation content | EU Cloud (eu.posthog.com), EEA |
+| Slack Technologies | Notifications and handoff, only when a workspace connects Slack | Notification content the workspace configures | United States |
+| Stripe | Payments | Billing details of account holders; no end-user conversation data | United States |
 
-We update this list when sub-processors change. We do not currently use a payment
-processor, because Radioso Cloud does not yet sell subscriptions online; one will
-be added here before paid online billing launches.
+We give customers at least 30 days' notice by email before we add or replace a
+sub-processor. Customers can request our Data Processing Agreement at the
+privacy contact above.
 
 ---
 
 ## 7. International transfers
 
-Radioso Cloud is hosted on Google Cloud Platform in an EU region (europe-west,
-within the EEA), and our analytics (PostHog) run on EU Cloud. The main transfer
-outside the EEA is when prompts and retrieved context are sent to AI providers
-(such as OpenAI and Anthropic), which primarily process in the United States.
+Radioso Cloud is hosted on Google Cloud Platform in two regions: europe-west1
+(Belgium, within the EEA) and us-central1 (United States). A workspace stays in
+the region where it was created. Our analytics (PostHog) run on EU Cloud. For
+workspaces in europe-west1, hosting, language-model calls and email stay in the
+EU. The main transfers outside the EEA are hosting, language-model calls and
+email for workspaces in us-central1, payments through Stripe, and Slack when a
+workspace connects it.
 Where we transfer personal data outside the EEA, UK, or Switzerland, we rely on a
 lawful transfer mechanism such as the EU Standard Contractual Clauses and the UK
 Addendum, together with supplementary measures where needed. Copies are available
@@ -197,11 +208,16 @@ We keep personal data only as long as needed for the purposes above:
 - **Account data** — for the life of the account, then deleted or anonymized
   within **30 days** after closure.
 - **Ingested content and conversations (Cloud)** — for as long as the workspace
-  keeps them, or until you delete them; deletions propagate to derived chunks and
-  vectors. Backups are purged within **35 days** on our standard backup cycle.
-- **Operational logs** — up to **90 days**.
-- **Audit and security events** — up to **12 months**, because they support
-  security investigations and abuse detection.
+  keeps them, until you delete them, or until the workspace's retention window
+  erases them; deletions propagate to every derived copy. Deleted data stays in
+  database backups until they age out, after at most **7 days**.
+- **Operational logs** — **30 days**.
+- **Audit and security events** — kept for **up to 12 months**, because they
+  support security investigations and abuse detection. This window runs from
+  when the event happened, not from when a workspace closes. Closing a
+  workspace erases the audit events that carry a conversation's content along
+  with it; every other audit event for that workspace keeps the same window
+  rather than being deleted with the workspace.
 - **Billing and accounting records** — retained for **7 years**, as required by
   Estonian accounting law.
 
@@ -212,8 +228,9 @@ For self-hosted deployments, retention is controlled by the operator.
 ## 9. Security
 
 We use technical and organizational measures appropriate to the risk, including
-encryption in transit, access controls, audit logging, and least-privilege
-operational practices. PostgreSQL is the system of record; application state,
+encryption at rest (the database, its backups and uploaded files are encrypted
+with AES-256 on Google Cloud), encryption in transit, access controls, audit
+logging, and least-privilege operational practices. PostgreSQL is the system of record; application state,
 documents, chunks, vectors, settings, sessions, and audit events are stored there.
 No system is perfectly secure, so we cannot guarantee absolute security.
 
