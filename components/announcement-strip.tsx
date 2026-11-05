@@ -95,7 +95,7 @@ export function AnnouncementStrip() {
           useSlotsViewOnSmallScreen: 'true',
           // Open on the booth day rather than today.
           month: '2026-11',
-          date: '2026-11-09',
+          date: '2026-11-12',
         },
       })
     } catch {
@@ -113,11 +113,11 @@ export function AnnouncementStrip() {
             pill's inset, so the close button's glyph lines up with the pill's edge. */}
         <div className="relative flex min-h-9 w-full items-center py-1.5 pr-7 md:mx-auto md:max-w-[calc(100%-1rem)] md:justify-center md:px-10">
           <p className="min-w-0 text-xs leading-snug text-muted-foreground sm:text-sm">
-            {/* "Lisbon" goes on phones: with it the line needs 320px and a 375px
-                screen has 315. Web Summit in November is Lisbon. */}
-            <span className="sm:hidden">Web Summit, ALPHA booth, 9 Nov.</span>
-            <span className="hidden sm:inline">
-              Meet us at Web Summit Lisbon, ALPHA booth, Monday 9 November.
+            {/* The short line keeps what someone on the floor needs, the day and the
+                stand. The full sentence only fits one line from `lg`. */}
+            <span className="lg:hidden">Web Summit, 12 Nov, Pavilion 4 A7-60.</span>
+            <span className="hidden lg:inline">
+              Meet us at Web Summit Lisbon on Thursday 12 November, ALPHA booth A7-60, Pavilion 4.
             </span>{' '}
             <a
               href={ANNOUNCEMENT_CAL_URL}
