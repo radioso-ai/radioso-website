@@ -30,9 +30,9 @@ Where a section applies only to one of these, it says so.
 
 - Entity: **Ljuv OÜ** (Estonian private limited company, registry code 12641968)
 - Registered address: **Ümera tn 25-39, Lasnamäe linnaosa, 13816 Tallinn, Harju maakond, Estonia**
-- Privacy contact: **hello@radioso.ai**
+- Privacy contact: **dpo@radioso.ai**
 - EU representative: **Not applicable — Ljuv OÜ is established in the EU (Estonia)**
-- Data Protection Officer: **Not appointed**
+- Data Protection Officer: **Not formally appointed. Send all data protection requests to the privacy contact above.**
 
 If you run **Radioso Self-Hosted**, the controller is the organization operating
 that deployment. Direct privacy requests about a self-hosted instance to that
@@ -300,5 +300,5 @@ the revised policy.
 
 Questions or requests about this policy or your personal data:
 
-- **hello@radioso.ai**
+- **dpo@radioso.ai**
 - **Ljuv OÜ, Ümera tn 25-39, Lasnamäe linnaosa, 13816 Tallinn, Estonia**
