@@ -45,13 +45,3 @@ jobs:
           # 15.34.1 checks serviceusage.services.get on radioso-live, which the
           # deploy service account doesn't hold; every deploy 403s with it.
           firebaseToolsVersion: 15.34.0
-
-      # Live deploys only: the agent on radioso.ai answers price questions from this
-      # document, so it follows the page that just went out. Skips with a notice while
-      # RADIOSO_DOCS_API_TOKEN is unset (the same workspace token the radioso repo's
-      # docs sync uses).
-      - name: Sync pricing into the agent's workspace
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        run: node scripts/sync-pricing-to-radioso.mjs
-        env:
-          RADIOSO_API_TOKEN: ${{ secrets.RADIOSO_DOCS_API_TOKEN }}
