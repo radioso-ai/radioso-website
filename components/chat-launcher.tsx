@@ -206,7 +206,8 @@ export function ChatLauncher() {
         </div>
 
         <div className="shrink-0 border-t border-border/70 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-3">
-          <AskInput className="rounded-full border border-border bg-background/70 p-1.5 pl-4 transition-colors focus-within:border-primary/35 focus-within:bg-background" />
+          {/* 27px is half the one-line height: a pill on one line, a rounded box as it grows. */}
+          <AskInput className="rounded-[27px] border border-border bg-background/70 p-1.5 pl-4 transition-colors focus-within:border-primary/35 focus-within:bg-background" />
         </div>
       </div>
 
