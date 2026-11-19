@@ -13,11 +13,13 @@ import { site } from '@/lib/site'
 /**
  * The commercial facts as plain markdown, generated from `lib/pricing.ts`.
  *
- * This exists so the agent behind the site's Ask box can be grounded in the
- * same numbers the page shows, by crawling one URL rather than by someone
- * remembering to re-upload a document. Point the workspace's website crawler
- * at `/pricing.md` and it re-ingests whenever the site deploys; the numbers
- * cannot drift from the page because both read this module.
+ * This exists so the agent behind the site's chat can be grounded in the same
+ * numbers the page shows. The radioso repo's docs sync
+ * (`.github/workflows/sync-docs-to-radioso.yml`) fetches the live
+ * https://radioso.ai/pricing.md into the agent's workspace on every run and at
+ * least daily, so the agent follows the page within a day of a deploy; run that
+ * workflow by hand for an immediate refresh. The page and the file both read this
+ * module, so they cannot disagree.
  *
  * Static export emits this as a file in `out/`, so Firebase serves it like any
  * other asset.
