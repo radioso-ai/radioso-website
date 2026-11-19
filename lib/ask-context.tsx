@@ -48,7 +48,7 @@ type AskState = {
   openReason: OpenReason | null
   openLauncher: (reason: Exclude<OpenReason, 'restore'>) => void
   closeLauncher: (via: 'button' | 'header' | 'escape') => void
-  inputRef: RefObject<HTMLInputElement | null>
+  inputRef: RefObject<HTMLTextAreaElement | null>
 }
 
 /**
@@ -79,7 +79,7 @@ export function AskProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [openReason, setOpenReason] = useState<OpenReason | null>(null)
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const inputRef = useRef<HTMLTextAreaElement | null>(null)
   // Read by `ask`, which must not re-create itself every time the panel toggles.
   const openRef = useRef(false)
 
