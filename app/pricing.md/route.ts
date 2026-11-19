@@ -13,11 +13,10 @@ import { site } from '@/lib/site'
 /**
  * The commercial facts as plain markdown, generated from `lib/pricing.ts`.
  *
- * This exists so the agent behind the site's Ask box can be grounded in the
- * same numbers the page shows, by crawling one URL rather than by someone
- * remembering to re-upload a document. Point the workspace's website crawler
- * at `/pricing.md` and it re-ingests whenever the site deploys; the numbers
- * cannot drift from the page because both read this module.
+ * This exists so the agent behind the site's chat can be grounded in the same
+ * numbers the page shows. Every live deploy upserts the built file into the
+ * agent's workspace (`scripts/sync-pricing-to-radioso.mjs`, run by the deploy
+ * workflow), so the numbers cannot drift from the page: both read this module.
  *
  * Static export emits this as a file in `out/`, so Firebase serves it like any
  * other asset.

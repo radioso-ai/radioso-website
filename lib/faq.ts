@@ -3,6 +3,12 @@ export type FaqItem = { question: string; answer: string }
 // Keep the homepage questions buyer-facing. Provider, integration, architecture,
 // and deployment detail belongs on /developers and in the docs. Lives outside the
 // client component so the homepage FAQPage JSON-LD can read the same list.
+//
+// Every question here is also sent to the live agent by its "Ask the agent" button, so
+// name Radioso instead of saying "it". The agent reads a bare "it" as itself, skips its
+// documents, and answers about its own limits: "Can it take actions, or is it just a
+// chatbot?" got "I can't take actions for you". "Can I self-host it?" is safe because it
+// asks about the visitor's action.
 export const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'Is Radioso really open source, or is there a paid tier?',
@@ -15,7 +21,7 @@ export const FAQ_ITEMS: FaqItem[] = [
       'Yes, run the whole platform on your own infrastructure, or use Radioso Cloud with the same product, on your own model keys or ours.',
   },
   {
-    question: 'Can it take actions, or is it just a chatbot?',
+    question: 'Can Radioso take actions, or is it just a chatbot?',
     answer:
       'It calls tools, fires webhooks, and runs multi-step routines, then hands off to a person with full context when it should.',
   },
