@@ -99,7 +99,7 @@ const DOCS_CHAT: Turn[] = [
   {
     who: 'radioso',
     think: 520,
-    text: "Grab the token from Channels → Website in the dashboard and paste the tag before </body>. That's it. The agent answers from whatever documents you've connected.",
+    text: "Grab the token from Channels → Web chat in the dashboard and paste the tag before </body>. That's it. The agent answers from whatever documents you've connected.",
     sources: ['website-embed'],
     pause: 760,
   },
@@ -107,7 +107,7 @@ const DOCS_CHAT: Turn[] = [
   {
     who: 'radioso',
     think: 700,
-    text: 'Yes. Colors, position, welcome message, and the suggested questions are all widget settings. Changes apply without redeploying. If you want full control, render your own UI on the REST API or the TypeScript SDK. Same agent, same grounding underneath.',
+    text: 'Yes. Colors, logo, position, and the widget’s wording are settings in the dashboard. The welcome message and its suggested questions are part of the agent’s profile. The tag on your site stays the same. If you want full control, render your own UI on the REST API or the TypeScript SDK. Same agent, same grounding underneath.',
     sources: ['website-embed', 'sdk'],
     pause: 760,
   },
