@@ -43,6 +43,20 @@ const plan = (p: (typeof CLOUD_PLANS)[number]) => {
   ].join('\n')
 }
 
+/**
+ * Every plan and its price in one sentence, near the top. The agent retrieves this
+ * file in pieces, and a piece holding one plan's section next to another plan's
+ * heading got read as the wrong price: asked about Planet, it quoted Satellite's
+ * €149. A sentence that pairs each name with its own price keeps them together.
+ */
+const atAGlance = () => {
+  const parts = [
+    ...CLOUD_PLANS.map((p) => (p.price === 'Free' ? `${p.name} is free` : `${p.name} costs ${p.price} a month`)),
+    `${STAR.name} is ${STAR.label}`,
+  ]
+  return `At a glance: ${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}.`
+}
+
 export function GET() {
   const body = `# Radioso plans and pricing
 
@@ -54,6 +68,8 @@ commercial facts for Radioso Cloud and the open-source edition.
 Radioso Cloud is priced on conversations. There are no per-seat fees and no
 per-resolution fees. Every product feature is available on every plan,
 including the free one. Listed prices exclude VAT.
+
+${atAGlance()}
 
 ${CLOUD_PLANS.map(plan).join('\n\n')}
 
