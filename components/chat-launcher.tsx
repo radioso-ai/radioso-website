@@ -24,18 +24,20 @@ const OPENER: AgentAnswerData = {
   sources: [],
 }
 
-// Name Radioso explicitly rather than saying "it". The live agent reads a bare "it" as
-// itself and answers about its own limits: "Can it take actions?" returned "I can't take
-// actions on your behalf", contradicting the product's whole pitch. "Can I self-host it?"
-// is safe because it asks about the visitor's action, not the assistant's capability.
+// Ask about "a Radioso agent", never "it" or bare "Radioso". The live agent is named
+// "Radioso Assistant", so it reads both as questions about itself, skips its documents,
+// and answers about its own limits: "Can it take actions?" and "Can Radioso take
+// actions…?" both got "I can't take actions on your behalf", contradicting the product's
+// whole pitch. Each chip below was checked twice against the live agent on 2026-11-20 and
+// answered from the docs both times. "Can I self-host it?" no longer was: once a refusal.
 //
 // The last chip is deliberately not a question: it trips the `talk-to-the-team` routine on
 // the live agent, so the visitor watches it run a real multi-step flow (qualify, collect
 // email, hand to a human) instead of being told that routines exist.
 const QUICK_REPLIES = [
-  'How does Radioso take actions?',
-  "What happens when Radioso can't answer?",
-  'Can I self-host it?',
+  'How does a Radioso agent take actions?',
+  "What if a Radioso agent can't answer?",
+  'Can I self-host Radioso?',
   TALK_TO_THE_TEAM,
 ]
 
