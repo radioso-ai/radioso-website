@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Github, LogIn } from 'lucide-react'
+import { Menu, X, Github } from 'lucide-react'
 
 import { site } from '@/lib/site'
 import { AnnouncementStrip } from '@/components/announcement-strip'
@@ -83,35 +83,32 @@ export function PillNav() {
                     </Link>
                   )
                 })}
+                {/* The star sits with the links, not the account actions, so it
+                    never competes with Log in. Between `md` and `lg` the pill has
+                    no room for the full label, so it shortens to “Star”. */}
+                <Link
+                  href={site.githubRepoUrl}
+                  aria-label="Star us on GitHub"
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <Github className="size-4" />
+                  <span>
+                    Star<span className="hidden lg:inline"> us on GitHub</span>
+                  </span>
+                </Link>
               </div>
 
               <div className="flex shrink-0 items-center gap-1">
-                <div className="hidden items-center gap-0.5 md:flex">
-                  <ThemeToggle className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" />
-                  <Link
-                    href={site.githubUrl}
-                    aria-label="GitHub"
-                    className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <Github className="size-4" />
-                  </Link>
-                </div>
+                <ThemeToggle className="hidden size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:inline-flex" />
 
-                <div aria-hidden className="mx-1 hidden h-6 w-px bg-border md:block" />
-
-                {/* The app serves log in and sign up from one entry point, so both
-                    go to `appUrl`: two labels for the two intents, one door. */}
+                {/* The app serves log in and sign up from one entry point, so the
+                    nav has one door to it rather than two labels for the same URL.
+                    It stays out of the phone menu so the way in is never hidden. */}
                 <Link
                   href={site.appUrl}
-                  className="hidden h-9 shrink-0 items-center rounded-full px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:inline-flex"
+                  className="inline-flex h-9 shrink-0 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 md:ml-1"
                 >
-                  Log in
-                </Link>
-                <Link
-                  href={site.appUrl}
-                  className="hidden h-9 shrink-0 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
-                >
-                  Sign up
+                  Go to app
                 </Link>
 
                 <button
@@ -153,27 +150,12 @@ export function PillNav() {
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   />
                   <Link
-                    href={site.githubUrl}
+                    href={site.githubRepoUrl}
                     onClick={() => setMenuOpen(false)}
                     className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <Github className="size-4" />
-                    GitHub
-                  </Link>
-                  <Link
-                    href={site.appUrl}
-                    onClick={() => setMenuOpen(false)}
-                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <LogIn className="size-4" />
-                    Log in
-                  </Link>
-                  <Link
-                    href={site.appUrl}
-                    onClick={() => setMenuOpen(false)}
-                    className="mt-1 inline-flex items-center justify-center rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                  >
-                    Sign up
+                    Star us on GitHub
                   </Link>
                 </div>
               </div>
