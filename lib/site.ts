@@ -11,6 +11,8 @@ export const site = {
   docsUrl: process.env.DOCS_SITE_URL ?? 'https://docs.radioso.ai',
   appUrl: process.env.APP_URL ?? 'https://app.radioso.ai',
   githubUrl: 'https://github.com/radioso-ai/',
+  // The star button needs the repository: an organisation page has no star.
+  githubRepoUrl: 'https://github.com/radioso-ai/radioso',
   contactEmail: 'hello@radioso.ai',
   // Slack install entry point. Radioso's install flow is authenticated and
   // per-workspace — a workspace admin starts it from the dashboard's Slack
